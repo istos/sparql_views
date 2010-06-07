@@ -222,9 +222,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       $endpoint = $this->endpoint_url;
       //<http://dbpedia.org/resource/Number-one_albums_of_1997_%28USA%29>
       $query_test = array('type' => 'property',
-                         'query' => "$this->prefixes
-      SELECT * $query
-      ");
+                         'query' => "$this->prefixes SELECT * $query");
       //dpm($query_test['query']);
       $results = rdfx_sparql_request($query_test['query'], $endpoint, array('store_read_key' => $this->endpoint_read_key));
 
