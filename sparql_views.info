@@ -1,0 +1,5 @@
+;$Id$
+name = SPARQL Views
+description = Runs a query against a SPARQL endpoint.
+dependencies[] = views
+core = 6.x

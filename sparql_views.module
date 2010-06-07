@@ -1,0 +1,19 @@
+<?php
+// $Id$
+
+/**
+ * Virtual Film Factory Backend
+ *
+ * @author
+ * Lin Clark <lin.w.clark@gmail.com>
+ */
+
+/**
+ * Implementation of hook_views_api().
+ */
+function sparql_views_views_api() {
+  return array(
+    'api' => '3.0-alpha1',
+  );
+}
+
