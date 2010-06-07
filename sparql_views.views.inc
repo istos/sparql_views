@@ -6,6 +6,39 @@
  */
 
 function sparql_views_views_data() {
+  $fields = array();
+  $sparql_view_names = array();
+  
+  if (arg(4) == 'add-item') {
+    $sparql_view_names[] = arg(5);
+  }
+  
+  else {
+    $views = views_get_all_views();
+    foreach ($views as $view_name => $view) {
+      $query_type = $view->display['default']->display_options['query']['type'];
+      if ($query_type == 'sparql_query') {
+        $sparql_view_names[] = $view_name;
+      }
+    }
+  }
+  
+  foreach ($sparql_view_names as $view_name) {
+    // Get the view the user is editing based on the URL.
+    $view = views_ui_cache_load($view_name);
+    
+    foreach ($view->display as $display) {
+      foreach ($display->display_options['filters'] as $filter) {
+        foreach ($filter['value'] as $value) {
+          if (strpos($value, '?') === 0) {
+            $field = substr($value, 1);
+            $fields[$field] = $field;
+          }
+        }
+      }
+    }
+  }
+  
   $data['sparql_ep']['table']['group']  = t('SPARQL');
 
   $data['sparql_ep']['table']['base'] = array(
@@ -22,14 +55,14 @@ function sparql_views_views_data() {
     ),
   );
 
-  $data['sparql_ep']['project_title'] = array(
+  /*$data['sparql_ep']['project_title'] = array(
     'title' => t('Project'),
     'help' => t('Display project titles.'),
     // Shouldn't there be sparql_views_handler_field_markup??
     'field' => array(
       'handler' => 'sparql_views_handler_field_link',
     ),
-  );
+  );*/
   
   $data['sparql_ep']['people'] = array(
     'title' => t('People'),
