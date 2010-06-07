@@ -6,38 +6,7 @@
  */
 
 function sparql_views_views_data() {
-  $fields = array();
-  $sparql_view_names = array();
-  
-  if (arg(4) == 'add-item') {
-    $sparql_view_names[] = arg(5);
-  }
-  
-  else {
-    $views = views_get_all_views();
-    foreach ($views as $view_name => $view) {
-      $query_type = $view->display['default']->display_options['query']['type'];
-      if ($query_type == 'sparql_query') {
-        $sparql_view_names[] = $view_name;
-      }
-    }
-  }
-  
-  foreach ($sparql_view_names as $view_name) {
-    // Get the view the user is editing based on the URL.
-    $view = views_ui_cache_load($view_name);
-    
-    foreach ($view->display as $display) {
-      foreach ($display->display_options['filters'] as $filter) {
-        foreach ($filter['value'] as $value) {
-          if (strpos($value, '?') === 0) {
-            $field = substr($value, 1);
-            $fields[$field] = $field;
-          }
-        }
-      }
-    }
-  }
+  $fields = _sparql_views_get_fields();
   
   $data['sparql_ep']['table']['group']  = t('SPARQL');
 
@@ -123,4 +92,41 @@ function sparql_views_views_plugins() {
       ),
     ),
   );
+}
+
+function _sparql_views_get_fields() {
+  $fields = array();
+  $sparql_view_names = array();
+  
+  if (arg(4) == 'add-item') {
+    $sparql_view_names[] = arg(5);
+  }
+  
+  else {
+    $views = views_get_all_views();
+    foreach ($views as $view_name => $view) {
+      $query_type = $view->display['default']->display_options['query']['type'];
+      if ($query_type == 'sparql_query') {
+        $sparql_view_names[] = $view_name;
+      }
+    }
+  }
+  
+  foreach ($sparql_view_names as $view_name) {
+    // Get the view the user is editing based on the URL.
+    $view = views_ui_cache_load($view_name);
+    
+    foreach ($view->display as $display) {
+      foreach ($display->display_options['filters'] as $filter) {
+        foreach ($filter['value'] as $value) {
+          if (strpos($value, '?') === 0) {
+            $field = substr($value, 1);
+            $fields[$field] = $field;
+          }
+        }
+      }
+    }
+  }
+  
+  return $fields;
 }
