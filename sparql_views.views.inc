@@ -117,7 +117,7 @@ function _sparql_views_get_fields() {
       $view = views_ui_cache_load($view_name);
       
       foreach ($view->display as $display) {
-        //if (isset($display->display_options['filters'])) {
+        if (isset($display->display_options['filters'])) {
           foreach ($display->display_options['filters'] as $filter) {
             foreach ($filter['value'] as $value) {
               if (strpos($value, '?') === 0) {
@@ -126,7 +126,7 @@ function _sparql_views_get_fields() {
               }
             }
           }
-        //}
+        }
       }
     }
   }
