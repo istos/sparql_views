@@ -32,15 +32,16 @@ function sparql_views_views_data() {
       'handler' => 'sparql_views_handler_field_link',
     ),
   );*/
-  
-  $data['sparql_ep']['people'] = array(
-    'title' => t('People'),
-    'help' => t('Display people on the project.'),
-    // Shouldn't there be sparql_views_handler_field_markup??
-    'field' => array(
-      'handler' => 'sparql_views_handler_field_link',
-    ),
-  );
+  foreach ($fields as $field) {
+    $data['sparql_ep'][$field] = array(
+      'title' => t($field),
+      // Shouldn't there be sparql_views_handler_field_markup??
+      'help' => t("$field as defined in the SPARQL:Where filter."),
+      'field' => array(
+        'handler' => 'sparql_views_handler_field_link',
+      ),
+    );
+  }
 
   return $data;
 }
@@ -99,9 +100,18 @@ function _sparql_views_get_fields() {
   $sparql_view_names = array();
   
   if (arg(4) == 'add-item') {
-    $sparql_view_names[] = arg(5);
+    $view = views_ui_cache_load(arg(5));
+    foreach($view->display[arg(6)]->display_options['filters'] as $filter) {
+      foreach ($filter['value'] as $value) {
+        if (strpos($value, '?') === 0) {
+          $field = substr($value, 1);
+          $fields[$field] = $field;
+        }
+      }
+    }
   }
   
+  //@todo Move this to _sparql_views_get_all_fields which could be Drupal static.
   else {
     $views = views_get_all_views();
     foreach ($views as $view_name => $view) {
@@ -110,18 +120,17 @@ function _sparql_views_get_fields() {
         $sparql_view_names[] = $view_name;
       }
     }
-  }
-  
-  foreach ($sparql_view_names as $view_name) {
-    // Get the view the user is editing based on the URL.
-    $view = views_ui_cache_load($view_name);
-    
-    foreach ($view->display as $display) {
-      foreach ($display->display_options['filters'] as $filter) {
-        foreach ($filter['value'] as $value) {
-          if (strpos($value, '?') === 0) {
-            $field = substr($value, 1);
-            $fields[$field] = $field;
+    foreach ($sparql_view_names as $view_name) {
+      // Get the view the user is editing based on the URL.
+      $view = views_ui_cache_load($view_name);
+      
+      foreach ($view->display as $display) {
+        foreach ($display->display_options['filters'] as $filter) {
+          foreach ($filter['value'] as $value) {
+            if (strpos($value, '?') === 0) {
+              $field = substr($value, 1);
+              $fields[$field] = $field;
+            }
           }
         }
       }
