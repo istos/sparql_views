@@ -230,7 +230,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
         foreach ($results['result']['rows'] as $resource) {
           $project = $resource['project'];
           
-          $view->result[$project]->project_title = array(array($resource['project']=>$resource['title']));
+          $view->result[$project]->project = array(array($resource['project']=>$resource['title']));
           $view->result[$project]->people[] = array($resource['person']=>$resource['personName']  );
         }
         // Save the metadata into the object
