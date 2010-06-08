@@ -23,15 +23,7 @@ function sparql_views_views_data() {
       'handler' => 'sparql_views_handler_filter_where',
     ),
   );
-
-  /*$data['sparql_ep']['project_title'] = array(
-    'title' => t('Project'),
-    'help' => t('Display project titles.'),
-    // Shouldn't there be sparql_views_handler_field_markup??
-    'field' => array(
-      'handler' => 'sparql_views_handler_field_link',
-    ),
-  );*/
+  
   foreach ($fields as $field) {
     $data['sparql_ep'][$field] = array(
       'title' => t($field),
