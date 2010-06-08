@@ -17,10 +17,10 @@ class sparql_views_handler_field_markup extends sparql_views_handler_field {
 
   function render($values) {
     $output = '';
-    $value = $values->{$this->field_alias};
+    $value = $values[$this->field_alias];
     if (is_array($value)) {
       foreach ($value as $item) {
-        $output .= $item . ', ';
+        $output .= $item;
       }
     }
     else {

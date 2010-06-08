@@ -30,7 +30,7 @@ function sparql_views_views_data() {
       // Shouldn't there be sparql_views_handler_field_markup??
       'help' => t("$field as defined in the SPARQL:Where filter."),
       'field' => array(
-        'handler' => 'sparql_views_handler_field_link',
+        'handler' => 'sparql_views_handler_field_markup',
       ),
     );
   }

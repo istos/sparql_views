@@ -228,11 +228,9 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
 
       if ($results['result']) {
         foreach ($results['result']['rows'] as $resource) {
-          $project = $resource['project'];
-          
-          $view->result[$project]->project = array(array($resource['project']=>$resource['title']));
-          $view->result[$project]->people[] = array($resource['person']=>$resource['personName']  );
+          $view->result[] = $resource;
         }
+        dpm($view->result);
         // Save the metadata into the object
         unset($results['results']);
         foreach ($results as $key => $value) {
@@ -262,7 +260,6 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
   }
   
   function admin_summary() {
-    dpm($this);
     if (!empty($this->options['exposed'])) {
     }
   }
