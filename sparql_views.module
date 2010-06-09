@@ -17,3 +17,75 @@ function sparql_views_views_api() {
   );
 }
 
+/**
+ * Implements hook_menu().
+ */
+function sparql_views_menu() {
+  $items['sparql_views/autocomplete/views/edit'] = array(
+    'title' => 'SPARQL variables autocomplete',
+    'page callback' => 'sparql_views_variables_autocomplete',
+    'access arguments' => array('administer users'),
+    'type' => MENU_CALLBACK,
+    'file' => 'sparql_views.pages.inc',
+  );
+  
+  return $items;
+}
+
+
+function _sparql_views_get_fields() {
+  $fields = array();
+  $sparql_view_names = array();
+  
+  if (arg(4) == 'add-item' || arg(4) == 'config-item') {
+    $view = views_ui_cache_load(arg(5));
+    foreach($view->display[arg(6)]->display_options['filters'] as $filter) {
+      if (isset($filter['value'])) {
+        foreach ($filter['value'] as $value) {
+          if (strpos($value, '?') === 0) {
+            $field = substr($value, 1);
+            $fields[$field] = $field;
+          }
+        }
+      }
+    }
+  }
+  
+  // @todo Handle the times when you want to add a field but the View hasn't been
+  // saved for the first time.
+  /*else if (arg(2) == 'views') {
+    $view_name = arg(5);
+  }*/
+  
+  //@todo Move this to _sparql_views_get_all_fields which could be Drupal static.
+  else {
+    $views = views_get_all_views();
+    foreach ($views as $view_name => $view) {
+      $query_type = $view->display['default']->display_options['query']['type'];
+      if ($query_type == 'sparql_query') {
+        $sparql_view_names[] = $view_name;
+      }
+    }
+    foreach ($sparql_view_names as $view_name) {
+      // Get the view the user is editing based on the URL.
+      $view = views_ui_cache_load($view_name);
+      
+      foreach ($view->display as $display) {
+        if (isset($display->display_options['filters'])) {
+          foreach ($display->display_options['filters'] as $filter) {
+            if (isset($filter['value'])) {
+              foreach ($filter['value'] as $value) {
+                if (strpos($value, '?') === 0) {
+                  $field = substr($value, 1);
+                  $fields[$field] = $field;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  return $fields;
+}
