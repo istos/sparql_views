@@ -8,6 +8,9 @@
  * Lin Clark <lin.w.clark@gmail.com>
  */
 
+include_once(drupal_get_path('module', 'rdfx') . '/vendor/arc/ARC2.php');
+include_once(drupal_get_path('module', 'rdfx') . '/rdfx.sparql.inc');
+
 /**
  * Implements hook_views_api().
  */

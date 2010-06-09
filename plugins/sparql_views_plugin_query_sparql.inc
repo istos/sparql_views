@@ -216,9 +216,6 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
 
       $start = views_microtime();
 
-      include_once(drupal_get_path('module', 'rdfx') . '/vendor/arc/ARC2.php');
-      include_once(drupal_get_path('module', 'rdfx') . '/rdfx.sparql.inc');
-
       $endpoint = $this->endpoint_url;
       //<http://dbpedia.org/resource/Number-one_albums_of_1997_%28USA%29>
       $query_test = array('type' => 'property',
@@ -289,6 +286,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
   }
 
   function options_submit(&$form, &$form_state) {
+    rdfx_sparql_request();
   }
 }
 
