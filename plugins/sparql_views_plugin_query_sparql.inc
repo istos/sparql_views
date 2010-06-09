@@ -230,7 +230,6 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
         foreach ($results['result']['rows'] as $resource) {
           $view->result[] = $resource;
         }
-        dpm($view->result);
         // Save the metadata into the object
         unset($results['results']);
         foreach ($results as $key => $value) {

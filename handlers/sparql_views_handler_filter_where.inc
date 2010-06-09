@@ -9,7 +9,6 @@ class sparql_views_handler_filter_where extends sparql_views_handler_filter {
     $options = parent::option_definition();
     
     $options['case'] = array('default' => TRUE);
-    $options['predicate'] = array('default' => '=');
 
     return $options;
   }
@@ -147,12 +146,6 @@ class sparql_views_handler_filter_where extends sparql_views_handler_filter {
       '#title' => t('Case sensitive'),
       '#default_value' => $this->options['case'],
       '#description' => t('Case sensitive filters may be faster. MySQL might ignore case sensitivity.'),
-    );
-    $form['predicate'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Predicate'),
-      '#size' => 30,
-      '#default_value' => $this->predicate,
     );
   }
   
