@@ -7,7 +7,8 @@
  */
 
 /**
- * Menu callback; Retrieve a JSON object containing autocomplete suggestions for existing users.
+ * Menu callback; Retrieve a JSON object containing autocomplete suggestions
+ * for SPARQL variables.
  */
 function sparql_views_variables_autocomplete($string = '') {
   $matches = array();
@@ -23,6 +24,12 @@ function sparql_views_variables_autocomplete($string = '') {
           $matches[$field] = $field;
         }
       }
+    }
+    // Need to add '?' so when selected, the form value will be a SPARQL
+    // variable.
+    foreach ($matches as $key => $match) {
+      $matches['?' . $key] = $match;
+      unset($matches[$key]);
     }
   }
   drupal_json($matches);
