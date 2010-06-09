@@ -21,9 +21,16 @@ function sparql_views_views_api() {
  * Implements hook_menu().
  */
 function sparql_views_menu() {
-  $items['sparql_views/autocomplete/views/edit'] = array(
+  $items['sparql_views/autocomplete/subject-object'] = array(
     'title' => 'SPARQL variables autocomplete',
     'page callback' => 'sparql_views_variables_autocomplete',
+    'access arguments' => array('administer users'),
+    'type' => MENU_CALLBACK,
+    'file' => 'sparql_views.pages.inc',
+  );
+  $items['sparql_views/autocomplete/predicate'] = array(
+    'title' => 'SPARQL variables autocomplete',
+    'page callback' => 'sparql_views_predicates_autocomplete',
     'access arguments' => array('administer users'),
     'type' => MENU_CALLBACK,
     'file' => 'sparql_views.pages.inc',
