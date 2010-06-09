@@ -193,6 +193,7 @@ class sparql_views_handler_filter_where extends sparql_views_handler_filter {
           '#type' => 'textfield',
           '#title' => t('Subject'),
           '#size' => 30,
+          '#autocomplete_path' => 'sparql_views/autocomplete/views/edit',
           '#default_value' => $this->value['subject'],
         ),
         'predicate' => array(
