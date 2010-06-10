@@ -24,7 +24,7 @@ function sparql_views_views_api() {
  * Implements hook_menu().
  */
 function sparql_views_menu() {
-  $items['sparql_views/autocomplete/subject-object'] = array(
+  $items['sparql_views/autocomplete/subject-object/%/%'] = array(
     'title' => 'SPARQL variables autocomplete',
     'page callback' => 'sparql_views_variables_autocomplete',
     'access arguments' => array('administer users'),

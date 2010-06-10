@@ -186,6 +186,9 @@ class sparql_views_handler_filter_where extends sparql_views_handler_filter {
         $source = 'edit-' . form_clean_id($this->options['expose']['operator']);
       }
     }
+    
+    $view_name = arg(5);
+    $display_name = arg(6);
 
     if ($which == 'all' || $which == 'value') {
       $form['value'] = array(
@@ -193,7 +196,7 @@ class sparql_views_handler_filter_where extends sparql_views_handler_filter {
           '#type' => 'textfield',
           '#title' => t('Subject'),
           '#size' => 70,
-          '#autocomplete_path' => 'sparql_views/autocomplete/subject-object',
+          '#autocomplete_path' => "sparql_views/autocomplete/subject-object/$view_name/$display_name",
           '#default_value' => $this->value['subject'],
         ),
         'predicate' => array(
@@ -207,7 +210,7 @@ class sparql_views_handler_filter_where extends sparql_views_handler_filter {
           '#type' => 'textfield',
           '#title' => t('Value (object)'),
           '#size' => 70,
-          '#autocomplete_path' => 'sparql_views/autocomplete/subject-object',
+          '#autocomplete_path' => "sparql_views/autocomplete/subject-object/$view_name/$display_name",
           '#default_value' => $this->value['object'],
         ),
       );

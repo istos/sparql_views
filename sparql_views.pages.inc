@@ -12,7 +12,10 @@
  */
 function sparql_views_variables_autocomplete($string = '') {
   $matches = array();
-  $fields = _sparql_views_get_fields();
+  $view = views_ui_cache_load(arg(3));
+  $display_name = arg(4);
+
+  $fields = _sparql_views_get_fields($view, $display_name);
   if ($string) {
     if ($string == '?') {
       $matches = $fields;
