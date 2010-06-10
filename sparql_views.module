@@ -43,14 +43,29 @@ function sparql_views_menu() {
 }
 
 
-function _sparql_views_get_fields() {
+function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
   $fields = array();
   $sparql_view_names = array();
-  
-  if (arg(4) == 'add-item' || arg(4) == 'config-item') {
-    $view = views_ui_cache_load(arg(5));
-    foreach($view->display[arg(6)]->display_options['filters'] as $filter) {
-      if (isset($filter['value'])) {
+
+  if ($view != NULL && $display_name != NULL) {
+    $default_filters = $view->display['default']->display_options['filters'];
+    $display_filters = $view->display[$display_name]->display_options['filters'];
+    
+    // If where clauses haven't been added to the default or the display, there
+    // are no added fields.
+    if (empty($default_filters) && empty($display_filters)) {
+      return array();
+    }
+    // Else, if where clauses have been added to the default but not to the
+    // display, use the default where clauses.
+    else if(empty($display_filters)) {
+      $display_filters = $default_filters;
+    }
+    
+    // Iterate through the where clauses and pull out the variables.
+    foreach($display_filters as $filter) {
+      // If there is an empty Where clause, $filter will not have values.
+      if (!empty($filter['value'])) {
         foreach ($filter['value'] as $value) {
           if (strpos($value, '?') === 0) {
             $field = substr($value, 1);
@@ -60,12 +75,6 @@ function _sparql_views_get_fields() {
       }
     }
   }
-  
-  // @todo Handle the times when you want to add a field but the View hasn't been
-  // saved for the first time.
-  /*else if (arg(2) == 'views') {
-    $view_name = arg(5);
-  }*/
   
   //@todo Move this to _sparql_views_get_all_fields which could be Drupal static.
   else {
