@@ -5,9 +5,7 @@
       $('.prefix-store').each(function(index) {
         wrapper = $(this).parents('div.form-item.form-type-textarea');
         wrapper.data('changed',false);
-        $(this).parents('.resizable-textarea').hide();
-        $(this).hide();
-        $(this).parent().parent().after(Drupal.theme('rdfPrefixWidget', wrapper, index));
+        $(this).parent().parent().before(Drupal.theme('rdfPrefixWidget', wrapper, index));
         initPrefixes(wrapper);
       });
       
@@ -20,26 +18,20 @@
         if ($(wrapper).find('.prefix-val').filter(function(){
           return $(this).text() == val;
         }).length == 0) {
-          // Ensure that this value is formatted as namespace:prefix based on the
-          // regular expression defined in sparql_views.module.
-          // @todo Check that the namespace is a valid namespace.
-          pattern = eval(Drupal.settings.sparql_views.prefixRegex);
-          if (pattern.test(val)) {
-            // Theme the prefix and add it to the prefix holder above the
-            // field.
-            $(wrapper).find('.prefix-holder').append(Drupal.theme('rdfPrefix',val, false));
-            // Make the 'x' a button that removes the prefix.
-            bindRemoveClicks(wrapper);
-            // Update the hidden textarea that will be used to submit the
-            // prefixes added by the field.
-            updateStore(wrapper);
-            // Empty the field so user can add another prefix.
-            $(this).prev().val('');        
-          }
-          // If the value didn't pass the regular expression, alert the user.
-          else {
-            alert(Drupal.t(val + ' is not formatted correctly.'));
-          }
+          // Theme the prefix and add it to the prefix holder above the
+          // field.
+          $(wrapper).find('.prefix-holder').append(Drupal.theme('rdfPrefix',val, false));
+          // Make the 'x' a button that removes the prefix.
+          bindRemoveClicks(wrapper);
+          // Update the hidden textarea that will be used to submit the
+          // prefixes added by the field.
+          updateStore(wrapper);
+          // Empty the field so user can add another prefix.
+          $(this).prev().val('');        
+        }
+        // If the value didn't pass the regular expression, alert the user.
+        else {
+          alert(Drupal.t(val + ' is not formatted correctly.'));
         }
         
         // Return false so the form does not submit.
@@ -104,7 +96,7 @@
       '<input type="text" class="prefix-entry form-autocomplete" size="30" id="sparql_views-prefix-edit-'+ index +'" />' +
       '<input type="submit" value="' + Drupal.t('Add') + '" class="form-submit prefix-add" id="sparql_views-prefix-edit-button-'+ index +'">' +
       '<input class="autocomplete" type="hidden" id="sparql_views-prefix-edit-'+ index +'-autocomplete" ' +
-      'value="' + basepath + '/sparql_views/prefixes/autocomplete" disabled="disabled" />' +
+      'value="' + basepath + 'sparql_views/prefixes/autocomplete" disabled="disabled" />' +
       '<div class="description">' + description.text() + '</div>' +
     '</div>';
     description.remove();
