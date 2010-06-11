@@ -7,7 +7,7 @@
         wrapper.data('changed',false);
         $(this).parents('.resizable-textarea').hide();
         $(this).hide();
-        $(this).after(Drupal.theme('rdfPrefixWidget', wrapper, index));
+        $(this).parent().parent().after(Drupal.theme('rdfPrefixWidget', wrapper, index));
         initPrefixes(wrapper);
       });
       
