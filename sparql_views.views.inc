@@ -85,6 +85,7 @@ function sparql_views_views_plugins() {
         'title' => t('SPARQL Query'),
         'help' => t('Query will be generated and run against a SPARQL endpoint.'),
         'handler' => 'sparql_views_plugin_query_sparql',
+        'js' => array(drupal_get_path('module', 'sparql_views') .'/js/sparql_views.js'),
         'path' => $path,
       ),
     ),
