@@ -21,9 +21,9 @@
           return $(this).text() == val;
         }).length == 0) {
           // Ensure that this value is formatted as namespace:prefix based on the
-          // regular expression defined in rdfui.module.
+          // regular expression defined in sparql_views.module.
           // @todo Check that the namespace is a valid namespace.
-          pattern = eval(Drupal.settings.rdfui.prefixRegex);
+          pattern = eval(Drupal.settings.sparql_views.prefixRegex);
           if (pattern.test(val)) {
             // Theme the prefix and add it to the prefix holder above the
             // field.
@@ -101,10 +101,10 @@
     var description = jQuery('.prefix-store + .description').eq(0);
     var html_output ='<div id="" class="form-item prefixes-widget">' +
       '<div class="prefix-holder"></div>' +
-      '<input type="text" class="prefix-entry form-autocomplete" size="30" id="rdfui-prefix-edit-'+ index +'" />' +
-      '<input type="submit" value="' + Drupal.t('Add') + '" class="form-submit prefix-add" id="rdfui-prefix-edit-button-'+ index +'">' +
-      '<input class="autocomplete" type="hidden" id="rdfui-prefix-edit-'+ index +'-autocomplete" ' +
-      'value="' + basepath + '/rdfui/prefixes/autocomplete" disabled="disabled" />' +
+      '<input type="text" class="prefix-entry form-autocomplete" size="30" id="sparql_views-prefix-edit-'+ index +'" />' +
+      '<input type="submit" value="' + Drupal.t('Add') + '" class="form-submit prefix-add" id="sparql_views-prefix-edit-button-'+ index +'">' +
+      '<input class="autocomplete" type="hidden" id="sparql_views-prefix-edit-'+ index +'-autocomplete" ' +
+      'value="' + basepath + '/sparql_views/prefixes/autocomplete" disabled="disabled" />' +
       '<div class="description">' + description.text() + '</div>' +
     '</div>';
     description.remove();
