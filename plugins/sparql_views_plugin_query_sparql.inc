@@ -285,6 +285,13 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       '#title' => t('Prefixes'),
       '#default_value' => $this->prefixes,
       '#description' => t("Prefixes to use for this query."),
+      '#attributes' => array('class' => 'prefix-store')
+    );
+    $form['prefixes_testing'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Prefixes'),
+      '#autocomplete_path' => 'sparql_views/prefixes/autocomplete',
+      '#description' => t("Prefixes to use for this query."),
     );
   }
 
