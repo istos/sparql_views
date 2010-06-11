@@ -94,3 +94,14 @@ function sparql_views_predicates_autocomplete($string = '') {
   }
   drupal_json($matches);
 }
+
+function sparql_views_autocomplete_prefixes($string = '') {
+  $matches = array();
+  $ns_mappings = _sparql_views_fetch_prefixes();
+  foreach ($ns_mappings as $prefix => $namespace) {
+    if (strpos(strtolower($prefix), strtolower($string)) !== FALSE) {
+      $matches[$prefix] = "PREFIX $prefix: &lt;$namespace&gt;";
+    }
+  }
+  drupal_json($matches);
+}
