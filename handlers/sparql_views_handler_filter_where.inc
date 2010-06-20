@@ -238,10 +238,8 @@ class sparql_views_handler_filter_where extends sparql_views_handler_filter {
   function query() {
     if (isset($this->query->where['where'])) {
       // Replace tokens.
-      foreach ($this->query->where['where'] as $key => $value) {
-        $this->value[$key] = token_replace($value, $type = 'global', $object = NULL, $leading = '[', $trailing = ']');
-      }
       $this->value['subject'] = token_replace($this->value['subject'], $type = 'global', $object = NULL, $leading = '[', $trailing = ']');
+      $this->value['object'] = token_replace($this->value['object'], $type = 'global', $object = NULL, $leading = '[', $trailing = ']');
       $this->query->add_where('where', '.' . $this->value['subject'] . ' ' . $this->value['predicate'] . ' ' . $this->value['object']);
     }
     else {
