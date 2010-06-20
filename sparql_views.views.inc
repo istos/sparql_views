@@ -55,9 +55,6 @@ function sparql_views_views_handlers() {
       'sparql_views_handler_field' => array(
         'parent' => 'views_handler_field'
       ),
-      'sparql_views_handler_field_link' => array(
-        'parent' => 'sparql_views_handler_field',
-      ),
       'sparql_views_handler_field_markup' => array(
         'parent' => 'sparql_views_handler_field',
       ),
