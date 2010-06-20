@@ -308,7 +308,6 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       foreach ($results['result']['rows'] as $result) {
         $predicates[] = $result['p'];
       }
-      dpm($predicates);
       //cache_set();
     //}
   }
