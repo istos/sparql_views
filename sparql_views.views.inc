@@ -22,12 +22,18 @@ function sparql_views_views_data() {
     ),
   );
   
+  // Because views_get_current_view() does not work in this context, we have
+  // to figure out the view from the path. This is a dirty hack, if anyone has
+  // any better ideas, let me know.
   if (arg(4) == 'add-item' || arg(4) == 'config-item') {
     $view = views_ui_cache_load(arg(5));
     $display_name = arg(6);
   }
   $fields = _sparql_views_get_fields($view, $display_name);
   
+  // We dynamically create the fields based on the variables that have been
+  // entered into the SPARQL query via filters. This is because RDF datasets
+  // do not have set schemas.
   foreach ($fields as $field) {
     $data['sparql_ep'][$field] = array(
       'title' => t($field),
