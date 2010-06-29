@@ -15,7 +15,9 @@ class sparql_views_handler_field extends views_handler_field {
 
     // Run through and see if there are other rows that are only off by one for
     // the first field through the nth field.
-    if (!isset($sparql_views_storage['combine'])) {
+    reset($this->view->field);
+    $first_key = key($this->view->field);
+    if ($this->field_alias == $first_key && count($values) > 1) {
       foreach ($values as $key => $value) {
         for ($i = $key + 1; $i < count($values); $i++) {
           if (count(array_diff_assoc($values[$i], $value) < 3)) {
