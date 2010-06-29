@@ -37,10 +37,9 @@ function sparql_views_views_data() {
   foreach ($fields as $field) {
     $data['sparql_ep'][$field] = array(
       'title' => t($field),
-      // Shouldn't there be sparql_views_handler_field_markup??
       'help' => t("$field as defined in the SPARQL:Where filter."),
       'field' => array(
-        'handler' => 'sparql_views_handler_field_markup',
+        'handler' => 'sparql_views_handler_field',
       ),
     );
   }
@@ -61,8 +60,8 @@ function sparql_views_views_handlers() {
       'sparql_views_handler_field' => array(
         'parent' => 'views_handler_field'
       ),
-      'sparql_views_handler_field_markup' => array(
-        'parent' => 'sparql_views_handler_field',
+      'sparql_views_handler_field' => array(
+        'parent' => 'views_handler_field',
       ),
 
       // Filters
