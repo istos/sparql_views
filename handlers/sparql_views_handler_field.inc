@@ -41,21 +41,21 @@ class sparql_views_handler_field extends views_handler_field {
     reset($this->view->field);
     $first_key = key($this->view->field);
     if ($this->field_alias == $first_key && count($values) > 1) {
-      // Need to add some logic so that you only combine if the two values are
-      // connected in token relationship and the path is excluded. In that case,
-      // the key that is temp 'coauthor_name' should be the display field.
-      $linked_fields;
+      // Get a list of fields that are linked to other fields if the other
+      // field is excluded from display. We do this because we can combine two
+      // rows if two field values are different ONLY IF the two are connected
+      // in this way. Otherwise, we only combine rows if one value is different.
+      $linked_fields = array();
       foreach ($this->view->field as $field) {
-        $link_path = $field->options['alter']['path'];
-        if (!empty($link_path) && $this->view->field[$link_path]->options['exclude'] != TRUE) {
-          $linked_fields[$field->field_alias] = $field->options['alter']['path']; 
+        $link_path = preg_replace('/\[|\]/', '', $field->options['alter']['path']);
+        if (!empty($link_path) && $this->view->field[$link_path]->options['exclude'] == FALSE) {
+          $linked_fields[$field->field_alias] = $link_path; 
         }
       }
-      
+
       foreach ($values as $key => $value) {
         for ($i = $key + 1; $i < count($values); $i++) {
           $array_diff = array_diff_assoc($values[$i], $value);
-          
           if (count($array_diff) < 3 && key($array_diff) == 'coauthor') {
             $sparql_views_storage['combine'][$key]['coauthor_name'][] = $i;
           }
