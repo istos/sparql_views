@@ -36,8 +36,6 @@ class sparql_views_handler_field extends views_handler_field {
   function pre_render(&$values) {
     static $sparql_views_storage;
 
-    // Iterate through and see if there are other rows that are only off by one
-    // for the first field through the nth field.
     reset($this->view->field);
     $first_key = key($this->view->field);
     if ($this->field_alias == $first_key && count($values) > 1) {
@@ -48,16 +46,27 @@ class sparql_views_handler_field extends views_handler_field {
       $linked_fields = array();
       foreach ($this->view->field as $field) {
         $link_path = preg_replace('/\[|\]/', '', $field->options['alter']['path']);
-        if (!empty($link_path) && $this->view->field[$link_path]->options['exclude'] == FALSE) {
-          $linked_fields[$field->field_alias] = $link_path; 
+        if (!empty($link_path) && $this->view->field[$link_path]->options['exclude'] == TRUE) {
+          $linked_fields[$link_path] = $field->field_alias; 
         }
       }
-
+      // Iterate through and see if there are other rows that are only off by one
+      // for the first field through the nth field.
       foreach ($values as $key => $value) {
         for ($i = $key + 1; $i < count($values); $i++) {
           $array_diff = array_diff_assoc($values[$i], $value);
-          if (count($array_diff) < 3 && key($array_diff) == 'coauthor') {
-            $sparql_views_storage['combine'][$key]['coauthor_name'][] = $i;
+          $diff_fields = array_keys($array_diff);
+          if (count($array_diff) == 1) {
+            $sparql_views_storage['combine'][$key][$diff_fields[0]][] = $i;
+          }
+          // If there are two distinct values in this row, check to see if they
+          // are linked to eachother. We know that the first key of $array_diff
+          // would be the $link_path because Views tokens can only be used to
+          // link to fields that came before.
+          else if (count($array_diff) == 2) {
+            if (isset($linked_fields[$diff_fields[0]]) && $linked_fields[$diff_fields[0]] == $diff_fields[1]) {
+              $sparql_views_storage['combine'][$key][$diff_fields[1]][] = $i;
+            }
           }
         }
       }
@@ -83,7 +92,7 @@ class sparql_views_handler_field extends views_handler_field {
       }
       
       if (isset($sparql_views_storage['combine'][$key][$this->field_alias])) {
-        $rows_to_combine = $sparql_views_storage['combine'][$key]['coauthor_name'];
+        $rows_to_combine = $sparql_views_storage['combine'][$key][$this->field_alias];
         foreach ($rows_to_combine as $row) {
           if (!isset($sparql_views_storage['field_values'][$this->field_alias][$row])) {
             $field = $values[$row][$this->field_alias];
