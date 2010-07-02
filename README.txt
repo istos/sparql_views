@@ -1,6 +1,16 @@
-Define SPARQL endpoint
-To do this through the user interface, you must apply the patch in issue
-http://drupal.org/node/621142.
+DRUPAL 6 vs. DRUPAL 7
+=====================
+Please note, while this is being developed in Drupal 6, I do not plan to
+maintain a Drupal 6 version of this module.
+
+INSTALL
+=======
+These are temp installation instructions while SPARQL Views is in heavy
+development.
+
+1. Download Views 3 dev
+2. Apply the patch in issue http://drupal.org/node/621142.
+3. Download the ARC library and 
 
 HACKS
 =====
