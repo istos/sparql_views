@@ -36,37 +36,28 @@ class sparql_views_handler_field extends views_handler_field {
   function pre_render(&$values) {
     static $sparql_views_storage;
 
+    // Iterate through and see if there are other rows that are only off by one
+    // for the first field through the nth field.
     reset($this->view->field);
     $first_key = key($this->view->field);
     if ($this->field_alias == $first_key && count($values) > 1) {
-      // Get a list of fields that are linked to other fields if the other
-      // field is excluded from display. We do this because we can combine two
-      // rows if two field values are different ONLY IF the two are connected
-      // in this way. Otherwise, we only combine rows if one value is different.
-      $linked_fields = array();
+      // Need to add some logic so that you only combine if the two values are
+      // connected in token relationship and the path is excluded. In that case,
+      // the key that is temp 'coauthor_name' should be the display field.
+      $linked_fields;
       foreach ($this->view->field as $field) {
-        $link_path = preg_replace('/\[|\]/', '', $field->options['alter']['path']);
-        if (!empty($link_path) && $this->view->field[$link_path]->options['exclude'] == FALSE) {
-          $linked_fields[$link_path] = $field->field_alias; 
+        $link_path = $field->options['alter']['path'];
+        if (!empty($link_path) && $this->view->field[$link_path]->options['exclude'] != TRUE) {
+          $linked_fields[$field->field_alias] = $field->options['alter']['path']; 
         }
       }
-      // Iterate through and see if there are other rows that are only off by one
-      // for the first field through the nth field.
+      
       foreach ($values as $key => $value) {
         for ($i = $key + 1; $i < count($values); $i++) {
           $array_diff = array_diff_assoc($values[$i], $value);
-          $diff_fields = array_keys($array_diff);
-          if (count($array_diff) == 1) {
+          
+          if (count($array_diff) < 3 && key($array_diff) == 'coauthor') {
             $sparql_views_storage['combine'][$key]['coauthor_name'][] = $i;
-          }
-          // If there are two distinct values in this row, check to see if they
-          // are linked to eachother. We know that the first key of $array_diff
-          // would be the $link_path because Views tokens can only be used to
-          // link to fields that came before.
-          else if (count($array_diff) == 2) {
-            if (isset($linked_fields[$diff_fields[0]]) && $linked_fields[$diff_fields[0]] == $diff_fields[1]) {
-              $sparql_views_storage['combine'][$key]['coauthor_name'][] = $i;
-            }
           }
         }
       }
