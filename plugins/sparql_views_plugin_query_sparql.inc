@@ -8,7 +8,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
    */
   function init($base_table = 'sparql_ep', $base_field, $query_options) {
     // @todo Add JS for hiding irrelvant field items.
-    
+
     $this->endpoint_url = $query_options['endpoint_url'];
     $this->endpoint_read_key = $query_options['endpoint_read_key'];
     $this->prefixes = $query_options['prefixes'];
@@ -30,12 +30,12 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
         }
         $clauses[] = $clause;
       }
-      
+
       // Unset the empty clause that is added (apparently by default).
       unset($clauses[0]);
       if ($clauses) {
         if (count($clauses) > 1) {
-          return implode(")" . $this->group_operator , $clauses);
+          return implode(")". $this->group_operator, $clauses);
         }
         else {
           return array_shift($clauses);
@@ -86,7 +86,6 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
 
     return $params;
   }
-
 
   /**
    * Get the arguments attached to the WHERE and HAVING clauses of this query.
@@ -146,9 +145,10 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
 
   function add_where($group, $clause) {
     $args = func_get_args();
-    array_shift($args); // ditch $group
-    array_shift($args); // ditch $clause
-
+    // ditch $group
+    array_shift($args);
+    // ditch $clause
+    array_shift($args);
     // Expand an array of args if it came in.
     if (count($args) == 1 && is_array(reset($args))) {
       $args = current($args);
@@ -179,7 +179,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
    */
   function alter(&$view) {
     foreach (module_implements('sparql_views_query_alter') as $module) {
-      $function = $module . '_sparql_views_query_alter';
+      $function = $module .'_sparql_views_query_alter';
       $function($view, $this);
     }
   }
@@ -209,7 +209,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
     $query = $view->build_info['query'];
     global $user;
     profile_load_profile($user);
-    
+
     if ($query) {
       $replacements = module_invoke_all('views_query_substitutions', $view);
       $query = str_replace(array_keys($replacements), $replacements, $query);
@@ -253,10 +253,9 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
     $options = parent::option_definition();
     return $options;
   }
-  
+
   function admin_summary() {
-    if (!empty($this->options['exposed'])) {
-    }
+    if (!empty($this->options['exposed'])) {}
   }
 
   function options_form(&$form, &$form_state) {
@@ -265,7 +264,8 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       '#title' => t('SPARQL Endpoint'),
       '#default_value' => $this->endpoint_url,
       '#description' => t("The SPARQL endpoint that you want to access. For instance, !dbpedia.",
-      array('!dbpedia' => l('http://dbpedia.org/sparql', 'http://dbpedia.org/sparql'))),
+        array('!dbpedia' => l('http://dbpedia.org/sparql', 'http://dbpedia.org/sparql'))
+      ),
     );
     $form['load_predicates'] = array(
       '#type' => 'checkbox',
@@ -284,7 +284,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       '#title' => t('Prefixes'),
       '#default_value' => $this->prefixes,
       '#description' => t("Prefixes to use for this query."),
-      '#attributes' => array('class' => 'prefix-store')
+      '#attributes' => array('class' => 'prefix-store'),
     );
     $form['prefixes_testing'] = array(
       '#type' => 'textfield',
@@ -294,21 +294,20 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
     );
   }
 
-  function options_validate(&$form, &$form_state) {
-  }
+  function options_validate(&$form, &$form_state) {}
 
   function options_submit(&$form, &$form_state) {
     $endpoint = $form_state['values']['query']['options']['endpoint_url'];
     $access_key = $form_state['values']['query']['options']['endpoint_read_key'];
 
     // If the user wants to load the predicates, do a SPARQL request and cache
-    // the predicates. 
+    // the predicates.
     //if ($form_state['values']['query']['options']['load_predicates'] === TRUE) {
-      $results = rdfx_sparql_request("SELECT DISTINCT ?p WHERE {?s ?p ?o}", $endpoint, array('store_read_key' => $access_key));
-      foreach ($results['result']['rows'] as $result) {
-        $predicates[] = $result['p'];
-      }
-      //cache_set();
+    $results = rdfx_sparql_request("SELECT DISTINCT ?p WHERE {?s ?p ?o}", $endpoint, array('store_read_key' => $access_key));
+    foreach ($results['result']['rows'] as $result) {
+      $predicates[] = $result['p'];
+    }
+    //cache_set();
     //}
   }
 }

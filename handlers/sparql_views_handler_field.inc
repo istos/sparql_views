@@ -55,7 +55,6 @@ class sparql_views_handler_field extends views_handler_field {
         }
         if (!empty($field)) {
           $items[] = array('field' => $field, 'token' => array($token => $link));
-
         }
       }
       $values[$key2]['rendered'] = TRUE;
@@ -97,7 +96,7 @@ class sparql_views_handler_field extends views_handler_field {
     }
   }
 
-    /**
+  /**
    * Render a field using advanced settings.
    *
    * This renders a field normally, then decides if render-as-link and
@@ -159,12 +158,12 @@ class sparql_views_handler_field extends views_handler_field {
     }
     $count = 0;
     foreach ($this->view->display_handler->get_handlers('argument') as $arg => $handler) {
-      $token = '%' . ++$count;
+      $token = '%'. ++$count;
       if (!isset($tokens[$token])) {
         $tokens[$token] = '';
       }
 
-      $tokens['!' . $count] = isset($this->view->args[$count - 1]) ? check_plain($this->view->args[$count - 1]) : '';
+      $tokens['!'. $count] = isset($this->view->args[$count - 1]) ? check_plain($this->view->args[$count - 1]) : '';
     }
 
     // Now add replacements for our fields.
@@ -186,3 +185,4 @@ class sparql_views_handler_field extends views_handler_field {
     return $tokens;
   }
 }
+

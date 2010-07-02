@@ -8,10 +8,9 @@
  * Lin Clark <lin.w.clark@gmail.com>
  */
 
-include_once(drupal_get_path('module', 'rdfx') . '/vendor/arc/ARC2.php');
-include_once(drupal_get_path('module', 'rdfx') . '/rdfx.sparql.inc');
-include_once(drupal_get_path('module', 'rdfx') . '/rdfx.import.inc');
-
+include_once (drupal_get_path('module', 'rdfx') .'/vendor/arc/ARC2.php');
+include_once (drupal_get_path('module', 'rdfx') .'/rdfx.sparql.inc');
+include_once (drupal_get_path('module', 'rdfx') .'/rdfx.import.inc');
 
 /**
  * Implements hook_views_api().
@@ -47,11 +46,14 @@ function sparql_views_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'sparql_views.pages.inc',
   );
-  
+
   return $items;
 }
 
-
+/*
+ * Helper function to retrieve the variables that have been entered in filters.
+ * These variables are used as the fields in Views.
+ */
 function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
   $fields = array();
   $sparql_view_names = array();
@@ -59,7 +61,7 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
   if ($view != NULL && $display_name != NULL) {
     $default_filters = $view->display['default']->display_options['filters'];
     $display_filters = $view->display[$display_name]->display_options['filters'];
-    
+
     // If where clauses haven't been added to the default or the display, there
     // are no added fields.
     if (empty($default_filters) && empty($display_filters)) {
@@ -67,12 +69,12 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
     }
     // Else, if where clauses have been added to the default but not to the
     // display, use the default where clauses.
-    else if(empty($display_filters)) {
+    else if (empty($display_filters)) {
       $display_filters = $default_filters;
     }
-    
+
     // Iterate through the where clauses and pull out the variables.
-    foreach($display_filters as $filter) {
+    foreach ($display_filters as $filter) {
       // If there is an empty Where clause, $filter will not have values.
       if (!empty($filter['value'])) {
         foreach ($filter['value'] as $value) {
@@ -84,7 +86,7 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
       }
     }
   }
-  
+
   //@todo Move this to _sparql_views_get_all_fields which could be Drupal static.
   else {
     $views = views_get_all_views();
@@ -97,7 +99,7 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
     foreach ($sparql_view_names as $view_name) {
       // Get the view the user is editing based on the URL.
       $view = views_ui_cache_load($view_name);
-      
+
       foreach ($view->display as $display) {
         if (isset($display->display_options['filters'])) {
           foreach ($display->display_options['filters'] as $filter) {
@@ -114,15 +116,17 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
       }
     }
   }
-  
+
   return $fields;
 }
 
 /*
- * Get namespace mappings from prefix.cc. 
+ * Get namespace mappings from prefix.cc.
+ * @todo This functionality still needs to be implemented.
  */
 function _sparql_views_fetch_prefixes() {
   // @todo Use Drupal cache.
   $results = rdfx_fetch_rdf('http://prefix.cc/popular/all.rdf.plain', 'prefix');
   return $results[1];
 }
+
