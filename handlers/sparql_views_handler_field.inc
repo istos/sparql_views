@@ -2,6 +2,29 @@
 // $Id$
 
 class sparql_views_handler_field extends views_handler_field {
+  /**
+   * Add SPARQL query specific field options.
+   */
+  function option_definition() {
+    $options = parent::option_definition();
+
+    $options['alter']['contains']['combine_values'] = array('default' => FALSE);
+
+    return $options;
+  }
+  
+  /**
+   * Add form elements for SPARQL query specific field options.
+   */
+  function options_form(&$form, &$form_state) {
+    parent::options_form($form, $form_state);
+        $form['alter']['combine_values'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Combine multiple values'),
+        '#description' => t('If checked, rows that contain all the same values except for this field will be combined and this field will become a multivalue field.'),
+        '#default_value' => $this->options['alter']['combine_values'],
+      );
+  }
 
   /**
    * Called to add the field to a query.
@@ -13,27 +36,53 @@ class sparql_views_handler_field extends views_handler_field {
   function pre_render(&$values) {
     static $sparql_views_storage;
 
-    // Run through and see if there are other rows that are only off by one for
-    // the first field through the nth field.
     reset($this->view->field);
     $first_key = key($this->view->field);
     if ($this->field_alias == $first_key && count($values) > 1) {
+      // Get a list of fields that are linked to other fields if the other
+      // field is excluded from display. We do this because we can combine two
+      // rows if two field values are different ONLY IF the two are connected
+      // in this way. Otherwise, we only combine rows if one value is different.
+      $linked_fields = array();
+      foreach ($this->view->field as $field) {
+        $link_path = preg_replace('/\[|\]/', '', $field->options['alter']['path']);
+        if (!empty($link_path) && $this->view->field[$link_path]->options['exclude'] == FALSE) {
+          $linked_fields[$link_path] = $field->field_alias; 
+        }
+      }
+      // Iterate through and see if there are other rows that are only off by one
+      // for the first field through the nth field.
       foreach ($values as $key => $value) {
         for ($i = $key + 1; $i < count($values); $i++) {
-          if (count(array_diff_assoc($values[$i], $value) < 3)) {
-            $sparql_views_storage['combine'][$key]['person_name'] = $i;
+          $array_diff = array_diff_assoc($values[$i], $value);
+          $diff_fields = array_keys($array_diff);
+          if (count($array_diff) == 1) {
+            $sparql_views_storage['combine'][$key]['coauthor_name'][] = $i;
+          }
+          // If there are two distinct values in this row, check to see if they
+          // are linked to eachother. We know that the first key of $array_diff
+          // would be the $link_path because Views tokens can only be used to
+          // link to fields that came before.
+          else if (count($array_diff) == 2) {
+            if (isset($linked_fields[$diff_fields[0]]) && $linked_fields[$diff_fields[0]] == $diff_fields[1]) {
+              $sparql_views_storage['combine'][$key]['coauthor_name'][] = $i;
+            }
           }
         }
       }
     }
 
+    // For each field, iterate through and combine values.
     foreach ($values as $key => $value) {
       $items = array();
       $field = $value[$this->field_alias];
+
+      // Copy the untampered field value into a storage array.
       if (!isset($sparql_views_storage['field_values'][$this->field_alias][$key])) {
         $sparql_views_storage['field_values'][$this->field_alias][$key] = $field;
       }
       $token = $this->options['alter']['path'];
+      // If this field is linked to another field, then add the token in a path.
       if (!empty($token)) {
         $token_fieldname = preg_replace('/\[|\]/', '', $token);
         $link = isset($sparql_views_storage['field_values'][$token_fieldname][$key]) ? $sparql_views_storage['field_values'][$token_fieldname][$key] : $value[$token_fieldname];
@@ -41,35 +90,27 @@ class sparql_views_handler_field extends views_handler_field {
       if (!empty($field)) {
         $items[] = array('field' => $field, 'token' => array($token => $link));
       }
-
+      
       if (isset($sparql_views_storage['combine'][$key][$this->field_alias])) {
-        $key2 = $sparql_views_storage['combine'][$key]['person_name'];
-        if (!isset($sparql_views_storage['field_values'][$this->field_alias][$key2])) {
-          $field = $values[$key2][$this->field_alias];
-          $sparql_views_storage['field_values'][$this->field_alias][$key2] = $field;
-        }
-        $token = $this->options['alter']['path'];
-        if (!empty($token)) {
-          $token_fieldname = preg_replace('/\[|\]/', '', $token);
-          $link = isset($sparql_views_storage['field_values'][$token_fieldname][$key2]) ? $sparql_views_storage['field_values'][$token_fieldname][$key2] : $values[$key2][$token_fieldname];
-        }
-        if (!empty($field)) {
-          $items[] = array('field' => $field, 'token' => array($token => $link));
+        $rows_to_combine = $sparql_views_storage['combine'][$key]['coauthor_name'];
+        foreach ($rows_to_combine as $row) {
+          if (!isset($sparql_views_storage['field_values'][$this->field_alias][$row])) {
+            $field = $values[$row][$this->field_alias];
+            $sparql_views_storage['field_values'][$this->field_alias][$row] = $field;
+          }
+          $token = $this->options['alter']['path'];
+          if (!empty($token)) {
+            $token_fieldname = preg_replace('/\[|\]/', '', $token);
+            $link = isset($sparql_views_storage['field_values'][$token_fieldname][$row]) ? $sparql_views_storage['field_values'][$token_fieldname][$row] : $values[$row][$token_fieldname];
+          }
+          if (!empty($field)) {
+            $items[] = array('field' => $field, 'token' => array($token => $link));
+          }
+          $values[$row]['rendered'] = TRUE;
+          unset($values[$row]);
         }
       }
-      $values[$key2]['rendered'] = TRUE;
       $values[$key][$this->field_alias] = $items;
-    }
-
-    // If this is the last pass through this function, unset all of the values
-    // that have been combined with another row.
-    $last_field = end($this->view->field);
-    if ($last_field->field_alias == $this->field_alias) {
-      foreach ($values as $key => $value) {
-        if ($value['rendered'] == TRUE) {
-          unset($values[$key]);
-        }
-      }
     }
   }
 
