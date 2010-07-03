@@ -46,6 +46,12 @@ class sparql_views_handler_field extends views_handler_field {
     $this->field_alias = $this->real_field;
   }
 
+  /**
+   * Override pre_render in views_handler_field.
+   *
+   * This override is required to create the array structure needed to combine
+   * multivalue fields.
+   */
   function pre_render(&$values) {
     static $sparql_views_storage;
 
@@ -100,16 +106,35 @@ class sparql_views_handler_field extends views_handler_field {
     }
   }
 
-  function get_items($values) {
+  /**
+   * Override get_items in view.inc.
+   *
+   * This override is required because the array structure created by
+   * pre_render needs to be parsed out on a row by row basis.
+   */
+  function get_items($values, $display_id = NULL) {
     $items = $values[$this->field_alias];
     return $items;
   }
 
-  // We need to include this override in order to use get_items.
+  /**
+   * This function is required in order for advanced_render to use get_items.
+   * Function advanced_render could be rewritten to make this unnecessary, but
+   * we prefer to keep advanced_render as close to its parent function as
+   * possible.
+   *
+   * This is modelled on views_handler_field_prerender_list.
+   */
   function render_item($count, $item) {
     return $item;
   }
 
+  /**
+   * This function is required in order for advanced_render to combine the items
+   * returned by render_item.
+   *
+   * This is modelled on views_handler_field_prerender_list.
+   */
   function render_items($items) {
     if (!empty($items)) {
       if ($this->options['alter']['combine_values'] == TRUE) {
@@ -122,10 +147,10 @@ class sparql_views_handler_field extends views_handler_field {
   }
 
   /**
-   * Render a field using advanced settings.
+   * Override advanced_render in views_handler_field.
    *
-   * This renders a field normally, then decides if render-as-link and
-   * text-replacement rendering is necessary.
+   * This override is required to parse the array structure that we created in
+   * pre_render to handle multivalue fields.
    */
   function advanced_render($values) {
     if ($this->allow_advanced_render() && method_exists($this, 'render_item')) {
@@ -141,6 +166,7 @@ class sparql_views_handler_field extends views_handler_field {
       if (method_exists($this, 'render_item')) {
         $items = array();
         foreach ($raw_items as $count => $item) {
+          // Override here.
           $rendered = $this->render_item($count, $item);
           $this->last_render = $rendered['field'];
           $this->original_value = $this->last_render;
