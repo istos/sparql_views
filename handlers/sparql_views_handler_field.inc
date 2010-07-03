@@ -219,18 +219,25 @@ function _sparql_views_calc_row_combinations($field_object, $values) {
     for ($i = $key + 1; $i < count($values); $i++) {
       $array_diff = array_diff_assoc($values[$i], $value);
       $diff_fields = array_keys($array_diff);
-      // If there is only one distinct value, or no distinct values, then
-      // combine with the first row.
-      if (count($array_diff) <= 1) {
-        $combine_rows[$key][$diff_fields[0]][] = $i;
-      }
-      // If there are two distinct values in this row, check to see if they
-      // are linked to eachother. We know that the first key of $array_diff
-      // would be the $link_path because tokens for linking a field in Views
-      // are only available for the fields that came before it.
-      else if (count($array_diff) == 2) {
-        if (isset($linked_fields[$diff_fields[0]]) && $linked_fields[$diff_fields[0]] == $diff_fields[1]) {
-          $combine_rows[$key][$diff_fields[1]][] = $i;
+
+      if (count($array_diff) <= 2) {
+        // If there is only one distinct value, or no distinct values, then
+        // combine with the first row.
+        if (count($array_diff) <= 1) {
+          $differing_field = $diff_fields[0];
+        }
+        // If there are two distinct values in this row, check to see if they
+        // are linked to eachother. We know that the first key of $array_diff
+        // would be the $link_path because tokens for linking a field in Views
+        // are only available for the fields that came before it.
+        else if (count($array_diff) == 2) {
+          if (isset($linked_fields[$diff_fields[0]]) && $linked_fields[$diff_fields[0]] == $diff_fields[1]) {
+            $differing_field = $diff_fields[1];
+          }
+        }
+
+        if (isset($differing_field)) {
+          $combine_rows[$key][$differing_field][] = $i;
         }
       }
     }
