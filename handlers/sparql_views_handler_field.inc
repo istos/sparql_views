@@ -202,6 +202,7 @@ class sparql_views_handler_field extends views_handler_field {
 
 function _sparql_views_calc_row_combinations($field_object, $values) {
   $combine_rows = array();
+
   // Get a list of fields that are linked to other fields if the other
   // field is excluded from display. We do this because we can combine two
   // rows if two field values are different ONLY IF the two are connected
@@ -213,6 +214,7 @@ function _sparql_views_calc_row_combinations($field_object, $values) {
       $linked_fields[$link_path] = $field->field_alias; 
     }
   }
+
   // Iterate through and see if there are other rows that are only off by one
   // for the first field through the nth field.
   foreach ($values as $key => $value) {
@@ -224,7 +226,7 @@ function _sparql_views_calc_row_combinations($field_object, $values) {
         // If there is only one distinct value, or no distinct values, then
         // combine with the first row.
         if (count($array_diff) <= 1) {
-          $differing_field = $diff_fields[0];
+          $different_field = $diff_fields[0];
         }
         // If there are two distinct values in this row, check to see if they
         // are linked to eachother. We know that the first key of $array_diff
@@ -232,12 +234,17 @@ function _sparql_views_calc_row_combinations($field_object, $values) {
         // are only available for the fields that came before it.
         else if (count($array_diff) == 2) {
           if (isset($linked_fields[$diff_fields[0]]) && $linked_fields[$diff_fields[0]] == $diff_fields[1]) {
-            $differing_field = $diff_fields[1];
+            $different_field = $diff_fields[1];
           }
         }
 
-        if (isset($differing_field)) {
-          $combine_rows[$key][$differing_field][] = $i;
+        // If there is only one different field...
+        if (isset($different_field)) {
+          // And if the row has not already been combined with other rows based
+          // on a third field, then combine these two rows.
+          if (!isset($combine_rows[$key]) || (count($combine_rows[$key]) == 1 && isset($combine_rows[$key][$different_field]))) {
+            $combine_rows[$key][$different_field][] = $i;
+          }
         }
       }
     }
