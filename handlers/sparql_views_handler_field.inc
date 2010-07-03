@@ -166,35 +166,9 @@ class sparql_views_handler_field extends views_handler_field {
    * used in one giant str_replace().
    */
   function get_render_tokens($item) {
-    $tokens = array();
-    if (!empty($this->view->build_info['substitutions'])) {
-      $tokens = $this->view->build_info['substitutions'];
-    }
-    $count = 0;
-    foreach ($this->view->display_handler->get_handlers('argument') as $arg => $handler) {
-      $token = '%'. ++$count;
-      if (!isset($tokens[$token])) {
-        $tokens[$token] = '';
-      }
-
-      $tokens['!'. $count] = isset($this->view->args[$count - 1]) ? check_plain($this->view->args[$count - 1]) : '';
-    }
-
-    // Now add replacements for our fields.
+    $tokens = parent::get_render_tokens($item);
     foreach ($this->view->display_handler->get_handlers('field') as $field => $handler) {
-      if (isset($handler->last_render)) {
-        $tokens["[$field]"] = $handler->last_render;
-      }
-      else {
-        $tokens["[$field]"] = '';
-      }
       $tokens = array_merge($tokens, $item['token']);
-      $this->add_self_tokens($tokens, $item);
-
-      // We only use fields up to (and including) this one.
-      if ($field == $this->options['id']) {
-        break;
-      }
     }
     return $tokens;
   }
