@@ -10,6 +10,7 @@ class sparql_views_handler_field extends views_handler_field {
     $options = parent::option_definition();
 
     $options['alter']['contains']['combine_values'] = array('default' => FALSE);
+    $options['alter']['contains']['separator'] = array('default' => FALSE);
 
     return $options;
   }
@@ -25,6 +26,17 @@ class sparql_views_handler_field extends views_handler_field {
       '#description' => t('If checked, rows that contain all the same values except for this field will be combined and this field will become a multivalue field.'),
       '#default_value' => $this->options['alter']['combine_values'],
     );
+    $form['alter']['separator'] = array(
+        '#title' => t('Separator'),
+        '#type' => 'textfield',
+        '#default_value' => $this->options['alter']['separator'],
+        '#description' => t('The separator between multiple values in a combined field.'),
+        '#process' => array('views_process_dependency'),
+        '#dependency' => array(
+          'edit-options-alter-combine-values' => array(1)
+        ),
+        '#maxlength' => 12,
+      );
   }
 
   /**
@@ -99,11 +111,9 @@ class sparql_views_handler_field extends views_handler_field {
   }
 
   function render_items($items) {
-    $this->options['type'] = 'separator';
-    $this->options['separator'] = ' || ';
     if (!empty($items)) {
-      if ($this->options['type'] == 'separator') {
-        return implode(check_plain($this->options['separator']), $items);
+      if ($this->options['alter']['combine_values'] == TRUE) {
+        return implode(check_plain($this->options['alter']['separator']), $items);
       }
       else {
         return theme('item_list', $items, NULL, $this->options['type']);
