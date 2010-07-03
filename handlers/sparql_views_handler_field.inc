@@ -2,6 +2,7 @@
 // $Id$
 
 class sparql_views_handler_field extends views_handler_field {
+
   /**
    * Add SPARQL query specific field options.
    */
@@ -12,18 +13,18 @@ class sparql_views_handler_field extends views_handler_field {
 
     return $options;
   }
-  
+
   /**
    * Add form elements for SPARQL query specific field options.
    */
   function options_form(&$form, &$form_state) {
     parent::options_form($form, $form_state);
-        $form['alter']['combine_values'] = array(
-        '#type' => 'checkbox',
-        '#title' => t('Combine multiple values'),
-        '#description' => t('If checked, rows that contain all the same values except for this field will be combined and this field will become a multivalue field.'),
-        '#default_value' => $this->options['alter']['combine_values'],
-      );
+    $form['alter']['combine_values'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Combine multiple values'),
+      '#description' => t('If checked, rows that contain all the same values except for this field will be combined and this field will become a multivalue field.'),
+      '#default_value' => $this->options['alter']['combine_values'],
+    );
   }
 
   /**
@@ -63,7 +64,7 @@ class sparql_views_handler_field extends views_handler_field {
       if (!empty($field)) {
         $items[] = array('field' => $field, 'token' => array($token => $link));
       }
-      
+
       if (isset($sparql_views_storage['combine'][$key][$this->field_alias])) {
         $rows_to_combine = $sparql_views_storage['combine'][$key][$this->field_alias];
         foreach ($rows_to_combine as $row) {
