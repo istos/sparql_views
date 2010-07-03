@@ -36,43 +36,16 @@ class sparql_views_handler_field extends views_handler_field {
   function pre_render(&$values) {
     static $sparql_views_storage;
 
+    // If this is the first time through the function pre_render, create an
+    // array representing the rows to combine.
     reset($this->view->field);
     $first_key = key($this->view->field);
     if ($this->field_alias == $first_key && count($values) > 1) {
-      // Get a list of fields that are linked to other fields if the other
-      // field is excluded from display. We do this because we can combine two
-      // rows if two field values are different ONLY IF the two are connected
-      // in this way. Otherwise, we only combine rows if one value is different.
-      $linked_fields = array();
-      foreach ($this->view->field as $field) {
-        $link_path = preg_replace('/\[|\]/', '', $field->options['alter']['path']);
-        if (!empty($link_path) && $this->view->field[$link_path]->options['exclude'] == TRUE) {
-          $linked_fields[$link_path] = $field->field_alias; 
-        }
-      }
-      // Iterate through and see if there are other rows that are only off by one
-      // for the first field through the nth field.
-      foreach ($values as $key => $value) {
-        for ($i = $key + 1; $i < count($values); $i++) {
-          $array_diff = array_diff_assoc($values[$i], $value);
-          $diff_fields = array_keys($array_diff);
-          if (count($array_diff) == 1) {
-            $sparql_views_storage['combine'][$key][$diff_fields[0]][] = $i;
-          }
-          // If there are two distinct values in this row, check to see if they
-          // are linked to eachother. We know that the first key of $array_diff
-          // would be the $link_path because Views tokens can only be used to
-          // link to fields that came before.
-          else if (count($array_diff) == 2) {
-            if (isset($linked_fields[$diff_fields[0]]) && $linked_fields[$diff_fields[0]] == $diff_fields[1]) {
-              $sparql_views_storage['combine'][$key][$diff_fields[1]][] = $i;
-            }
-          }
-        }
-      }
+      $sparql_views_storage['combine'] = _sparql_views_calc_row_combinations($this, $values);
     }
 
-    // For each field, iterate through and combine values.
+    // For each field, iterate through and combine values as defined in
+    // $sparql_views_storage['combine'] array.
     foreach ($values as $key => $value) {
       $items = array();
       $field = $value[$this->field_alias];
@@ -227,3 +200,39 @@ class sparql_views_handler_field extends views_handler_field {
   }
 }
 
+function _sparql_views_calc_row_combinations($field_object, $values) {
+  $combine_rows = array();
+  // Get a list of fields that are linked to other fields if the other
+  // field is excluded from display. We do this because we can combine two
+  // rows if two field values are different ONLY IF the two are connected
+  // in this way. Otherwise, we only combine rows if one value is different.
+  $linked_fields = array();
+  foreach ($field_object->view->field as $field) {
+    $link_path = preg_replace('/\[|\]/', '', $field->options['alter']['path']);
+    if (!empty($link_path) && $field_object->view->field[$link_path]->options['exclude'] == TRUE) {
+      $linked_fields[$link_path] = $field->field_alias;
+    }
+  }
+  // Iterate through and see if there are other rows that are only off by one
+  // for the first field through the nth field.
+  foreach ($values as $key => $value) {
+    for ($i = $key + 1; $i < count($values); $i++) {
+      $array_diff = array_diff_assoc($values[$i], $value);
+      $diff_fields = array_keys($array_diff);
+      // If there is only one distinct value, or no distinct values, then
+      if (count($array_diff) <= 1) {
+        $combine_rows[$key][$diff_fields[0]][] = $i;
+      }
+      // If there are two distinct values in this row, check to see if they
+      // are linked to eachother. We know that the first key of $array_diff
+      // would be the $link_path because tokens for linking a field in Views
+      // are only available for the fields that came before it.
+      else if (count($array_diff) == 2) {
+        if (isset($linked_fields[$diff_fields[0]]) && $linked_fields[$diff_fields[0]] == $diff_fields[1]) {
+          $combine_rows[$key][$diff_fields[1]][] = $i;
+        }
+      }
+    }
+  }
+  return $combine_rows;
+}
