@@ -136,13 +136,16 @@ class sparql_views_handler_field extends views_handler_field {
    * This is modelled on views_handler_field_prerender_list.
    */
   function render_items($items) {
-    if (!empty($items)) {
-      if ($this->options['alter']['combine_values'] == TRUE) {
+    if (!empty($items) && $this->options['alter']['combine_values'] == TRUE) {
+      if ($this->options['alter']['separator'] != FALSE) {
         return implode(check_plain($this->options['alter']['separator']), $items);
       }
       else {
         return theme('item_list', $items, NULL, $this->options['type']);
       }
+    }
+    else {
+      return check_markup($items[0]);
     }
   }
 
