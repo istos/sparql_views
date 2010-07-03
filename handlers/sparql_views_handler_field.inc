@@ -210,7 +210,7 @@ function _sparql_views_calc_row_combinations($field_object, $values) {
   foreach ($field_object->view->field as $field) {
     $link_path = preg_replace('/\[|\]/', '', $field->options['alter']['path']);
     if (!empty($link_path) && $field_object->view->field[$link_path]->options['exclude'] == TRUE) {
-      $linked_fields[$link_path] = $field->field_alias;
+      $linked_fields[$link_path] = $field->field_alias; 
     }
   }
   // Iterate through and see if there are other rows that are only off by one
@@ -220,6 +220,7 @@ function _sparql_views_calc_row_combinations($field_object, $values) {
       $array_diff = array_diff_assoc($values[$i], $value);
       $diff_fields = array_keys($array_diff);
       // If there is only one distinct value, or no distinct values, then
+      // combine with the first row.
       if (count($array_diff) <= 1) {
         $combine_rows[$key][$diff_fields[0]][] = $i;
       }
