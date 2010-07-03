@@ -251,8 +251,9 @@ class sparql_views_handler_field extends views_handler_field {
             }
           }
 
-          // If there is only one different field...
-          if (isset($different_field)) {
+          // If there is only one different field and if the user has set the
+          // option to combine values on this field...
+          if (isset($different_field) && $this->view->field[$different_field]->options['alter']['combine_values'] == TRUE) {
             // And if the row has not already been combined with other rows based
             // on a third field, then combine these two rows.
             if (!isset($combine_rows[$key]) || (count($combine_rows[$key]) == 1 && isset($combine_rows[$key][$different_field]))) {
