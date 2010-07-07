@@ -2,6 +2,5 @@
 name = SPARQL Views
 description = Runs a query against a SPARQL endpoint.
 dependencies[] = views
-dependencies[] = views_ui
-dependencies[] = token
+dependencies[] = rdfx
 core = 6.x

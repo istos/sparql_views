@@ -230,21 +230,24 @@ class sparql_views_handler_filter_where extends sparql_views_handler_filter {
       // Ensure there is something in the 'value'.
       $form['value'] = array(
         '#type' => 'value',
-        '#value' => NULL
+        '#value' => NULL,
       );
     }
   }
-  
+
   function query() {
     if (isset($this->query->where['where'])) {
+      if (function_exists('token_replace')) {
+        $this->value['subject'] = token_replace($this->value['subject'], $type = 'global', $object = NULL, $leading = '[', $trailing = ']');
+        $this->value['object'] = token_replace($this->value['object'], $type = 'global', $object = NULL, $leading = '[', $trailing = ']');
+      }
       // Replace tokens.
-      $this->value['subject'] = token_replace($this->value['subject'], $type = 'global', $object = NULL, $leading = '[', $trailing = ']');
-      $this->value['object'] = token_replace($this->value['object'], $type = 'global', $object = NULL, $leading = '[', $trailing = ']');
-      $this->query->add_where('where', '.' . $this->value['subject'] . ' ' . $this->value['predicate'] . ' ' . $this->value['object']);
+
+      $this->query->add_where('where', '.'. $this->value['subject'] .' '. $this->value['predicate'] .' '. $this->value['object']);
     }
     else {
-      $this->query->add_where('where', $this->value['subject'] . ' ' . $this->value['predicate'] . ' ' . $this->value['object']);
+      $this->query->add_where('where', $this->value['subject'] .' '. $this->value['predicate'] .' '. $this->value['object']);
     }
   }
-
 }
+
