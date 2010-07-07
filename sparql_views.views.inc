@@ -82,6 +82,7 @@ function sparql_views_views_handlers() {
 function sparql_views_views_plugins() {
   $path = drupal_get_path('module', 'sparql_views') . '/plugins';
   return array(
+    // Query plugins
     'query' => array(
       'sparql_query' => array(
         'title' => t('SPARQL Query'),
