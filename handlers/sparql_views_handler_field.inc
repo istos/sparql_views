@@ -27,16 +27,16 @@ class sparql_views_handler_field extends views_handler_field {
       '#default_value' => $this->options['alter']['combine_values'],
     );
     $form['alter']['separator'] = array(
-        '#title' => t('Separator'),
-        '#type' => 'textfield',
-        '#default_value' => $this->options['alter']['separator'],
-        '#description' => t('The separator between multiple values in a combined field.'),
-        '#process' => array('views_process_dependency'),
-        '#dependency' => array(
-          'edit-options-alter-combine-values' => array(1)
-        ),
-        '#maxlength' => 12,
-      );
+      '#title' => t('Separator'),
+      '#type' => 'textfield',
+      '#default_value' => $this->options['alter']['separator'],
+      '#description' => t('The separator between multiple values in a combined field.'),
+      '#process' => array('views_process_dependency'),
+      '#dependency' => array(
+        'edit-options-alter-combine-values' => array(1),
+      ),
+      '#maxlength' => 12,
+    );
   }
 
   /**
@@ -199,11 +199,10 @@ class sparql_views_handler_field extends views_handler_field {
   }
 
   /**
-   * Get the 'render' tokens to use for advanced rendering.
+   * Override get_render_tokens in views_handler_field.
    *
-   * This runs through all of the fields and arguments that
-   * are available and gets their values. This will then be
-   * used in one giant str_replace().
+   * This adds the token that is stored with the item itself. We need this
+   * to keep the association between a row value and its token when we combine.
    */
   function get_render_tokens($item) {
     $tokens = parent::get_render_tokens($item);
@@ -230,7 +229,6 @@ class sparql_views_handler_field extends views_handler_field {
         $linked_fields[$link_path] = $field->field_alias;
       }
     }
-
     // Iterate through and see if there are other rows that are only off by one
     // for the first field through the nth field.
     foreach ($values as $key => $value) {
