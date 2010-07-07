@@ -10,7 +10,8 @@ development.
 
 1. Download Views 3 dev
 2. Apply the patch in issue http://drupal.org/node/621142.
-3. Download the ARC library and 
+3. Download the ARC library from http://code.semsol.org/source/arc.tar.gz
+   and place it in sparql_views/lib
 
 HACKS
 =====
@@ -38,3 +39,13 @@ by Earl Miles et al.)
 However, when using SPARQL against arbitrary datasets, we do not know which
 variables will return multiple values and running a separate query for each
 would not be performant, so we process the results after the query returns.
+
+DRUPAL 6 HACKS
+==============
+These hacks are necessary because of the differences between Drupal 6 and 7.
+
+1. rdfx_ functions are included in SPARQL Views because they differ from the rdf
+functions in 6.
+
+2. The ARC library needs to be placed in SPARQL Views folder, but in D7 the
+library is in rdfx.
