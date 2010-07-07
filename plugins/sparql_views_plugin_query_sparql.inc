@@ -207,8 +207,6 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
    */
   function execute(&$view) {
     $query = $view->build_info['query'];
-    global $user;
-    profile_load_profile($user);
 
     if ($query) {
       $replacements = module_invoke_all('views_query_substitutions', $view);
