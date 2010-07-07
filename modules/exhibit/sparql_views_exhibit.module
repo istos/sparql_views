@@ -1,0 +1,18 @@
+<?php
+// $Id$
+
+/**
+ * SPARQL Views - Exhibit integration
+ *
+ * @author
+ * Lin Clark <lin.w.clark@gmail.com>
+ */
+
+/**
+ * Implements hook_views_api().
+ */
+function sparql_views_exhibit_views_api() {
+  return array(
+    'api' => '3.0-alpha1',
+  );
+}

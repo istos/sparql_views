@@ -1,0 +1,7 @@
+; $Id$
+name = SPARQL Views - Exhibit Integration
+description = Provides Exhibit JSON data feeds of SPARQL Views queries.
+package = SPARQL Views
+dependencies[] = exhibit
+dependencies[] = sparql_views
+core = 6.x
