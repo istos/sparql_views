@@ -8,7 +8,6 @@
  * Lin Clark <lin.w.clark@gmail.com>
  */
 
-include_once (drupal_get_path('module', 'sparql_views') .'/lib/arc/ARC2.php');
 include_once (drupal_get_path('module', 'rdfx') .'/rdfx.sparql.inc');
 include_once (drupal_get_path('module', 'rdfx') .'/rdfx.import.inc');
 
