@@ -1,13 +1,13 @@
 <?php
+// $Id$
 
 class sparql_views_handler_filter_where extends sparql_views_handler_filter {
 
   // exposed filter options
   var $no_single = TRUE;
-
   function option_definition() {
     $options = parent::option_definition();
-    
+
     $options['case'] = array('default' => TRUE);
 
     return $options;
@@ -134,7 +134,7 @@ class sparql_views_handler_filter_where extends sparql_views_handler_filter {
     $options = $this->operator_options('short');
     $output = check_plain($options[$this->operator]);
     if (in_array($this->operator, $this->operator_values(1))) {
-      $output .= ' ' . check_plain($this->value['subject'] . ' ' . $this->value['predicate'] . ' ' . $this->value['object']);
+      $output .= ' '. check_plain($this->value['subject'] .' '. $this->value['predicate'] .' '. $this->value['object']);
     }
     return $output;
   }
@@ -148,9 +148,8 @@ class sparql_views_handler_filter_where extends sparql_views_handler_filter {
       '#description' => t('Case sensitive filters may be faster. MySQL might ignore case sensitivity.'),
     );
   }
-  
-  function options_submit(&$form, &$form_state) {
-  }
+
+  function options_submit(&$form, &$form_state) {}
 
   function operator_values($values = 1) {
     $options = array();
@@ -183,10 +182,10 @@ class sparql_views_handler_filter_where extends sparql_views_handler_filter {
         $which = in_array($this->operator, $this->operator_values(1)) ? 'value' : 'none';
       }
       else {
-        $source = 'edit-' . form_clean_id($this->options['expose']['operator']);
+        $source = 'edit-'. form_clean_id($this->options['expose']['operator']);
       }
     }
-    
+
     $view_name = arg(5);
     $display_name = arg(6);
 

@@ -129,4 +129,3 @@ function _sparql_views_fetch_prefixes() {
   $results = rdfx_fetch_rdf('http://prefix.cc/popular/all.rdf.plain', 'prefix');
   return $results[1];
 }
-
