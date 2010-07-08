@@ -215,11 +215,14 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       $start = views_microtime();
 
       $endpoint = $this->endpoint_url;
-      //<http://dbpedia.org/resource/Number-one_albums_of_1997_%28USA%29>
+      // @todo fix this after demo to replace all args, not just one
+      /*foreach ($view->args as $arg_num) {
+        $query = str_replace('%1', urldecode($view->args[0]), $query);
+      }*/
       $query_test = array('type' => 'property',
-                         'query' => "$this->prefixes SELECT * $query");
+        'query' => "$this->prefixes SELECT * $query",
+      );
       $results = rdfx_sparql_request($query_test['query'], $endpoint, array('store_read_key' => $this->endpoint_read_key));
-
       if ($results['result']) {
         foreach ($results['result']['rows'] as $resource) {
           $view->result[] = $resource;
