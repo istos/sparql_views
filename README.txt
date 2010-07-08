@@ -13,6 +13,7 @@ development.
 2. Apply the patch in issue http://drupal.org/node/621142.
 3. Download the ARC library from http://code.semsol.org/source/arc.tar.gz
    and place it in sparql_views/lib/rdfx/vendor/
+4. After enabling Views, turn off Views data caching.
 
 HACKS
 =====
