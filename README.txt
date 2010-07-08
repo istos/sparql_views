@@ -1,7 +1,8 @@
 DRUPAL 6 vs. DRUPAL 7
 =====================
 Please note, while this is being developed in Drupal 6, I do not plan to
-maintain a Drupal 6 version of this module.
+maintain a Drupal 6 version of this module. It will be released in Drupal 7 as
+soon as there are stable versions of all of the required modules.
 
 INSTALL
 =======

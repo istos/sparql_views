@@ -1,6 +1,11 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * Views field handler that renders SPARQL query results as returned from ARC.
+ */
+
 class sparql_views_handler_field extends views_handler_field {
 
   /**

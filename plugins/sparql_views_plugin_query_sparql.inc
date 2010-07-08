@@ -1,6 +1,11 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * Views query plugin to build and transmit a SPARQL query to an endpoint.
+ */
+
 class sparql_views_plugin_query_sparql extends views_plugin_query {
 
   /**

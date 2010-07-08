@@ -1,6 +1,12 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * Views filter handler to display UI for WHERE clauses and prepare them for
+ * the query.
+ */
+
 class sparql_views_handler_filter_where extends sparql_views_handler_filter {
 
   // exposed filter options

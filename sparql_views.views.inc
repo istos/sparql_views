@@ -2,9 +2,20 @@
 // $Id$
 
 /**
- * SPARQL Views.
+ * @file
+ * Provide Views data, handler and plugins for SPARQL Views. These only
+ * depend on SPARQL Views default dependencies. Any handlers or plugins that
+ * are dependent on additional modules are placed in their own module in the
+ * sparql_views/modules folder.
  */
 
+/**
+ * Implements hook_views_data.
+ *
+ * Declare the base table and all of the fields. Because available fields are
+ * not in a known schema but are dynamically defined in the SPARQL query, this
+ * requires more complicated logic than usual.
+ */
 function sparql_views_views_data() {
   $data['sparql_ep']['table']['group']  = t('SPARQL');
 
@@ -48,7 +59,7 @@ function sparql_views_views_data() {
 }
 
 /**
- * Implementation of hook_views_handlers().
+ * Implements hook_views_handlers().
  */
 function sparql_views_views_handlers() {
   return array(
@@ -77,7 +88,7 @@ function sparql_views_views_handlers() {
 }
 
 /**
- * Implementation of hook_views_plugins().
+ * Implements hook_views_plugins().
  */
 function sparql_views_views_plugins() {
   $path = drupal_get_path('module', 'sparql_views') . '/plugins';

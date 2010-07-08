@@ -1,15 +1,9 @@
 <?php
-// $Id: views_plugin_row_fields_exhibit.inc,v 1.4 2009/05/01 05:09:26 arto Exp $
-
-//////////////////////////////////////////////////////////////////////////////
-// Views API plugins
+// $Id$
 
 /**
- * Views row plugin that invokes node_view() on each node and prepares its
- * body for inclusion as an RSS 1.0 item description in the feed.
- *
- * @see http://web.resource.org/rss/1.0/spec
- * @ingroup views_row_plugins
+ * @file
+ * Views row plugin to render SPARQL Views result row.
  */
 class sparql_views_plugin_row_fields_exhibit extends views_plugin_row {
   function render(&$row) {

@@ -2,10 +2,9 @@
 // $Id$
 
 /**
- * Views style plugin that outputs an Exhibit JSON feed.
- *
- * @see [TODO: link to Exhibit feed doc]
- * @ingroup views_style_plugins
+ * @file
+ * Views style plugin that outputs an Exhibit JSON feed from a SPARQL Views
+ * query.
  */
 class sparql_views_plugin_style_exhibit_json extends views_plugin_style_exhibit_json {
   function option_definition() {

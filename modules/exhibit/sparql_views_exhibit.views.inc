@@ -2,7 +2,8 @@
 // $Id$
 
 /**
- * SPARQL Views.
+ * @file
+ * Provide Views plugins for SPARQL Views - Exhibit integration.
  */
 
 /**

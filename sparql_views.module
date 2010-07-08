@@ -2,10 +2,11 @@
 // $Id$
 
 /**
- * Virtual Film Factory Backend
+ * SPARQL Views
  *
- * @author
- * Lin Clark <lin.w.clark@gmail.com>
+ * The SPARQL Views module enables the creation of SPARQL queries in Views.
+ * SPARQL is a query language for accessing RDF datastores, frequently to access
+ * remote datastores using HTTP.
  */
 
 include_once (drupal_get_path('module', 'rdfx') .'/rdfx.sparql.inc');
