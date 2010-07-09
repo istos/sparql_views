@@ -40,8 +40,12 @@ function sparql_views_views_data() {
     $view = views_ui_cache_load(arg(5));
     $display_name = arg(6);
   }
+  if (arg(3) == 'edit') {
+    $view = views_ui_cache_load(arg(4));
+    $display_name = 'default';
+  }
   $fields = _sparql_views_get_fields($view, $display_name);
-  
+
   // We dynamically create the fields based on the variables that have been
   // entered into the SPARQL query via filters. This is because RDF datasets
   // do not have set schemas.
