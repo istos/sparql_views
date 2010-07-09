@@ -1,3 +1,5 @@
+$Id$
+
 INSTALL
 =======
 These are temp installation instructions while SPARQL Views is in heavy

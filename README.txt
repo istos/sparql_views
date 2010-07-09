@@ -1,3 +1,5 @@
+$Id$
+
 DRUPAL 6 vs. DRUPAL 7
 =====================
 Please note, while this is being developed in Drupal 6, I do not plan to
@@ -9,8 +11,9 @@ INSTALL
 These are temp installation instructions while SPARQL Views is in heavy
 development.
 
-1. Download Views 3 dev
-2. Apply the patch in issue http://drupal.org/node/621142.
+1. Download Views 3 dev.
+2. Apply the following patch to Views,
+   http://drupal.org/files/issues/views_621142-16.patch.
 3. Download the ARC library from http://code.semsol.org/source/arc.tar.gz
    and place it in sparql_views/lib/rdfx/vendor/
 4. After enabling Views, turn off Views data caching.

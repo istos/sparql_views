@@ -17,12 +17,12 @@
  * requires more complicated logic than usual.
  */
 function sparql_views_views_data() {
-  $data['sparql_ep']['table']['group']  = t('SPARQL');
+  $data['sparql_ep']['table']['group'] = t('SPARQL');
 
   $data['sparql_ep']['table']['base'] = array(
     'title' => t('SPARQL query'),
     'help' => t('Connects to a SPARQL endpoint.'),
-    'query class' => 'sparql_query'
+    'query class' => 'sparql_query',
   );
 
   $data['sparql_ep']['where'] = array(
@@ -32,7 +32,7 @@ function sparql_views_views_data() {
       'handler' => 'sparql_views_handler_filter_where',
     ),
   );
-  
+
   // Because views_get_current_view() does not work in this context, we have
   // to figure out the view from the path. This is a dirty hack, if anyone has
   // any better ideas, let me know.
@@ -68,24 +68,22 @@ function sparql_views_views_data() {
 function sparql_views_views_handlers() {
   return array(
     'info' => array(
-      'path' => drupal_get_path('module', 'sparql_views') . '/handlers',
+      'path' => drupal_get_path('module', 'sparql_views') .'/handlers',
     ),
     'handlers' => array(
       // Fields
       'sparql_views_handler_field' => array(
-        'parent' => 'views_handler_field'
+        'parent' => 'views_handler_field',
       ),
       'sparql_views_handler_field' => array(
         'parent' => 'views_handler_field',
       ),
-
       // Filters
       'sparql_views_handler_filter_where' => array(
-        'parent' => 'sparql_views_handler_filter'
+        'parent' => 'sparql_views_handler_filter',
       ),
-      
       'sparql_views_handler_filter' => array(
-        'parent' => 'views_handler_filter'
+        'parent' => 'views_handler_filter',
       ),
     ),
   );
@@ -95,7 +93,7 @@ function sparql_views_views_handlers() {
  * Implements hook_views_plugins().
  */
 function sparql_views_views_plugins() {
-  $path = drupal_get_path('module', 'sparql_views') . '/plugins';
+  $path = drupal_get_path('module', 'sparql_views') .'/plugins';
   return array(
     // Query plugins
     'query' => array(
@@ -103,9 +101,10 @@ function sparql_views_views_plugins() {
         'title' => t('SPARQL Query'),
         'help' => t('Query will be generated and run against a SPARQL endpoint.'),
         'handler' => 'sparql_views_plugin_query_sparql',
-        'js' => array(drupal_get_path('module', 'sparql_views') .'/js/sparql_views.js'),
+        //'js' => array(drupal_get_path('module', 'sparql_views') .'/js/sparql_views.js'),
         'path' => $path,
       ),
     ),
   );
 }
+
