@@ -9,25 +9,11 @@
 class sparql_views_plugin_style_exhibit_json extends views_plugin_style_exhibit_json {
   function option_definition() {
     $options = parent::option_definition();
-    /*$options['type_label'] = array('default' => $this->view->base_table, 'translatable' => TRUE);
-    $options['type_plural_label'] = array('default' => '', 'translatable' => TRUE);*/
     return $options;
   }
 
   function options_form(&$form, &$form_state) {
     parent::options_form(&$form, &$form_state);
-    /*$form['type_label'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Type Label'),
-      '#default_value' => $this->options['type_label'],
-      '#description' => t('This is the label for the type of items in the feed.'),
-    );
-    $form['type_plural_label'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Type Plural Label'),
-      '#default_value' => $this->options['type_plural_label'],
-      '#description' => t('The plural label for the type of items in the feed.'),
-    );*/
   }
 
   function render() {

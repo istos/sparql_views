@@ -35,7 +35,7 @@ function sparql_views_exhibit_views_plugins() {
         'handler' => 'sparql_views_plugin_row_fields_exhibit',
         'path' => $path,
         'uses fields' => TRUE,
-        'uses options' => FALSE,
+        'uses options' => TRUE,
         'type' => 'feed',
         'help topic' => 'style-node-exhibit',
       ),
