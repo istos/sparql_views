@@ -15,6 +15,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
     // @todo Add JS for hiding irrelvant field items.
 
     $this->endpoint_url = $query_options['endpoint_url'];
+    $this->dataset_url = $query_options['dataset_url'];
     $this->endpoint_read_key = $query_options['endpoint_read_key'];
     $this->prefixes = $query_options['prefixes'];
   }
@@ -219,7 +220,12 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
 
       $start = views_microtime();
 
-      $endpoint = $this->endpoint_url;
+      if (isset($endpoint)) {
+        $endpoint = $this->endpoint_url;
+      }
+      else {
+        $dataset = $this->dataset_url;
+      }
       // @todo fix this after demo to replace all args, not just one
       /*foreach ($view->args as $arg_num) {
         $query = str_replace('%1', urldecode($view->args[0]), $query);
@@ -269,6 +275,14 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       '#type' => 'textfield',
       '#title' => t('SPARQL Endpoint'),
       '#default_value' => $this->endpoint_url,
+      '#description' => t("The SPARQL endpoint that you want to access. For instance, !dbpedia.",
+        array('!dbpedia' => l('http://dbpedia.org/sparql', 'http://dbpedia.org/sparql'))
+      ),
+    );
+    $form['dataset_url'] = array(
+      '#type' => 'textfield',
+      '#title' => t('SPARQL Endpoint'),
+      '#default_value' => $this->dataset_url,
       '#description' => t("The SPARQL endpoint that you want to access. For instance, !dbpedia.",
         array('!dbpedia' => l('http://dbpedia.org/sparql', 'http://dbpedia.org/sparql'))
       ),
