@@ -220,7 +220,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
 
       $start = views_microtime();
 
-      if (isset($endpoint)) {
+      if (isset($this->endpoint_url)) {
         $endpoint = $this->endpoint_url;
       }
       else {
