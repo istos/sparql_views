@@ -117,13 +117,13 @@ function rdfx_arc2_init_store($name, $endpoint = FALSE) {
   // @todo fix this. Error reporting is off because ARC2 throws strict warnings.
   error_reporting(0);
   
-  $db_spec = $GLOBALS['databases']['default']['default'];
-
+  global $db_url;
+  $url = parse_url($db_url);
   $config = array(
     /* db */
-    'db_name' => $db_spec['database'],
-    'db_user' => $db_spec['username'],
-    'db_pwd' => isset($db_spec['password']) ? $db_spec['password'] : '',
+    'db_name' => substr(urldecode($url['path']), 1),
+    'db_user' => urldecode($url['user']),
+    'db_pwd' => isset($url['pass']) ? urldecode($url['pass']) : '',
     /* store */
     'store_name' => $name,
 
