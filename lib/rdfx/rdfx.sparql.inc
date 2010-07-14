@@ -56,7 +56,7 @@ function rdfx_sparql_request($query, $endpoint = NULL, $options = array(), $data
     }
     $rs = $store->query($query);
     if (!$store->getErrors()) {
-      $rows = $rs['result']['rows'];
+      $rows = $rs;
     }
   }
   // Try to execute the query against a series of public SPARQL endpoints.
