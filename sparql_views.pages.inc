@@ -5,6 +5,26 @@
  * @file
  * Autocomplete callbacks for the SPARQL Views administration UI.
  */
+ 
+function sparql_views_get_predicates() {
+  $output = '';
+
+  //$result = rdfx_sparql_request("SELECT DISTINCT ?p COUNT(?p) AS ?count WHERE {?s ?p ?o} GROUP BY ?p", "http://lab.linkeddata.deri.ie/ppa/sparql.php", array('store_read_key' => 'imp'));
+  $result = array(
+    'result' => array(
+      'rows' => array(
+        array('p' => 'foaf:name'),
+        array('p' => 'foaf:homepage'),
+      )
+    )
+  );
+  
+  foreach ($result['result']['rows'] as $row) {
+    $output .= "<div id='" . rand(0, 99999999) . "' class='predicate box'>" . $row['p'] . "</div>";
+  }
+  
+  print($output);
+}
 
 /**
  * Menu callback; Retrieve a JSON object containing autocomplete suggestions
