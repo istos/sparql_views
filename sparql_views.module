@@ -79,7 +79,7 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
       $view = views_ui_cache_load($view_name);
 
       foreach ($view->display as $display_name => $display) {
-        $fields = _sparql_views_get_filters($view, $display_name);
+        $fields = array_merge(_sparql_views_get_filters($view, $display_name), $fields);
       }
     }
   }
