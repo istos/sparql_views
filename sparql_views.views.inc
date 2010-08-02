@@ -55,6 +55,10 @@ function sparql_views_views_data() {
       'help' => t("$field as defined in the SPARQL:Where filter."),
       'field' => array(
         'handler' => 'sparql_views_handler_field',
+        'click sortable' => TRUE,
+      ),
+      'sort' => array(
+        'handler' => 'views_handler_sort',
       ),
     );
   }
