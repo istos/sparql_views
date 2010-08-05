@@ -212,8 +212,16 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
    * $view->pager['current_page'].
    */
   function execute(&$view) {
+  // The else is only needed while we support where clauses
+  // in filters.
+  // @todo Remove.
+  if ($view->sparql_views['query']) {
+    $query = $view->sparql_views['query'];
+    $query = str_replace('SELECT * ', '', $query);
+  }
+  else {
     $query = $view->build_info['query'];
-
+  }
     if ($query) {
       $replacements = module_invoke_all('views_query_substitutions', $view);
       $query = str_replace(array_keys($replacements), $replacements, $query);
@@ -230,10 +238,9 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       /*foreach ($view->args as $arg_num) {
         $query = str_replace('%1', urldecode($view->args[0]), $query);
       }*/
-      $query_test = array('type' => 'property',
-        'query' => "$this->prefixes SELECT * $query",
-      );
-      $results = rdfx_sparql_request($query_test['query'], $endpoint, array('store_read_key' => $this->endpoint_read_key));
+      $query = "$this->prefixes SELECT * $query";
+
+      $results = rdfx_sparql_request($query, $endpoint, array('store_read_key' => $this->endpoint_read_key));
       if ($results['result']) {
         foreach ($results['result']['rows'] as $resource) {
           $view->result[] = $resource;
