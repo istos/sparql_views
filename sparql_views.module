@@ -32,6 +32,13 @@ function sparql_views_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'sparql_views.pages.inc',
   );
+  $items['admin/build/sparql_views/add'] = array(
+    'title' => 'SPARQL visual query builder',
+    'page callback' => 'sparql_views_add_query',
+    'access arguments' => array('administer views'),
+    'type' => MENU_CALLBACK,
+    'file' => 'sparql_views.pages.inc',
+  );
   $items['sparql_views/autocomplete/subject-object/%/%'] = array(
     'title' => 'SPARQL variables autocomplete',
     'page callback' => 'sparql_views_variables_autocomplete',
@@ -55,6 +62,20 @@ function sparql_views_menu() {
   );
 
   return $items;
+}
+
+function sparql_views_theme($existing, $type, $theme, $path) {
+  $path = drupal_get_path('module', 'sparql_views');
+  $base = array(
+    'path' => "$path/theme",
+  );
+
+  $hooks['sparql_views_ui'] = $base + array(
+    'template' => 'sparql_views_ui',
+    'arguments' => array(),
+  );
+
+  return $hooks;
 }
 
 /*

@@ -3,8 +3,111 @@
 
 /**
  * @file
- * Autocomplete callbacks for the SPARQL Views administration UI.
+ * Menu callbacks for the SPARQL Views administration UI.
  */
+
+/**
+ * Page callback to add a new view.
+ */
+function sparql_views_add_query() {
+  $path = drupal_get_path('module', 'sparql_views');
+  drupal_add_css("$path/css/sparql_views_ui.css", 'module');
+  $form_state = array(
+    'view' => NULL,
+    'query' => NULL
+  );
+
+  return drupal_build_form('sparql_views_add_form', $form_state);
+}
+
+/**
+ * Form constructor callback to create the SPARQL Views Add Form, phase 1.
+ */
+function sparql_views_add_form(&$form_state) {
+  $query = $form_state['query'];
+  $form = array();
+
+  $form['name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('View name'),
+    '#description' => t('This is the unique name of the view. It must contain only alphanumeric characters and underscores; it is used to identify the view internally and to generate unique theming template names for this view. If overriding a module provided view, the name must not be changed or instead a new view will be created.'),
+    '#required' => TRUE,
+    '#maxlength' => 32,
+    '#default_value' => $view ? $view->name : '',
+    '#attributes' => array('dir'=>'ltr'),
+  );
+
+  $form['visual_query'] = array(
+    '#type' => 'markup',
+    '#theme' => 'sparql_views_ui',
+    '#title' => t('View description'),
+    '#description' => t('This description will appear on the Views administrative UI to tell you what the view is about.'),
+    '#default_value' => $view ? $view->description : '',
+  );
+
+  $form['query'] = array(
+    '#type' => 'textarea',
+    '#title' => t('SPARQL query'),
+    '#description' => t('The SPARQL query.'),
+    '#default_value' => $view ? $view->query : '',
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Next'),
+    '#validate' => array('sparql_views_add_form_validate'),
+    '#submit' => array('sparql_views_add_form_submit'),
+  );
+
+  return $form;
+}
+
+/**
+ * Validate the add view form.
+ */
+function sparql_views_add_form_validate($form, &$form_state) {
+  $name = $form_state['values']['name'];
+
+  // View name must be alphanumeric or underscores, no other punctuation.
+  if (preg_match('/[^a-zA-Z0-9_]/', $name)) {
+    form_error($form['name'], t('View name must be alphanumeric or underscores only.'));
+  }
+
+  // View name must not already exist.
+  //$view = views_get_view($form_state['values']['name']);
+  if ($view && $view->type != t('Default')) {
+    form_error($form['name'], t('You must use a unique name for this view.'));
+  }
+}
+
+/**
+ * Process the add view form
+ */
+function sparql_views_add_form_submit($form, &$form_state) {
+  $view = $form_state['view'] ? $form_state['view'] : views_new_view();
+  $view->name = $form_state['values']['name'];
+  $view->description = $form_state['values']['description'];
+  $view->tag = $form_state['values']['tag'];
+  $view->base_table = 'sparql_ep';
+  $view->sparql_views['query'] = $form_state['values']['query'];
+
+  // Get the variables (anything that starts with '?' or '$').
+  preg_match_all('/(?<=\?).[^\s]*|(?<=\$).[^\s]*/', $view->sparql_views['query'], $matches);
+  $view->sparql_views['fields'] = array_unique($matches[0]);
+
+  $data = array(
+    'name' => $view->name,
+    'description' => $view->description,
+    'data' => $view->sparql_views,
+  );
+
+  // @todo Check to see if there is already a record and figure out how to
+  // handle edits.
+  drupal_write_record('sparql_views_query', $data);
+
+  views_ui_cache_set($view);
+  $form_state['redirect'] ='admin/build/views/edit/' . $view->name;
+}
  
 function sparql_views_get_predicates() {
   $output = '';
