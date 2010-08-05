@@ -36,7 +36,7 @@ function sparql_views_views_data() {
   // Because views_get_current_view() does not work in this context, we have
   // to figure out the view from the path. This is a dirty hack, if anyone has
   // any better ideas, let me know.
-  if (arg(4) == 'add-item' || arg(4) == 'config-item') {
+  if (arg(3) == 'ajax') {
     $view = views_ui_cache_load(arg(5));
     $display_name = arg(6);
   }
