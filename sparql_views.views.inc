@@ -52,7 +52,7 @@ function sparql_views_views_data() {
   foreach ($fields as $field) {
     $data['sparql_ep'][$field] = array(
       'title' => t($field),
-      'help' => t("$field as defined in the SPARQL:Where filter."),
+      'help' => t("$field as defined in the SPARQL query."),
       'field' => array(
         'handler' => 'sparql_views_handler_field',
         'click sortable' => TRUE,
