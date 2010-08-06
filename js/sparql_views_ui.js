@@ -13,37 +13,37 @@
     // @todo If issue isn't fixed in jsPlumb, set a class on the endpoint
     // to register which item it is attached to. Then run through all
     // connections to see whether that item is already connected.
-	id = event.target.id;
-	if (newEvent == true && !$(this).hasClass("predicate-subject")) {
-	sparqlViews.setDroppable(id);
-		/*connectedEndpoints = _getConnectedEndpoints();
-		$(".dragActive").each(function(index) {
-			if (connectedEndpoints[$(this).attr("id")]) {
-				$(this).droppable( "option", "disabled", true );
-				$(this).removeClass("dragActive");
-			}
-		});*/
+    	id = event.target.id;
+    	if (newEvent == true && !$(this).hasClass("predicate-subject")) {
+    	sparqlViews.setDroppable(id);
+    		/*connectedEndpoints = _getConnectedEndpoints();
+    		$(".dragActive").each(function(index) {
+    			if (connectedEndpoints[$(this).attr("id")]) {
+    				$(this).droppable( "option", "disabled", true );
+    				$(this).removeClass("dragActive");
+    			}
+    		});*/
       }
       newEvent = false;
     })
-
+				
     $(".hide").click(function() {
       jsPlumb.toggle($(this).attr("rel"));
     });
 
     $("#dataset").click(function() {
       $.ajax({
-	  type: 'GET',
-		url: "/sparql-views/get-predicates",
-		dataType: 'html',
-		success: function(html, textStatus) {
-		  $('#predicate-store').append(html);
-			$('.predicate').draggable({
+    	  type: 'GET',
+    		url: "/sparql-views/get-predicates",
+    		dataType: 'html',
+    		success: function(html, textStatus) {
+    		  $('#predicate-store').append(html);
+    			$('.predicate').draggable({
 			      helper: "clone"
 		      });
-			$('#workspace').droppable({
-			  accept: '.predicate',
-				drop: function(event,ui) {
+    			$('#workspace').droppable({
+    			  accept: '.predicate',
+    				drop: function(event,ui) {
 				      addTriple(ui);
 					  }
 				  });
