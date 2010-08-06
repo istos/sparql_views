@@ -44,7 +44,7 @@
     			$('#workspace').droppable({
     			  accept: '.predicate',
     				drop: function(event,ui) {
-				      addTriple(ui);
+				      $.prototype.addTriple(ui);
 					  }
 				  });
 			  },
@@ -59,6 +59,7 @@
     });
 
     $("#clear").click(function() { jsPlumb.detachEverything(); });
+  });
 
     originalEndpointClass = jsPlumb.endpointClass;
     jsPlumb.Defaults.DragOptions = { cursor: 'pointer', zIndex:2000 };
@@ -128,7 +129,7 @@
       connector: new jsPlumb.Connectors.Bezier(63),
     };
 
-    function addTriple(ui) {
+    function _addBoxes(ui) {
       // ID variables.
     	var id = Math.floor(Math.random()*999999);
     	var pid = "predicate_" + id;
@@ -278,8 +279,6 @@
 				_activateSwitcher('object', 'value', id);
     	});
     }
-
-  });
 				
   function _getTriples() {
     var sparqlQuery = (sparqlQuery != undefined) ? sparqlQuery : '';
@@ -398,6 +397,10 @@
 				$("#edit-query").html(sparqlQuery);
       },
 			
+			addBoxes : function(ui) {
+				_addBoxes(ui);
+			},
+
 			setDroppable : function(id) {
 			  // @todo If issue isn't fixed in jsPlumb, set a class on the endpoint
 				// to register which item it is attached to. Then run through all
@@ -418,5 +421,9 @@
 (function($){
   $.fn.processSparql = function() {
     sparqlViews.processSparql();
+  }
+
+	$.fn.addTriple = function(ui) {
+    sparqlViews.addBoxes(ui);
   }
 })(jQuery);
