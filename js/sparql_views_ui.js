@@ -49,6 +49,44 @@
 				return this;
 			},
 
+			addForm : function() {
+				var nodeForm = function(type) {
+				  var prependChar = '';
+					var appendChar = '';
+				  var form = $("<div></div>");
+
+					if (type == "variable") {
+				    prependChar = "?";
+						appendChar = '';
+					}
+					else if (type == "value") {
+				    prependChar = '"';
+						appendChar = '"';
+					}
+
+					form.html(prependChar + " <input type='text' name='" + type + "_value'/> " + appendChar);
+					form.attr("id", termPosition + "_" + type + "_" + id);
+
+					return form;
+				};
+
+				var activateSwitcher = function(type) {
+				  var otherType = (type == 'variable') ? "value" : "variable";
+					$("#" + termPosition + "_" + id + " ." + type).click(function () {
+    		    if ($("input[name=" + termPosition + "_type_" + id +"][value=" + otherType + "]").is(':checked')) {
+              $("input[name=" + termPosition + "_type_" + id +"][value=" + otherType + "]").attr('checked', false);
+						  $("#" + termPosition + "_" + otherType + "_" + id).toggle(500);
+    			  }
+    			  $("#" + termPosition + "_" + type + "_" + id).toggle(500);
+    		  });
+				}
+
+				nodeForm('variable').hide().appendTo($('#' + this.getTid()));
+				nodeForm('value').hide().appendTo($('#' + this.getTid()));
+				activateSwitcher('variable');
+				activateSwitcher('value');
+			},
+
 			position : function(top, left) {
 				$('#' + this.getTid()).css({
     	    position: 'absolute',
@@ -148,9 +186,9 @@
         objectBox.fadeIn(1000);
 				o.addEndpoints();
 
-		sConnection = jsPlumb.connect({ source:s.getTid(), target:p.getTid(), sourceEndpoint:s.getEndpoints().right, targetEndpoint:p.getEndpoints().left});
+    		sConnection = jsPlumb.connect({ source:s.getTid(), target:p.getTid(), sourceEndpoint:s.getEndpoints().right, targetEndpoint:p.getEndpoints().left});
     		sConnection.canvas.style.display = 'none';
-		oConnection = jsPlumb.connect({ source:o.getTid(), target:p.getTid(), sourceEndpoint:o.getEndpoints().left, targetEndpoint:p.getEndpoints().right});
+    		oConnection = jsPlumb.connect({ source:o.getTid(), target:p.getTid(), sourceEndpoint:o.getEndpoints().left, targetEndpoint:p.getEndpoints().right});
     		oConnection.canvas.style.display = 'none';
 
         $(sConnection.canvas).fadeIn(500);
@@ -162,46 +200,8 @@
 			    $(this).parent().parent().remove();
         });
 				
-				var _getNodeForm = function(position, type, id) {
-				  var prependChar = '';
-					var appendChar = '';
-				  var form = $("<div></div>");
-
-					if (type == "variable") {
-				    prependChar = "?";
-						appendChar = '';
-					}
-					else if (type == "value") {
-				    prependChar = '"';
-						appendChar = '"';
-					}
-
-					form.html(prependChar + " <input type='text' name='" + type + "_value'/> " + appendChar);
-					form.attr("id", position + "_" + type + "_" + id);
-					
-					return form;
-				}
-    		
-				_getNodeForm('subject', 'variable', id).hide().appendTo(subjectBox);
-				_getNodeForm('subject', 'value', id).hide().appendTo(subjectBox);
-				_getNodeForm('object', 'variable', id).hide().appendTo(objectBox);
-				_getNodeForm('object', 'value', id).hide().appendTo(objectBox);
-				
-				var _activateSwitcher = function(position, type, id) {
-				  var otherType = (type == 'variable') ? "value" : "variable";
-					$("#" + position + "_" + id + " ." + type).click(function () {
-    		    if ($("input[name=" + position + "_type_" + id +"][value=" + otherType + "]").is(':checked')) {
-              $("input[name=" + position + "_type_" + id +"][value=" + otherType + "]").attr('checked', false);
-						  $("#" + position + "_" + otherType + "_" + id).toggle(500);
-    			  }
-    			  $("#" + position + "_" + type + "_" + id).toggle(500);
-    		  });
-				}
-				
-				_activateSwitcher('subject', 'variable', id);
-				_activateSwitcher('subject', 'value', id);
-				_activateSwitcher('object', 'variable', id);
-				_activateSwitcher('object', 'value', id);
+				s.addForm();
+				o.addForm();
     	});
     }
 				
