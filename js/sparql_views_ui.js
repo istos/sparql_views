@@ -98,6 +98,20 @@
     $(".hide").click(function() {
       jsPlumb.toggle($(this).attr("rel"));
     });
+
+    function _getConnectedEndpoints() {
+				  endpointsByElement = jsPlumb.getEndpointsByElement();
+      connectedEndpoints = new Object();
+      for (element in endpointsByElement) {
+        if (endpointsByElement[element][0].connections.length > 0) {
+          sourceEndpointId = endpointsByElement[element][0].connections[0].endpoints[0].canvas.id;
+          targetEndpointId = endpointsByElement[element][0].connections[0].endpoints[1].canvas.id;
+          connectedEndpoints[sourceEndpointId] = targetEndpointId;
+          connectedEndpoints[targetEndpointId] = sourceEndpointId;
+        }
+      }
+			return connectedEndpoints;
+		}
 				
     $("#dataset").click(function() {
       $.ajax({
