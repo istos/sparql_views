@@ -150,60 +150,63 @@
 				$(leftEndpoint.canvas).fadeIn(1000);
 				$(rightEndpoint.canvas).fadeIn(1000);
 				this.setEndpoints(leftEndpoint, rightEndpoint);
-			},
+			}
 		}
 	};
 
-    function _addBoxes(ui) {
-      // ID variables.
-    	var id = Math.floor(Math.random()*999999);
-    	var pid = "predicate_" + id;
-    	var sid = "subject_" + id;
-    	var oid = "object_" + id;
+	function _addBoxes(ui) {
+		// ID variables.
+		var id = Math.floor(Math.random()*999999);
+		var pid = "predicate_" + id;
+		var sid = "subject_" + id;
+		var oid = "object_" + id;
 
-    	// Layout variables.
-			var width = 200;
-    	var top = ui.position['top'];
-    	var left = ui.position['left'];
-    	var boxMargin = 100;
+		// Layout variables.
+		var width = 200;
+		var top = ui.position['top'];
+		var left = ui.position['left'];
+		var boxMargin = 100;
 
-      // Create and position boxes.
-			s = termBox('subject', id).create().position(top, left - width - boxMargin);
-      p = termBox('predicate', id).create().position(top, left);
-    	o = termBox('object', id).create().position(top, left + width + boxMargin);
+		// Create and position boxes.
+		s = termBox('subject', id).create().position(top, left - width - boxMargin);
+		p = termBox('predicate', id).create().position(top, left);
+		o = termBox('object', id).create().position(top, left + width + boxMargin);
 
-			predicateBox = $('#' + pid)
-			  .append(ui.draggable.text())
-				.attr("dataset-triplevalue", ui.draggable.text());
-			subjectBox = $('#' + sid);
-			objectBox = $('#' + oid);
+		predicateBox = $('#' + pid)
+			.append(ui.draggable.text())
+			.attr("dataset-triplevalue", ui.draggable.text());
+		subjectBox = $('#' + sid);
+		objectBox = $('#' + oid);
 
-      predicateBox.fadeIn(1000, function(){
-				// Add endpoints to the boxes.
-				p.addEndpoints();
-    		subjectBox.fadeIn(1000);
-				s.addEndpoints();
-        objectBox.fadeIn(1000);
-				o.addEndpoints();
+		predicateBox.fadeIn(1000, function(){
+			// Add endpoints to the boxes.
+			p.addEndpoints();
+			subjectBox.fadeIn(1000);
+			s.addEndpoints();
+			objectBox.fadeIn(1000);
+			o.addEndpoints();
 
-    		sConnection = jsPlumb.connect({ source:s.getTid(), target:p.getTid(), sourceEndpoint:s.getEndpoints().right, targetEndpoint:p.getEndpoints().left});
-    		sConnection.canvas.style.display = 'none';
-    		oConnection = jsPlumb.connect({ source:o.getTid(), target:p.getTid(), sourceEndpoint:o.getEndpoints().left, targetEndpoint:p.getEndpoints().right});
-    		oConnection.canvas.style.display = 'none';
+			// Add the connections between the predicate and the nodes.
+			sConnection = jsPlumb.connect({ source:s.getTid(), target:p.getTid(), sourceEndpoint:s.getEndpoints().right, targetEndpoint:p.getEndpoints().left});
+			sConnection.canvas.style.display = 'none';
+			oConnection = jsPlumb.connect({ source:o.getTid(), target:p.getTid(), sourceEndpoint:o.getEndpoints().left, targetEndpoint:p.getEndpoints().right});
+			oConnection.canvas.style.display = 'none';
 
-        $(sConnection.canvas).fadeIn(500);
-        $(oConnection.canvas).fadeIn(500);
-    		
-				$(".detach").click(function() {
-				  jsPlumb.detachAll($(this).parent().attr("rel"));
-			    jsPlumb.removeAllEndpoints($(this).parent().attr("rel"));
-			    $(this).parent().parent().remove();
-        });
-				
-				s.addForm();
-				o.addForm();
-    	});
-    }
+			$(sConnection.canvas).fadeIn(500);
+			$(oConnection.canvas).fadeIn(500);
+			
+			$(".detach").click(function() {
+				jsPlumb.detachAll($(this).parent().attr("rel"));
+				jsPlumb.removeAllEndpoints($(this).parent().attr("rel"));
+				$(this).parent().parent().remove();
+			});
+			
+			// Add the forms. We don't do this at first because the extra height
+			// would make the endpoints center weirdly.
+			s.addForm();
+			o.addForm();
+		});
+	}
 				
   function _getTriples() {
     var sparqlQuery = (sparqlQuery != undefined) ? sparqlQuery : '';
