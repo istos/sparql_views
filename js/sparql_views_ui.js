@@ -6,11 +6,22 @@
 	* A box that can
   */
 	var termBox = function (termPosition, id) {
-		tid = termPosition + "_" + id;
-
 		return {
+			getTid : function() {
+				return termPosition + "_" + id;
+			},
+
+			setEndpoints : function(leftEndpoint, rightEndpoint) {
+				this.endpoints = new Object();
+				this.endpoints['left'] = leftEndpoint;
+				this.endpoints['right'] = rightEndpoint;
+			},
+
+			getEndpoints : function(endpoint) {
+				return this.endpoints;
+			},
+
 			create : function() {
-				tid = termPosition + "_" + id;
 				var box = $("<div class='box'></div>");
 				var headerBar = $("<div class='header-bar'><span class='detach'>X</span><span class='minimize'>&ndash;</span></div>");
 
@@ -21,17 +32,17 @@
 
 				if (termPosition == 'predicate') {
 					box
-						.prepend(headerBar.clone().attr("rel", tid))
+						.prepend(headerBar.clone().attr("rel", this.getTid()))
 						.addClass("predicate")
-						.attr("id", tid)
+						.attr("id", this.getTid())
 						.hide();
 				}
 				else {
 					box
 						.html(nodeTypeSwitcher)
-						.prepend(headerBar.clone().attr("rel", tid))
+						.prepend(headerBar.clone().attr("rel", this.getTid()))
 						.addClass("node")
-						.attr("id", tid)
+						.attr("id", this.getTid())
 						.hide();
 				}
 				$('#workspace').append(box);
@@ -39,60 +50,71 @@
 			},
 
 			position : function(top, left) {
-				window.console.log('#' + tid);
-				$('#' + tid).css({
+				$('#' + this.getTid()).css({
     	    position: 'absolute',
 					top: top,
 					left: left
         });
 				return this;
-			}
+			},
+
+			addEndpoints : function() {
+				var termType = (termPosition == 'predicate') ? 'predicate' : 'node';
+
+				originalEndpointClass = jsPlumb.endpointClass;
+				jsPlumb.Defaults.DragOptions = { cursor: 'pointer', zIndex:2000 };
+				jsPlumb.Defaults.PaintStyle = { strokeStyle:'#666' };
+				jsPlumb.Defaults.EndpointStyle = { width:20, height:16, strokeStyle:'#666' };
+				jsPlumb.Defaults.Endpoint = new jsPlumb.Endpoints.Rectangle();
+				jsPlumb.Defaults.Anchors = [jsPlumb.Anchors.TopCenter, jsPlumb.Anchors.TopCenter];
+
+				var dropOptions = {
+					tolerance:'touch',
+					hoverClass:'dropHover',
+					activeClass:'dragActive'
+				};
+
+				var endpoint = function(termType, endpointPosition) {
+					switch (endpointPosition) {
+						case 'left':
+							var anchorPosition = jsPlumb.Anchors.LeftMiddle;
+							var scope = (termType == 'node') ? "objectEndpoint" : "predicateSubjectEndpoint";
+							var dropScope = (termType == 'node') ? "predicateObjectEndpoint" : "subjectEndpoint";
+							break;
+						case 'right':
+							var anchorPosition = jsPlumb.Anchors.RightMiddle;
+							var scope = (termType == 'node') ? "subjectEndpoint" : "predicateObjectEndpoint";
+							var dropScope = (termType == 'node') ? "predicateSubjectEndpoint" : "objectEndpoint";
+							break;
+					}
+
+					var maxConnections = (scope == "subjectEndpoint") ? 100 : 1;
+
+					return {
+						endpoint:new jsPlumb.Endpoints.Dot({radius:9}),
+						anchor: anchorPosition,
+						scope: scope,
+						style:{ strokeStyle: '#A2CD3A' },
+						maxConnections: maxConnections,
+						isSource:true,
+						dragOptions : scope,
+						isTarget:true,
+						dropOptions : $.extend({scope:dropScope}, dropOptions),
+						connectorStyle:{ strokeStyle:'#ccc', lineWidth:3 },
+						connector: new jsPlumb.Connectors.Bezier(63)
+					};
+				}
+
+				leftEndpoint = $('#' + this.getTid()).addEndpoint(endpoint(termType, 'left'));
+				rightEndpoint = $('#' + this.getTid()).addEndpoint(endpoint(termType, 'right'));
+				leftEndpoint.canvas.style.display = 'none';
+				rightEndpoint.canvas.style.display = 'none';
+				$(leftEndpoint.canvas).fadeIn(1000);
+				$(rightEndpoint.canvas).fadeIn(1000);
+				this.setEndpoints(leftEndpoint, rightEndpoint);
+			},
 		}
 	};
-
-    originalEndpointClass = jsPlumb.endpointClass;
-    jsPlumb.Defaults.DragOptions = { cursor: 'pointer', zIndex:2000 };
-    jsPlumb.Defaults.PaintStyle = { strokeStyle:'#666' };
-    jsPlumb.Defaults.EndpointStyle = { width:20, height:16, strokeStyle:'#666' };
-    jsPlumb.Defaults.Endpoint = new jsPlumb.Endpoints.Rectangle();
-    jsPlumb.Defaults.Anchors = [jsPlumb.Anchors.TopCenter, jsPlumb.Anchors.TopCenter];
-
-    var dropOptions = {
-      tolerance:'touch',
-      hoverClass:'dropHover',
-      activeClass:'dragActive'
-    };
-
-    var getEndpointDefinition = function(termType, endpointPosition) {
-			switch (endpointPosition) {
-				case 'left':
-					var anchorPosition = jsPlumb.Anchors.LeftMiddle;
-					var scope = (termType == 'node') ? "objectEndpoint" : "predicateSubjectEndpoint";
-					var dropScope = (termType == 'node') ? "predicateObjectEndpoint" : "subjectEndpoint";
-					break;
-			  case 'right':
-					var anchorPosition = jsPlumb.Anchors.RightMiddle;
-					var scope = (termType == 'node') ? "subjectEndpoint" : "predicateObjectEndpoint";
-					var dropScope = (termType == 'node') ? "predicateSubjectEndpoint" : "objectEndpoint";
-					break;
-			}
-
-			var maxConnections = (scope == "subjectEndpoint") ? 100 : 1;
-
-			return {
-        endpoint:new jsPlumb.Endpoints.Dot({radius:9}),
-        anchor: anchorPosition,
-        scope: scope,
-        style:{ strokeStyle: '#A2CD3A' },
-        maxConnections: maxConnections,
-        isSource:true,
-        dragOptions : scope,
-        isTarget:true,
-        dropOptions : $.extend({scope:dropScope}, dropOptions),
-        connectorStyle:{ strokeStyle:'#ccc', lineWidth:3 },
-        connector: new jsPlumb.Connectors.Bezier(63)
-      };
-		}
 
     function _addBoxes(ui) {
       // ID variables.
@@ -111,51 +133,28 @@
 			s = termBox('subject', id).create().position(top, left - width - boxMargin);
       p = termBox('predicate', id).create().position(top, left);
     	o = termBox('object', id).create().position(top, left + width + boxMargin);
-			
+
 			predicateBox = $('#' + pid)
 			  .append(ui.draggable.text())
 				.attr("dataset-triplevalue", ui.draggable.text());
 			subjectBox = $('#' + sid);
 			objectBox = $('#' + oid);
 
-			var subjectEndpoint = getEndpointDefinition('node', 'right');
-      var predicateSubjectEndpoint = getEndpointDefinition('predicate', 'left');
-      var objectEndpoint = getEndpointDefinition('node', 'left');
-      var predicateObjectEndpoint = getEndpointDefinition('predicate', 'right');
-
       predicateBox.fadeIn(1000, function(){
 				// Add endpoints to the boxes.
-    	  pLeftEndpoint = $('#' + pid).addEndpoint(predicateSubjectEndpoint);
-				pRightEndpoint = $('#' + pid).addEndpoint(predicateObjectEndpoint);
-				sLeftEndpoint = $('#' + sid).addEndpoint(objectEndpoint);
-				sRightEndpoint = $('#' + sid).addEndpoint(subjectEndpoint);
-				oRightEndpoint = $('#' + oid).addEndpoint(subjectEndpoint);
-				oLeftEndpoint = $('#' + oid).addEndpoint(objectEndpoint);
-    		pLeftEndpoint.canvas.style.display = 'none';
-    		pRightEndpoint.canvas.style.display = 'none';
-				sLeftEndpoint.canvas.style.display = 'none';
-    		sRightEndpoint.canvas.style.display = 'none';
-				oLeftEndpoint.canvas.style.display = 'none';
-        oRightEndpoint.canvas.style.display = 'none';
-
+				p.addEndpoints();
     		subjectBox.fadeIn(1000);
-    		$(pLeftEndpoint.canvas).fadeIn(1000);
+				s.addEndpoints();
         objectBox.fadeIn(1000);
-    		$(pRightEndpoint.canvas).fadeIn(1000);
+				o.addEndpoints();
 
-    		sConnection = jsPlumb.connect({ source:sid, target:pid, sourceEndpoint:sRightEndpoint, targetEndpoint:pLeftEndpoint});
+		sConnection = jsPlumb.connect({ source:s.getTid(), target:p.getTid(), sourceEndpoint:s.getEndpoints().right, targetEndpoint:p.getEndpoints().left});
     		sConnection.canvas.style.display = 'none';
-    		oConnection = jsPlumb.connect({ source:oid, target:pid, sourceEndpoint:oLeftEndpoint, targetEndpoint:pRightEndpoint});
+		oConnection = jsPlumb.connect({ source:o.getTid(), target:p.getTid(), sourceEndpoint:o.getEndpoints().left, targetEndpoint:p.getEndpoints().right});
     		oConnection.canvas.style.display = 'none';
-    		
-    		$(sRightEndpoint.canvas).fadeIn(1000, function() {
-          $(sConnection.canvas).fadeIn(500);
-        });
-    		$(oRightEndpoint.canvas).fadeIn(1000);
-    		$(sLeftEndpoint.canvas).fadeIn(1000);
-    		$(oLeftEndpoint.canvas).fadeIn(1000, function() {
-          $(oConnection.canvas).fadeIn(500);
-        });
+
+        $(sConnection.canvas).fadeIn(500);
+        $(oConnection.canvas).fadeIn(500);
     		
 				$(".detach").click(function() {
 				  jsPlumb.detachAll($(this).parent().attr("rel"));
