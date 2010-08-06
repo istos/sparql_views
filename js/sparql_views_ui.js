@@ -55,7 +55,7 @@
     });
 
 		$(".process").click(function() {
-      sparqlViews.processSparql();
+      $.prototype.processSparql();
     });
 
     $("#clear").click(function() { jsPlumb.detachEverything(); });
@@ -417,10 +417,6 @@
 //jQuery plugin code
 (function($){
   $.fn.processSparql = function() {
-  return this.each(function() 
-  {
-    var id = $(this).attr("id");
-    sparqlViews.processSparql(id);
-  });
+    sparqlViews.processSparql();
   }
 })(jQuery);
