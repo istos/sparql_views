@@ -74,60 +74,36 @@
       activeClass:'dragActive'
     };
 
-    var subjectEndpoint = {
-      endpoint:new jsPlumb.Endpoints.Dot({radius:9}),
-      anchor: jsPlumb.Anchors.RightMiddle,
-      scope: "subjectEndpoint",
-      style:{ strokeStyle: '#A2CD3A' },
-      maxConnections:100,
-      // This can't be the source because maxConnections is not checked in both directions. If this is fixed in jsPlumb (most likely in initDraggable), then this can go in both directions.
-      isSource:true, 
-      dragOptions : { scope:'subjectConnection' },
-      isTarget:true,
-      dropOptions : $.extend({scope:'predicateSubjectConnection'}, dropOptions),
-      connectorStyle:{ strokeStyle:'#ccc', lineWidth:3 },
-      connector: new jsPlumb.Connectors.Bezier(63),
-    };
-    var predicateSubjectEndpoint = {
-      endpoint:new jsPlumb.Endpoints.Dot({radius:9}),
-			anchor: jsPlumb.Anchors.LeftMiddle,
-			scope: "predicateSubjectEndpoint",
-      style:{ strokeStyle: '#A2CD3A' },
-      maxConnections:1,
-      isSource:true,
-      dragOptions : { scope:'predicateSubjectConnection' },
-      isTarget:true,
-      dropOptions : $.extend({scope:'subjectConnection'}, dropOptions),
-      connectorStyle:{ strokeStyle:'#ccc', lineWidth:3 },
-      connector: new jsPlumb.Connectors.Bezier(63),
-    };
-    var objectEndpoint = {
-      endpoint:new jsPlumb.Endpoints.Dot({radius:9}),
-			anchor: jsPlumb.Anchors.LeftMiddle,
-			scope: "objectEndpoint",
-      style:{ strokeStyle:'#A9529F' },
-      maxConnections:1,
-      // This can't be the source because maxConnections is not checked in both directions. If this is fixed in jsPlumb (most likely in initDraggable), then this can go in both directions.
-      isSource:true, 
-      dragOptions : { scope:'objectConnection' },
-      isTarget:true,
-      dropOptions : $.extend({scope:'predicateObjectConnection'}, dropOptions),
-      connectorStyle:{ strokeStyle:'#ccc', lineWidth:3 },
-      connector: new jsPlumb.Connectors.Bezier(63),
-    };
-    var predicateObjectEndpoint = {
-      endpoint:new jsPlumb.Endpoints.Dot({radius:9}),
-			anchor: jsPlumb.Anchors.RightMiddle,
-			scope: "predicateObjectEndpoint",
-      style:{ strokeStyle:'#A9529F' },
-      maxConnections:1,
-      isSource:true,
-      dragOptions : { scope:'predicateObjectConnection' },
-      isTarget:true,
-      dropOptions : $.extend({scope:'objectConnection'}, dropOptions),
-      connectorStyle:{ strokeStyle:'#ccc', lineWidth:3 },
-      connector: new jsPlumb.Connectors.Bezier(63),
-    };
+    var getEndpointDefinition = function(termType, endpointPosition) {
+			switch (endpointPosition) {
+				case 'left':
+					var anchorPosition = jsPlumb.Anchors.LeftMiddle;
+					var scope = (termType == 'node') ? "objectEndpoint" : "predicateSubjectEndpoint";
+					var dropScope = (termType == 'node') ? "predicateObjectEndpoint" : "subjectEndpoint";
+					break;
+			  case 'right':
+					var anchorPosition = jsPlumb.Anchors.RightMiddle;
+					var scope = (termType == 'node') ? "subjectEndpoint" : "predicateObjectEndpoint";
+					var dropScope = (termType == 'node') ? "predicateSubjectEndpoint" : "objectEndpoint";
+					break;
+			}
+
+			var maxConnections = (scope == "subjectEndpoint") ? 100 : 1;
+
+			return {
+        endpoint:new jsPlumb.Endpoints.Dot({radius:9}),
+        anchor: anchorPosition,
+        scope: scope,
+        style:{ strokeStyle: '#A2CD3A' },
+        maxConnections: maxConnections,
+        isSource:true,
+        dragOptions : scope,
+        isTarget:true,
+        dropOptions : $.extend({scope:dropScope}, dropOptions),
+        connectorStyle:{ strokeStyle:'#ccc', lineWidth:3 },
+        connector: new jsPlumb.Connectors.Bezier(63)
+      };
+		}
 
     function _addBoxes(ui) {
       // ID variables.
@@ -196,7 +172,12 @@
         top: top,
     		left: left + predicateBox.width() + boxMargin
       });
-    	
+
+			var subjectEndpoint = getEndpointDefinition('node', 'right');
+      var predicateSubjectEndpoint = getEndpointDefinition('predicate', 'left');
+      var objectEndpoint = getEndpointDefinition('node', 'left');
+      var predicateObjectEndpoint = getEndpointDefinition('predicate', 'right');
+
       predicateBox.fadeIn(1000, function(){
 				// Add endpoints to the boxes.
     	  pLeftEndpoint = $('#' + pid).addEndpoint(predicateSubjectEndpoint);
