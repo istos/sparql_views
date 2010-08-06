@@ -25,6 +25,13 @@ function sparql_views_views_api() {
  * Implements hook_menu().
  */
 function sparql_views_menu() {
+  $sparql_views = array();
+  // Could be made into a singleton.
+  $query = db_query("SELECT name FROM {sparql_views_query}");
+  while ($result = db_fetch_array($query)) {
+    $sparql_views[] = $result['name'];
+  }
+
   $items['get-predicates'] = array(
     'title' => 'Temporary page for SVUI development',
     'page callback' => 'sparql_views_get_predicates',
@@ -32,13 +39,36 @@ function sparql_views_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'sparql_views.pages.inc',
   );
-  $items['admin/build/sparql_views/add'] = array(
+  $items['admin/build/sparql_views'] = array(
     'title' => 'SPARQL visual query builder',
-    'page callback' => 'sparql_views_add_query',
+    'page callback' => 'sparql_views_list_queries',
     'access arguments' => array('administer views'),
-    'type' => MENU_CALLBACK,
     'file' => 'sparql_views.pages.inc',
   );
+  $items['admin/build/sparql_views/list'] = array(
+    'title' => 'List',
+    'page callback' => 'sparql_views_list_queries',
+    'access arguments' => array('administer views'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'file' => 'sparql_views.pages.inc',
+  );
+  $items['admin/build/sparql_views/add'] = array(
+    'title' => 'Add',
+    'page callback' => 'sparql_views_add_query',
+    'access arguments' => array('administer views'),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'sparql_views.pages.inc',
+  );
+  foreach ($sparql_views as $view_name) {
+    $items["admin/build/sparql_views/edit/$view_name"] = array(
+      'title' => 'Edit',
+      'page callback' => 'sparql_views_edit_query',
+      'page arguments' => array($view_name),
+      'access arguments' => array('administer views'),
+      'type' => MENU_CALLBACK,
+      'file' => 'sparql_views.pages.inc',
+    );
+  }
   $items['sparql_views/autocomplete/subject-object/%/%'] = array(
     'title' => 'SPARQL variables autocomplete',
     'page callback' => 'sparql_views_variables_autocomplete',
