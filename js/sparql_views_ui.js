@@ -1,65 +1,6 @@
 // SPARQL Views UI
 // lin.w.clark@gmail.com
 (function() {
-  $(document).ready(function() {
-		// We do not want to have predicates connected to more than one object.
-    // Because jsPlumb maxConnections only checks whether this endpoint is
-    // full from the source perspective and not the target perspective, we
-    // have to test during the drag itself.
-    $("._jsPlumb_endpoint").bind("dragstart", function( event ){
-       newEvent = true;
-    })
-    .bind("drag", function(event, ui) {
-    // @todo If issue isn't fixed in jsPlumb, set a class on the endpoint
-    // to register which item it is attached to. Then run through all
-    // connections to see whether that item is already connected.
-    	id = event.target.id;
-    	if (newEvent == true && !$(this).hasClass("predicate-subject")) {
-    	sparqlViews.setDroppable(id);
-    		/*connectedEndpoints = _getConnectedEndpoints();
-    		$(".dragActive").each(function(index) {
-    			if (connectedEndpoints[$(this).attr("id")]) {
-    				$(this).droppable( "option", "disabled", true );
-    				$(this).removeClass("dragActive");
-    			}
-    		});*/
-      }
-      newEvent = false;
-    })
-				
-    $(".hide").click(function() {
-      jsPlumb.toggle($(this).attr("rel"));
-    });
-
-    $("#dataset").click(function() {
-      $.ajax({
-    	  type: 'GET',
-    		url: "/sparql-views/get-predicates",
-    		dataType: 'html',
-    		success: function(html, textStatus) {
-    		  $('#predicate-store').append(html);
-    			$('.predicate').draggable({
-			      helper: "clone"
-		      });
-    			$('#workspace').droppable({
-    			  accept: '.predicate',
-    				drop: function(event,ui) {
-				      $.prototype.addTriple(ui);
-					  }
-				  });
-			  },
-			  error: function(xhr, textStatus, errorThrown) {
-			    alert('An error occurred ' + (errorThrown ? errorThrown : xhr.status));
-		    }
-	    });
-    });
-
-		$(".process").click(function() {
-      $.prototype.processSparql();
-    });
-
-    $("#clear").click(function() { jsPlumb.detachEverything(); });
-  });
 
     originalEndpointClass = jsPlumb.endpointClass;
     jsPlumb.Defaults.DragOptions = { cursor: 'pointer', zIndex:2000 };
@@ -408,3 +349,64 @@
     sparqlViews.addBoxes(ui);
   }
 })(jQuery);
+
+  $(document).ready(function() {
+		// We do not want to have predicates connected to more than one object.
+    // Because jsPlumb maxConnections only checks whether this endpoint is
+    // full from the source perspective and not the target perspective, we
+    // have to test during the drag itself.
+    $("._jsPlumb_endpoint").bind("dragstart", function( event ){
+       newEvent = true;
+    })
+    .bind("drag", function(event, ui) {
+    // @todo If issue isn't fixed in jsPlumb, set a class on the endpoint
+    // to register which item it is attached to. Then run through all
+    // connections to see whether that item is already connected.
+	id = event.target.id;
+	if (newEvent == true && !$(this).hasClass("predicate-subject")) {
+	sparqlViews.setDroppable(id);
+		/*connectedEndpoints = _getConnectedEndpoints();
+		$(".dragActive").each(function(index) {
+			if (connectedEndpoints[$(this).attr("id")]) {
+				$(this).droppable( "option", "disabled", true );
+				$(this).removeClass("dragActive");
+			}
+		});*/
+      }
+      newEvent = false;
+    })
+
+    $(".hide").click(function() {
+      jsPlumb.toggle($(this).attr("rel"));
+    });
+
+    $("#dataset").click(function() {
+      $.ajax({
+	  type: 'GET',
+		url: "/sparql-views/get-predicates",
+		dataType: 'html',
+		success: function(html, textStatus) {
+		  $('#predicate-store').append(html);
+			$('.predicate').draggable({
+			      helper: "clone"
+		      });
+			$('#workspace').droppable({
+			  accept: '.predicate',
+				drop: function(event,ui) {
+				      $.prototype.addTriple(ui);
+					  }
+				  });
+			  },
+			  error: function(xhr, textStatus, errorThrown) {
+			    alert('An error occurred ' + (errorThrown ? errorThrown : xhr.status));
+		    }
+	    });
+    });
+
+		$(".process").click(function() {
+      $.prototype.processSparql();
+    });
+
+    $("#clear").click(function() { jsPlumb.detachEverything(); });
+  });
+	/* end jQuery */
