@@ -157,9 +157,6 @@
 	function _addBoxes(ui) {
 		// ID variables.
 		var id = Math.floor(Math.random()*999999);
-		var pid = "predicate_" + id;
-		var sid = "subject_" + id;
-		var oid = "object_" + id;
 
 		// Layout variables.
 		var width = 200;
@@ -172,11 +169,11 @@
 		p = termBox('predicate', id).create().position(top, left);
 		o = termBox('object', id).create().position(top, left + width + boxMargin);
 
-		predicateBox = $('#' + pid)
+		predicateBox = $('#' + p.getTid())
 			.append(ui.draggable.text())
 			.attr("dataset-triplevalue", ui.draggable.text());
-		subjectBox = $('#' + sid);
-		objectBox = $('#' + oid);
+		subjectBox = $('#' + s.getTid());
+		objectBox = $('#' + o.getTid());
 
 		predicateBox.fadeIn(1000, function(){
 			// Add endpoints to the boxes.
