@@ -1,6 +1,54 @@
 // SPARQL Views UI
 // lin.w.clark@gmail.com
-(function() {
+(function($) {
+  /**
+	* Class: termBox
+	* A box that can
+  */
+	var termBox = function (termPosition, id) {
+		tid = termPosition + "_" + id;
+
+		return {
+			create : function() {
+				tid = termPosition + "_" + id;
+				var box = $("<div class='box'></div>");
+				var headerBar = $("<div class='header-bar'><span class='detach'>X</span><span class='minimize'>&ndash;</span></div>");
+
+				var nodeTypeSwitcher = "<input type='checkbox' class='variable' name='" + termPosition + "_type_" + id + "' value='variable'/>"
+					+ "<label for='" + termPosition + "_type_" + id + "'>Get as variable</label>&nbsp;"
+					+ "<input type='checkbox' class='value' name='" + termPosition + "_type_" + id + "' value='value'/>"
+					+ "<label for='" + termPosition + "_type_" + id + "'>Get by value</label><br>";
+
+				if (termPosition == 'predicate') {
+					box
+						.prepend(headerBar.clone().attr("rel", tid))
+						.addClass("predicate")
+						.attr("id", tid)
+						.hide();
+				}
+				else {
+					box
+						.html(nodeTypeSwitcher)
+						.prepend(headerBar.clone().attr("rel", tid))
+						.addClass("node")
+						.attr("id", tid)
+						.hide();
+				}
+				$('#workspace').append(box);
+				return this;
+			},
+
+			position : function(top, left) {
+				window.console.log('#' + tid);
+				$('#' + tid).css({
+    	    position: 'absolute',
+					top: top,
+					left: left
+        });
+				return this;
+			}
+		}
+	};
 
     originalEndpointClass = jsPlumb.endpointClass;
     jsPlumb.Defaults.DragOptions = { cursor: 'pointer', zIndex:2000 };
@@ -54,65 +102,21 @@
     	var oid = "object_" + id;
 
     	// Layout variables.
+			var width = 200;
     	var top = ui.position['top'];
     	var left = ui.position['left'];
     	var boxMargin = 100;
 
-      // Object variables.
-      var workspace = $('#workspace');
-      var predicateBox = $("<div class='box'></div>");
-    	var subjectBox = predicateBox.clone();
-    	var objectBox = predicateBox.clone();
-			var headerBar = $("<div class='header-bar'><span class='detach'>X</span><span class='minimize'>&ndash;</span></div>");
-
-    	var _getNodeTypeSwitcher = function(position, id) {
-				return "<input type='checkbox' class='variable' name='" + position + "_type_" + id + "' value='variable'/>"
-				  + "<label for='" + position + "_type_" + id + "'>Get as variable</label>&nbsp;"
-    	    + "<input type='checkbox' class='value' name='" + position + "_type_" + id + "' value='value'/>"
-    	    + "<label for='" + position + "_type_" + id + "'>Get by value</label><br>";
-			}
+      // Create and position boxes.
+			s = termBox('subject', id).create().position(top, left - width - boxMargin);
+      p = termBox('predicate', id).create().position(top, left);
+    	o = termBox('object', id).create().position(top, left + width + boxMargin);
 			
-			subjectNodeTypeSwitcher = _getNodeTypeSwitcher('subject', id);
-			objectNodeTypeSwitcher = _getNodeTypeSwitcher('object', id);
-    
-      predicateBox
-    	  .text(ui.draggable.text())
-				.prepend(headerBar.clone().attr("rel", pid))
-    	  .addClass("predicate")
-    		.attr("id", pid)
-    		.attr("dataset-triplevalue", ui.draggable.text())
-    	  .hide();
-      subjectBox
-    	  .html(subjectNodeTypeSwitcher)
-				.prepend(headerBar.clone().attr("rel", sid))
-        .addClass("node")
-    		.attr("id", sid)
-    		.hide();
-    	objectBox
-    	  .html(objectNodeTypeSwitcher)
-				.prepend(headerBar.clone().attr("rel", oid))
-        .addClass("node")
-    		.attr("id", oid)
-    		.hide();
-      workspace.append(predicateBox);
-    	workspace.append(subjectBox);
-    	workspace.append(objectBox);
-    
-    	predicateBox.css({
-    	  position: 'absolute',
-    	  top: top,
-    	  left: left
-      });
-    	subjectBox.css({
-    	  position: 'absolute',
-        top: top,
-    		left: left - subjectBox.width() - boxMargin
-      });
-    	objectBox.css({
-    	  position: 'absolute',
-        top: top,
-    		left: left + predicateBox.width() + boxMargin
-      });
+			predicateBox = $('#' + pid)
+			  .append(ui.draggable.text())
+				.attr("dataset-triplevalue", ui.draggable.text());
+			subjectBox = $('#' + sid);
+			objectBox = $('#' + oid);
 
 			var subjectEndpoint = getEndpointDefinition('node', 'right');
       var predicateSubjectEndpoint = getEndpointDefinition('predicate', 'left');
