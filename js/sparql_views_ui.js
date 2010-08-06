@@ -54,6 +54,12 @@
 	    });
     });
 
+		$(".process").click(function() {
+      sparqlViews.processSparql();
+    });
+
+    $("#clear").click(function() { jsPlumb.detachEverything(); });
+
     originalEndpointClass = jsPlumb.endpointClass;
     jsPlumb.Defaults.DragOptions = { cursor: 'pointer', zIndex:2000 };
     jsPlumb.Defaults.PaintStyle = { strokeStyle:'#666' };
@@ -272,12 +278,7 @@
 				_activateSwitcher('object', 'value', id);
     	});
     }
-    
-    $(".process").click(function() {
-      sparqlViews.processSparql();
-    });
 
-    $("#clear").click(function() { jsPlumb.detachEverything(); });
   });
 				
   function _getTriples() {
