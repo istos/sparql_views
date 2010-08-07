@@ -158,32 +158,45 @@
 		}
 	};
 
-	function _addBoxes(ui) {
+	function _addBoxes(text, position, sid) {
 		// ID variables.
 		var id = Math.floor(Math.random()*999999);
 
 		// Layout variables.
 		var width = 200;
-		var top = ui.position['top'];
-		var left = ui.position['left'];
+		var top = position['top'];
+		var left = position['left'];
 		var boxMargin = 100;
 
-		// Create and position boxes.
-		s = termBox('subject', id).create().position(top, left - width - boxMargin);
+		// Create and position boxes. If this isn't being created from an exisitng
+		// subject, create a new subject.
+		if (sid == null) {
+		  s = termBox('subject', id).create().position(top, left - width - boxMargin);
+			subjectBox = $('#' + s.getTid());
+	  }
+		else {
+			var s;
+			s.getTid = function() {
+				return sid;
+			}
+			s.getEndpoints = function() {
+				return endpoints[sid];
+			}
+		}
 		p = termBox('predicate', id).create().position(top, left);
-		o = termBox('object', id).create().position(top, left + width + boxMargin);
-
 		predicateBox = $('#' + p.getTid())
-			.append(ui.draggable.text())
-			.attr("dataset-triplevalue", ui.draggable.text());
-		subjectBox = $('#' + s.getTid());
+			.append(text)
+			.attr("dataset-triplevalue", text);
+		o = termBox('object', id).create().position(top, left + width + boxMargin);
 		objectBox = $('#' + o.getTid());
 
 		predicateBox.fadeIn(1000, function(){
 			// Add endpoints to the boxes.
 			p.addEndpoints();
-			subjectBox.fadeIn(1000);
-			s.addEndpoints();
+			if (sid == null) {
+				subjectBox.fadeIn(1000);
+				s.addEndpoints();
+			}
 			objectBox.fadeIn(1000);
 			o.addEndpoints();
 
@@ -327,7 +340,8 @@
       },
 			
 			addBoxes : function(ui) {
-				_addBoxes(ui);
+				source = null;
+				_addBoxes(ui.draggable.text(), ui.position, source);
 			},
 
 			setDroppable : function(id) {
