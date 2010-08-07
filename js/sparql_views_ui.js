@@ -70,6 +70,8 @@
 					return form;
 				};
 
+				var addPredicateButton = $("<span class='add-predicate' rel='" + this.getTid() + "'>+</span>");
+
 				var activateSwitcher = function(type) {
 				  var otherType = (type == 'variable') ? "value" : "variable";
 					$("#" + termPosition + "_" + id + " ." + type).click(function () {
@@ -81,10 +83,12 @@
     		  });
 				}
 
+				// Attach the elements to the box.
 				nodeForm('variable').hide().appendTo($('#' + this.getTid()));
 				nodeForm('value').hide().appendTo($('#' + this.getTid()));
 				activateSwitcher('variable');
 				activateSwitcher('value');
+				addPredicateButton.appendTo($('#' + this.getTid()));
 			},
 
 			position : function(top, left) {
