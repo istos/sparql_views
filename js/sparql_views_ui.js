@@ -15,6 +15,7 @@
 				this.endpoints = new Object();
 				this.endpoints['left'] = leftEndpoint;
 				this.endpoints['right'] = rightEndpoint;
+				endpoints[this.getTid()] = this.endpoints;
 			},
 
 			getEndpoints : function(endpoint) {
@@ -217,11 +218,12 @@
 				var id = $(this).parent().attr("rel");
 				jsPlumb.detachAll(id);
 				jsPlumb.removeAllEndpoints(id);
+				delete endpoints[id];
 				$(this).parent().parent().remove();
 			});
 		});
 	}
-				
+
   function _getTriples() {
     var sparqlQuery = (sparqlQuery != undefined) ? sparqlQuery : '';
 	  var triples = new Object();
@@ -313,6 +315,10 @@
    This is the main entry point to sparqlViews.  Static methods are used instead of methods in jQuery's "$.fn" object itself, to stay in line with jsPlumb, which this depends on.  
    */
     var sparqlViews = window.sparqlViews = {
+			init : function() {
+				endpoints = new Object();
+			},
+
       processSparql : function() {
 				var sparqlQuery = (sparqlQuery != undefined) ? sparqlQuery : 'SELECT * WHERE {\n';
 				var triples = new Array();
@@ -372,6 +378,8 @@
 })(jQuery);
 
   $(document).ready(function() {
+		sparqlViews.init();
+
 		// We do not want to have predicates connected to more than one object.
     // Because jsPlumb maxConnections only checks whether this endpoint is
     // full from the source perspective and not the target perspective, we
