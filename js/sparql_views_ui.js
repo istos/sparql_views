@@ -24,7 +24,18 @@
 
 			create : function() {
 				var box = $("<div class='box'></div>");
-				var headerBar = $("<div class='header-bar'><span class='detach'>X</span><span class='minimize'>&ndash;</span></div>");
+				var detachButton = $("<span class='detach'>X</span>");
+				var minimizeButton = $("<span class='minimize'>&ndash;</span>");
+				var headerBar = $("<div class='header-bar'></div>")
+					.append(detachButton)
+					.append(minimizeButton);
+				detachButton.click(function() {
+					var id = $(this).parent().attr("rel");
+					jsPlumb.detachAll(id);
+					jsPlumb.removeAllEndpoints(id);
+					delete endpoints[id];
+					$(this).parent().parent().remove();
+				});
 
 				var nodeTypeSwitcher = "<input type='checkbox' class='variable' name='" + termPosition + "_type_" + id + "' value='variable'/>"
 					+ "<label for='" + termPosition + "_type_" + id + "'>Get as variable</label>&nbsp;"
@@ -33,7 +44,7 @@
 
 				if (termPosition == 'predicate') {
 					box
-						.prepend(headerBar.clone().attr("rel", this.getTid()))
+						.prepend(headerBar.attr("rel", this.getTid()))
 						.addClass("predicate")
 						.attr("id", this.getTid())
 						.hide();
@@ -41,7 +52,7 @@
 				else {
 					box
 						.html(nodeTypeSwitcher)
-						.prepend(headerBar.clone().attr("rel", this.getTid()))
+						.prepend(headerBar.attr("rel", this.getTid()))
 						.addClass("node")
 						.attr("id", this.getTid())
 						.hide();
@@ -213,14 +224,6 @@
 			// would make the endpoints center weirdly.
 			s.addForm();
 			o.addForm();
-
-			$(".detach").click(function() {
-				var id = $(this).parent().attr("rel");
-				jsPlumb.detachAll(id);
-				jsPlumb.removeAllEndpoints(id);
-				delete endpoints[id];
-				$(this).parent().parent().remove();
-			});
 		});
 	}
 
