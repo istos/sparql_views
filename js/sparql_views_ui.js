@@ -208,17 +208,17 @@
 
 			$(sConnection.canvas).fadeIn(500);
 			$(oConnection.canvas).fadeIn(500);
-			
-			$(".detach").click(function() {
-				jsPlumb.detachAll($(this).parent().attr("rel"));
-				jsPlumb.removeAllEndpoints($(this).parent().attr("rel"));
-				$(this).parent().parent().remove();
-			});
-			
 			// Add the forms. We don't do this at first because the extra height
 			// would make the endpoints center weirdly.
 			s.addForm();
 			o.addForm();
+
+			$(".detach").click(function() {
+				var id = $(this).parent().attr("rel");
+				jsPlumb.detachAll(id);
+				jsPlumb.removeAllEndpoints(id);
+				$(this).parent().parent().remove();
+			});
 		});
 	}
 				
