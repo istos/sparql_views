@@ -348,9 +348,9 @@
 				$("#edit-query").html(sparqlQuery);
       },
 			
-			addBoxes : function(ui) {
+			addBoxes : function(text, position, sid) {
 				source = null;
-				_addBoxes(ui.draggable.text(), ui.position, source);
+				_addBoxes(text, position, sid);
 			},
 
 			setDroppable : function(id) {
@@ -375,8 +375,8 @@
     sparqlViews.processSparql();
   }
 
-	$.fn.addTriple = function(ui) {
-    sparqlViews.addBoxes(ui);
+	$.fn.addTriple = function(text, position, sid) {
+    sparqlViews.addBoxes(text, position, sid);
   }
 })(jQuery);
 
@@ -425,7 +425,8 @@
 			$('#workspace').droppable({
 			  accept: '.predicate',
 				drop: function(event,ui) {
-				      $.prototype.addTriple(ui);
+					    sid = null;
+				      $.prototype.addTriple(ui.draggable.text(), ui.position, null);
 					  }
 				  });
 			  },
