@@ -13,6 +13,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
    */
   function init($base_table = 'sparql_ep', $base_field, $query_options) {
     // @todo Add JS for hiding irrelvant field items.
+    dialog_add_js();
 
     $this->endpoint_url = $query_options['endpoint_url'];
     $this->dataset_url = $query_options['dataset_url'];
@@ -293,6 +294,10 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       '#description' => t("The SPARQL endpoint that you want to access. For instance, !dbpedia.",
         array('!dbpedia' => l('http://dbpedia.org/sparql', 'http://dbpedia.org/sparql'))
       ),
+    );
+    $form['visual_query'] = array(
+      '#type' => 'markup',
+      '#value' => l('New query', 'admin/build/sparql_views/add/nojs', array('attributes' => array('class' => 'ctools-use-dialog'))),
     );
     /*$form['load_predicates'] = array(
       '#type' => 'checkbox',

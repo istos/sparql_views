@@ -52,11 +52,12 @@ function sparql_views_menu() {
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'file' => 'sparql_views.pages.inc',
   );
-  $items['admin/build/sparql_views/add'] = array(
+  $items['admin/build/sparql_views/add/%ctools_js'] = array(
     'title' => 'Add',
-    'page callback' => 'sparql_views_add_query',
+    'page callback' => 'sparql_views_add_query_modal',
+    'page arguments' => array(4),
     'access arguments' => array('administer views'),
-    'type' => MENU_LOCAL_TASK,
+    'type' => MENU_CALLBACK,
     'file' => 'sparql_views.pages.inc',
   );
   foreach ($sparql_views as $view_name) {

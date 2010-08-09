@@ -26,21 +26,43 @@ function sparql_views_list_queries() {
   }
 
   $output = theme('table', array('Name', 'Query', 'Operations'), $rows);
+  dialog_add_js();
+  $output .= l('New query', 'admin/build/sparql_views/add/nojs', array('attributes' => array('class' => 'ctools-use-dialog')));
   return $output;
 }
 
-/**
- * Page callback to add a new SPARQL query.
- */
-function sparql_views_add_query() {
+function sparql_views_add_query_modal($ajax = FALSE) {
   $path = drupal_get_path('module', 'sparql_views');
   drupal_add_css("$path/css/sparql_views_ui.css", 'module');
-  $form_state = array(
-    'view' => NULL,
-    'query' => NULL
-  );
+  $form_id = 'sparql_views_add_form';
+  if ($ajax) {
+    ctools_include('ajax');
+    $form_state = array(
+      'ajax' => TRUE,
+      'title' => $title,
+      'view' => NULL,
+      'query' => NULL
+    );
+    $output = dialog_form_wrapper($form_id, $form_state);
+    if (empty($output)) {
+      $output[] = ctools_ajax_command_replace('#edit-query-options-prefixes', $form_state['input']['query']);
+    }
+    else {
+      foreach ($output as $i => $command) {
+        if ($command['command'] == 'dialog_display') {
+          $output[$i]['options']['height'] = 900;
+          $output[$i]['options']['width'] = 960;
 
-  return drupal_build_form('sparql_views_add_form', $form_state);
+          $output[$i]['options']['position'] = 'center';
+          $output[$i]['options']['resizable'] = TRUE;
+        }
+      }
+    }
+    ctools_ajax_render($output);
+  }
+  else {
+    return drupal_build_form('sparql_views_add_form', $form_state);
+  }
 }
 
 /**
@@ -66,6 +88,7 @@ function sparql_views_edit_query($view_name) {
  * Form constructor callback to create the SPARQL Views Add Form.
  */
 function sparql_views_add_form(&$form_state) {
+  dialog_add_js();
   $query = $form_state['query'];
   $form = array();
 
@@ -148,7 +171,6 @@ function sparql_views_add_form_submit($form, &$form_state) {
   drupal_write_record('sparql_views_query', $data);
 
   views_ui_cache_set($view);
-  $form_state['redirect'] ='admin/build/views/edit/' . $view->name;
 }
 
 /**
