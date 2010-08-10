@@ -36,13 +36,13 @@ function sparql_views_views_data() {
   // Because views_get_current_view() does not work in this context, we have
   // to figure out the view from the path. This is a dirty hack, if anyone has
   // any better ideas, let me know.
-  if (arg(3) == 'ajax') {
+  if (arg(3) == 'ajax' || arg(3) == 'nojs') {
     $view = views_ui_cache_load(arg(5));
     $display_name = arg(6);
   }
   if (arg(3) == 'edit') {
     $view = views_ui_cache_load(arg(4));
-    $display_name = 'default';
+    $display_name = NULL;
   }
   $fields = _sparql_views_get_fields($view, $display_name);
 
