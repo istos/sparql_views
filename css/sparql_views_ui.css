@@ -6,9 +6,9 @@ body {
 
 #workspace-window {
   border: #fff 20px solid;
-  height: 400px;
+  height: 600px;
   overflow: hidden;
-  width: 800px;
+  width: 95%;
 }
 
 #workspace {
