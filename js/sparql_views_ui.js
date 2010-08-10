@@ -154,6 +154,7 @@
 				jsPlumb.Defaults.EndpointStyle = { width:20, height:16, strokeStyle:'#666' };
 				jsPlumb.Defaults.Endpoint = new jsPlumb.Endpoints.Rectangle();
 				jsPlumb.Defaults.Anchors = [jsPlumb.Anchors.TopCenter, jsPlumb.Anchors.TopCenter];
+				jsPlumb.Defaults.Container = $('#workspace');
 
 				var dropOptions = {
 					tolerance:'touch',
