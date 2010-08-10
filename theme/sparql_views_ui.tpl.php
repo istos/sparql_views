@@ -11,7 +11,7 @@
 global $base_path;?>
   <div id="dataset">get predicates</div>
 	<div id="predicate-store"></div>
-	<div id="workspace"></div>
+	<div id="workspace-window"><div id="workspace" class="ui-draggable"></div></div>
 
   <div id="explanation">
     <a href="#" class="cmdLink process" rel="window2">process</a>
