@@ -465,7 +465,9 @@
 			  accept: '.predicate',
 				drop: function(event,ui) {
 					    sid = null;
-							position = {'top': event.layerY, 'left': event.layerX};
+							// @todo Account for #workspace-window border.
+							windowPos = $('#workspace').position();
+							position = {'top': ui.position.top-windowPos.top, 'left': ui.offset.left-windowPos.left};
 				      sparqlViews.addBoxes(ui.draggable.text(), position, sid);
 					  }
 				  });
