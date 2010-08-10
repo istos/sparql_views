@@ -496,6 +496,8 @@
       $.prototype.processSparql();
     });
 
+		$('#workspace').draggable();
+
     $("#clear").click(function() { jsPlumb.detachEverything(); });
   });
 	/* end jQuery */
