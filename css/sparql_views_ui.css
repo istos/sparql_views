@@ -19,8 +19,12 @@ body {
 }
 
 #predicate-store {
-  float: right;
+  background: #fff;
+  height: 300px;
+  padding: 20px;
+  position: absolute; right: 30px;
   width: 180px;
+  z-index: 200;
 }
 
 .box {
@@ -90,20 +94,35 @@ body {
 }
 
 .add-predicate {
+  display: block;
+  margin-left: 185px;
+  position: absolute;
+  text-align: center;
+
+  -moz-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  border-radius: 15px;
+}
+
+.add-predicate .button{
   background: #fff;
   border: #8efe6d 4px solid;
   color: #8efe6d;
   display: block;
   font-size: 30px;
   height: 25px;
-  position: relative; left: 185px;
   text-align: center;
   width: 25px;
   
   -moz-border-radius: 15px;
   -webkit-border-radius: 15px;
   border-radius: 15px;
+}
 
+.add-predicate .list {
+  background: #fff;
+  border: #8efe6d 4px solid;
+  position: absolute;
 }
 
 #edit-query-wrapper {

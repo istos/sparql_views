@@ -84,8 +84,8 @@
 				};
 
 				var sid = this.getTid();
-				var addPredicateButton = $("<span class='add-predicate' rel='" + sid + "'>+</span>");
-				var predicateList = $("<div id='predicate-list_"+ sid +"' class='contextual-predicate'></div>").attr('rel', sid);
+				var addPredicateButton = $("<div class='add-predicate'><span class='button' rel='" + sid + "'>+</span></div>");
+				var predicateList = $("<div id='predicate-list_"+ sid +"' class='list'></div>").attr('rel', sid);
 				addPredicateButton.click(function(event) {
 					$.ajax({
 						type: 'GET',
@@ -113,13 +113,7 @@
 							alert('An error occurred ' + (errorThrown ? errorThrown : xhr.status));
 						}
 					});
-
-					predicateList.appendTo($('body'))
-						.css({
-							position: 'absolute',
-							top: event.pageY,
-							left: event.pageX
-						})
+					predicateList.appendTo($(addPredicateButton))
 						.fadeIn(2000);
 				});
 
