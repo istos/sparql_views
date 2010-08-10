@@ -198,7 +198,7 @@
 		}
 		p = termBox('predicate', id).create().position(top, left);
 		predicateBox = $('#' + p.getTid())
-			.append(text)
+			.append("<span class='form'>" + text + "</span>")
 			.attr("dataset-triplevalue", text);
 		o = termBox('object', id).create().position(top, left + width + boxMargin);
 		objectBox = $('#' + o.getTid());
@@ -321,6 +321,7 @@
     var sparqlViews = window.sparqlViews = {
 			init : function() {
 				endpoints = new Object();
+				this.boxMarginY = 20;
 			},
 
       processSparql : function() {
