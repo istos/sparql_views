@@ -37,10 +37,10 @@
 					$(this).parent().parent().remove();
 				});
 
-				var nodeTypeSwitcher = "<input type='checkbox' class='variable' name='" + termPosition + "_type_" + id + "' value='variable'/>"
+				var nodeTypeSwitcher = "<div class='form'><input type='checkbox' class='variable' name='" + termPosition + "_type_" + id + "' value='variable'/>"
 					+ "<label for='" + termPosition + "_type_" + id + "'>Get as variable</label>&nbsp;"
 					+ "<input type='checkbox' class='value' name='" + termPosition + "_type_" + id + "' value='value'/>"
-					+ "<label for='" + termPosition + "_type_" + id + "'>Get by value</label><br>";
+					+ "<label for='" + termPosition + "_type_" + id + "'>Get by value</label></div>";
 
 				if (termPosition == 'predicate') {
 					box
@@ -53,7 +53,7 @@
 					box
 						.html(nodeTypeSwitcher)
 						.prepend(headerBar.attr("rel", this.getTid()))
-						.addClass("node")
+						.addClass("rdf-node")
 						.attr("id", this.getTid())
 						.hide();
 				}
@@ -78,6 +78,7 @@
 
 					form.html(prependChar + " <input type='text' name='" + type + "_value'/> " + appendChar);
 					form.attr("id", termPosition + "_" + type + "_" + id);
+					form.attr("class", "form");
 
 					return form;
 				};
