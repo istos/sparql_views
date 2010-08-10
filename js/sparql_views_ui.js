@@ -83,7 +83,45 @@
 					return form;
 				};
 
-				var addPredicateButton = $("<span class='add-predicate' rel='" + this.getTid() + "'>+</span>");
+				var sid = this.getTid();
+				var addPredicateButton = $("<span class='add-predicate' rel='" + sid + "'>+</span>");
+				var predicateList = $("<div id='predicate-list_"+ sid +"' class='contextual-predicate'></div>").attr('rel', sid);
+				addPredicateButton.click(function(event) {
+					$.ajax({
+						type: 'GET',
+						url: "/sparql-views/get-predicates",
+						dataType: 'html',
+						success: function(html, textStatus) {
+							$('#predicate-list_'+ sid).append(html);
+							$('.predicate').click(function(event) {
+								sid = $(this).parent().attr("rel");
+								attachedPreds = getPredicates(sid);
+								var newPosition = $('#' + attachedPreds[0]).position();
+								for (i in attachedPreds) {
+									position = $('#' + attachedPreds[i]).position();
+									if (position.top > newPosition.top) {
+										newPosition.top = position.top;
+									}
+									newPosition.left = position.left;
+								}
+								newPosition.top += sparqlViews.boxMarginY + $('#' + sid).height();
+								$.prototype.addTriple('xx', newPosition, sid);
+								$(this).parent().slideUp();
+							});
+						},
+						error: function(xhr, textStatus, errorThrown) {
+							alert('An error occurred ' + (errorThrown ? errorThrown : xhr.status));
+						}
+					});
+
+					predicateList.appendTo($('body'))
+						.css({
+							position: 'absolute',
+							top: event.pageY,
+							left: event.pageX
+						})
+						.fadeIn(2000);
+				});
 
 				var activateSwitcher = function(type) {
 				  var otherType = (type == 'variable') ? "value" : "variable";
@@ -170,6 +208,22 @@
 			}
 		}
 	};
+
+	function getPredicates(sid) {
+		var options = [{'source': sid}];
+		var predicates = new Array;
+		var connections = jsPlumb.getConnections(options);
+		for (i in connections['subjectEndpoint']) {
+			predicates.push([connections['subjectEndpoint'][i]['targetId']]);
+		}
+		delete options.source;
+		options.target = sid;
+		var connections = jsPlumb.getConnections(options);
+		for (i in connections['predicateSubjectEndpoint']) {
+			predicates.push([connections['predicateSubjectEndpoint'][i]['sourceId']]);
+		}
+		return predicates;
+	}
 
 	function _addBoxes(text, position, sid) {
 		// ID variables.
