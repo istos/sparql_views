@@ -119,39 +119,6 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
   return $fields;
 }
 
-function _sparql_views_get_filters($view = NULL, $display_name = NULL) {
-  $fields = array();
-
-  $default_filters = $view->display['default']->display_options['filters'];
-  $display_filters = $view->display[$display_name]->display_options['filters'];
-
-  // If where clauses haven't been added to the default or the display, there
-  // are no added fields.
-  if (empty($default_filters) && empty($display_filters)) {
-    return array();
-  }
-  // Else, if where clauses have been added to the default but not to the
-  // display, use the default where clauses.
-  else if (empty($display_filters)) {
-    $display_filters = $default_filters;
-  }
-
-  // Iterate through the where clauses and pull out the variables.
-  foreach ($display_filters as $filter) {
-    // If there is an empty Where clause, $filter will not have values.
-    if (!empty($filter['value'])) {
-      foreach ($filter['value'] as $value) {
-        if (strpos($value, '?') === 0) {
-          $field = substr($value, 1);
-          $fields[$field] = $field;
-        }
-      }
-    }
-  }
-
-  return $fields;
-}
-
 /*
  * Get namespace mappings from prefix.cc.
  * @todo This functionality still needs to be implemented.
