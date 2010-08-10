@@ -39,18 +39,19 @@ function sparql_views_add_query_modal($ajax = FALSE) {
     ctools_include('ajax');
     $form_state = array(
       'ajax' => TRUE,
-      'title' => $title,
-      'view' => NULL,
-      'query' => NULL
+      'title' => 'Foo',
     );
     $output = dialog_form_wrapper($form_id, $form_state);
     if (empty($output)) {
-      $output[] = ctools_ajax_command_replace('#edit-query-options-prefixes', $form_state['input']['query']);
+      $output[] = ctools_ajax_command_replace('#edit-query-options-query', '<div class="resizable-textarea"><span><textarea cols="60" rows="5" name="query[options][query]" id="edit-query-options-prefixes" class="form-textarea resizable prefix-store textarea-processed">'.$form_state['input']['query'].'</textarea><div class="grippie" style="margin-right: -2px;"></div></span></div>
+');
+      $output[] = ctools_ajax_command_submit('#views-ui-edit-display-form');
     }
     else {
       foreach ($output as $i => $command) {
         if ($command['command'] == 'dialog_display') {
           $output[$i]['options']['height'] = 900;
+          $output[$i]['options']['maxHeight'] = 1000;
           $output[$i]['options']['width'] = 960;
 
           $output[$i]['options']['position'] = 'center';
@@ -92,16 +93,6 @@ function sparql_views_add_form(&$form_state) {
   $query = $form_state['query'];
   $form = array();
 
-  $form['name'] = array(
-    '#type' => 'textfield',
-    '#title' => t('View name'),
-    '#description' => t('This is the unique name of the view. It must contain only alphanumeric characters and underscores; it is used to identify the view internally and to generate unique theming template names for this view. If overriding a module provided view, the name must not be changed or instead a new view will be created.'),
-    '#required' => TRUE,
-    '#maxlength' => 32,
-    '#default_value' => $view ? $view->name : '',
-    '#attributes' => array('dir'=>'ltr'),
-  );
-
   $form['visual_query'] = array(
     '#type' => 'markup',
     '#theme' => 'sparql_views_ui',
@@ -120,9 +111,8 @@ function sparql_views_add_form(&$form_state) {
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Next'),
-    '#validate' => array('sparql_views_add_form_validate'),
-    '#submit' => array('sparql_views_add_form_submit'),
   );
+  $form['submit']['#attributes']['class'] = 'ctools-dialog-button';
 
   return $form;
 }

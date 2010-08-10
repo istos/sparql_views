@@ -19,6 +19,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
     $this->dataset_url = $query_options['dataset_url'];
     $this->endpoint_read_key = $query_options['endpoint_read_key'];
     $this->prefixes = $query_options['prefixes'];
+    $this->query = $query_options['query'];
   }
 
   /**
@@ -317,6 +318,12 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       '#default_value' => $this->prefixes,
       '#description' => t("Prefixes to use for this query."),
       '#attributes' => array('class' => 'prefix-store'),
+    );
+    $form['query'] = array(
+      '#type' => 'textarea',
+      '#title' => t('Query'),
+      '#default_value' => $this->query,
+      '#description' => t("Prefixes to use for this query."),
     );
     /*$form['prefixes_testing'] = array(
       '#type' => 'textfield',
