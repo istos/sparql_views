@@ -105,7 +105,7 @@
 									newPosition.left = position.left;
 								}
 								newPosition.top += sparqlViews.boxMarginY + $('#' + sid).height();
-								$.prototype.addTriple('xx', newPosition, sid);
+								sparqlViews.addTriple('xx', newPosition, sid);
 								$(this).parent().slideUp();
 							});
 						},
@@ -424,18 +424,6 @@
   };
 })(jQuery);
 
-
-//jQuery plugin code
-(function($){
-  $.fn.processSparql = function() {
-    sparqlViews.processSparql();
-  }
-
-	$.fn.addTriple = function(text, position, sid) {
-    sparqlViews.addBoxes(text, position, sid);
-  }
-})(jQuery);
-
   $(document).ready(function() {
 		sparqlViews.init();
 
@@ -482,7 +470,8 @@
 			  accept: '.predicate',
 				drop: function(event,ui) {
 					    sid = null;
-				      $.prototype.addTriple(ui.draggable.text(), ui.position, null);
+							position = {'top': event.layerY, 'left': event.layerX};
+				      sparqlViews.addBoxes(ui.draggable.text(), position, sid);
 					  }
 				  });
 			  },
@@ -493,7 +482,7 @@
     });
 
 		$(".process").click(function() {
-      $.prototype.processSparql();
+      sparqlViews.processSparql();
     });
 
 		$('#workspace').draggable();
