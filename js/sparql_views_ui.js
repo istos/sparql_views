@@ -188,7 +188,7 @@
 			subjectBox = $('#' + s.getTid());
 	  }
 		else {
-			var s;
+			var s = new Object;
 			s.getTid = function() {
 				return sid;
 			}
@@ -209,6 +209,7 @@
 			if (sid == null) {
 				subjectBox.fadeIn(1000);
 				s.addEndpoints();
+				s.addForm();
 			}
 			objectBox.fadeIn(1000);
 			o.addEndpoints();
@@ -223,7 +224,6 @@
 			$(oConnection.canvas).fadeIn(500);
 			// Add the forms. We don't do this at first because the extra height
 			// would make the endpoints center weirdly.
-			s.addForm();
 			o.addForm();
 		});
 	}
