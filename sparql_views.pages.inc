@@ -131,46 +131,12 @@ function sparql_views_add_form(&$form_state) {
  * Validate the add view form.
  */
 function sparql_views_add_form_validate($form, &$form_state) {
-  $name = $form_state['values']['name'];
-
-  // View name must be alphanumeric or underscores, no other punctuation.
-  if (preg_match('/[^a-zA-Z0-9_]/', $name)) {
-    form_error($form['name'], t('View name must be alphanumeric or underscores only.'));
-  }
-
-  // View name must not already exist.
-  $view = views_get_view($form_state['values']['name']);
-  if ($view && $view->type != t('Default')) {
-    form_error($form['name'], t('You must use a unique name for this view.'));
-  }
 }
 
 /**
  * Process the add view form
  */
 function sparql_views_add_form_submit($form, &$form_state) {
-  $view = $form_state['view'] ? $form_state['view'] : views_new_view();
-  $view->name = $form_state['values']['name'];
-  $view->description = $form_state['values']['description'];
-  $view->tag = $form_state['values']['tag'];
-  $view->base_table = 'sparql_ep';
-  $view->sparql_views['query'] = $form_state['values']['query'];
-
-  // Get the variables (anything that starts with '?' or '$').
-  preg_match_all('/(?<=\?).[^\s]*|(?<=\$).[^\s]*/', $view->sparql_views['query'], $matches);
-  $view->sparql_views['fields'] = array_unique($matches[0]);
-
-  $data = array(
-    'name' => $view->name,
-    'description' => $view->description,
-    'data' => $view->sparql_views,
-  );
-
-  // @todo Check to see if there is already a record and figure out how to
-  // handle edits.
-  drupal_write_record('sparql_views_query', $data);
-
-  views_ui_cache_set($view);
 }
 
 /**
