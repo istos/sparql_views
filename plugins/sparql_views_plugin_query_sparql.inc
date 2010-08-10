@@ -19,7 +19,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
     $this->dataset_url = $query_options['dataset_url'];
     $this->endpoint_read_key = $query_options['endpoint_read_key'];
     $this->prefixes = $query_options['prefixes'];
-    $this->query = $query_options['query'];
+    $this->select_clause = $query_options['select_clause'];
   }
 
   /**
@@ -214,16 +214,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
    * $view->pager['current_page'].
    */
   function execute(&$view) {
-  // The else is only needed while we support where clauses
-  // in filters.
-  // @todo Remove.
-  if ($view->sparql_views['query']) {
-    $query = $view->sparql_views['query'];
-    $query = str_replace('SELECT * ', '', $query);
-  }
-  else {
-    $query = $view->build_info['query'];
-  }
+    $query = $view->query->select_clause;
     if ($query) {
       $replacements = module_invoke_all('views_query_substitutions', $view);
       $query = str_replace(array_keys($replacements), $replacements, $query);
@@ -319,10 +310,10 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       '#description' => t("Prefixes to use for this query."),
       '#attributes' => array('class' => 'prefix-store'),
     );
-    $form['query'] = array(
+    $form['select_clause'] = array(
       '#type' => 'textarea',
-      '#title' => t('Query'),
-      '#default_value' => $this->query,
+      '#title' => t('Select query'),
+      '#default_value' => $this->select_clause,
       '#description' => t("Prefixes to use for this query."),
     );
     /*$form['prefixes_testing'] = array(

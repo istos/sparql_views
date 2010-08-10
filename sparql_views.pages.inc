@@ -17,7 +17,8 @@ function sparql_views_add_query_modal($ajax = FALSE) {
     );
     $output = dialog_form_wrapper($form_id, $form_state);
     if (empty($output)) {
-      $output[] = ctools_ajax_command_replace('#edit-query-options-query', '<div class="resizable-textarea"><span><textarea cols="60" rows="5" name="query[options][query]" id="edit-query-options-prefixes" class="form-textarea resizable prefix-store textarea-processed">'.$form_state['input']['query'].'</textarea><div class="grippie" style="margin-right: -2px;"></div></span></div>
+      // @todo Fix this hack with a innerHTML replace in CTools.
+      $output[] = ctools_ajax_command_replace('#edit-query-options-select-clause', '<div class="resizable-textarea"><span><textarea cols="60" rows="5" name="query[options][select_clause]" class="form-textarea resizable textarea-processed">'.$form_state['input']['select_clause'].'</textarea><div class="grippie" style="margin-right: -2px;"></div></span></div>
 ');
       $output[] = ctools_ajax_command_submit('#views-ui-edit-display-form');
     }
@@ -56,11 +57,11 @@ function sparql_views_add_form(&$form_state) {
     '#default_value' => $view ? $view->description : '',
   );
 
-  $form['query'] = array(
+  $form['select_clause'] = array(
     '#type' => 'textarea',
     '#title' => t('SPARQL query'),
     '#description' => t('The SPARQL query.'),
-    '#default_value' => $view ? $view->query : '',
+    '#default_value' => $view ? $view->select_clause : '',
   );
 
   $form['submit'] = array(
