@@ -87,45 +87,30 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
   $fields = array();
   $sparql_view_names = array();
 
-  // These two conditions are only needed while we support
-  // Where clauses in filters.
-  // @todo Remove.
-  if ($view != NULL && $display_name != NULL) {
-    $fields = _sparql_views_get_filters($view, $display_name);
-  }
-  else if ($view != NULL) {
-    $fields = _sparql_views_get_filters($view, 'default');
-  }
-  if ($view != NULL && empty($fields)) {
-    if (isset($view->sparql_views['fields'])) {
-      $fields = $view->sparql_views['fields'];
+  $display_name = ($view != NULL && $display_name == NULL) ? 'default' : $display_name;
+
+  if ($view != NULL) {
+    $select_clause = $view->display[$display_name]->display_options['query']['options']['select_clause'];
+    if ($select_clause == NULL) {
+      $select_clause = $view->display['default']->display_options['query']['options']['select_clause'];
     }
-    else {
-      $query = db_query("SELECT data FROM {sparql_views_query} WHERE name='$view->name'");
-      $result = db_fetch_array($query);
-      $view->sparql_views = unserialize($result['data']);
-      views_ui_cache_set($view);
-      dpm($view->sparql_views);
-    }
-    return $view->sparql_views['fields'];
+    $parsed_clause = _sparql_views_parse_query($select_clause);
+    return $parsed_clause['vars'];
   }
 
   //@todo Move this to _sparql_views_get_all_fields which could be Drupal static.
+  // @todo make logic more elegant.
   else {
     $views = views_get_all_views();
     foreach ($views as $view_name => $view) {
       $query_type = $view->display['default']->display_options['query']['type'];
-      if ($query_type == 'sparql_query' && isset($view->sparql_views['fields'])) {
-        $fields = array_merge($fields, $view->sparql_views['fields']);
-      }
-      // This else is only required as long as WHERE clauses
-      // in filters is supported.
-      // @todo Remove.
-      else if ($query_type == 'sparql_query') {
-        $view = views_ui_cache_load($view_name);
-
-        foreach ($view->display as $display_name => $display) {
-          $fields = _sparql_views_get_filters($view, $display_name);
+      if ($query_type == 'sparql_query') {
+        foreach ($view->display as $display) {
+          $select_clause = $display->display_options['query']['options']['select_clause'];
+          if (isset($select_clause)) {
+            $parsed_clause = _sparql_views_parse_query($select_clause);
+            $fields = array_merge($parsed_clause['vars'], $fields);
+          }
         }
       }
     }
@@ -177,3 +162,13 @@ function _sparql_views_fetch_prefixes() {
   return $results[1];
 }
 
+function _sparql_views_parse_query($query) {
+  $parser = ARC2::getSPARQLParser();
+  // @todo Actually pull in prefixes.
+  $q = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> $query";
+  $parser->parse($q);
+  if (!$parser->getErrors()) {
+    $parsed_query = $parser->getQueryInfos();
+  }
+  return $parsed_query;
+}

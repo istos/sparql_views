@@ -231,8 +231,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       /*foreach ($view->args as $arg_num) {
         $query = str_replace('%1', urldecode($view->args[0]), $query);
       }*/
-      $query = "$this->prefixes SELECT * $query";
-
+      $query = "$this->prefixes $query";
       $results = rdfx_sparql_request($query, $endpoint, array('store_read_key' => $this->endpoint_read_key));
       if ($results['result']) {
         foreach ($results['result']['rows'] as $resource) {
