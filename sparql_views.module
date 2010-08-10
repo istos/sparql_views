@@ -25,13 +25,6 @@ function sparql_views_views_api() {
  * Implements hook_menu().
  */
 function sparql_views_menu() {
-  $sparql_views = array();
-  // Could be made into a singleton.
-  $query = db_query("SELECT name FROM {sparql_views_query}");
-  while ($result = db_fetch_array($query)) {
-    $sparql_views[] = $result['name'];
-  }
-
   $items['get-predicates'] = array(
     'title' => 'Temporary page for SVUI development',
     'page callback' => 'sparql_views_get_predicates',
