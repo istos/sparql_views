@@ -79,16 +79,6 @@ function sparql_views_views_handlers() {
       'sparql_views_handler_field' => array(
         'parent' => 'views_handler_field',
       ),
-      'sparql_views_handler_field' => array(
-        'parent' => 'views_handler_field',
-      ),
-      // Filters
-      'sparql_views_handler_filter_where' => array(
-        'parent' => 'sparql_views_handler_filter',
-      ),
-      'sparql_views_handler_filter' => array(
-        'parent' => 'views_handler_filter',
-      ),
     ),
   );
 }
