@@ -47,7 +47,6 @@ function &_rdfx_parse_rdf($base_uri) {
   // through the attached parser object's prefixes and remove the colon from
   // the end of the prefix.
   // @todo File an issue with ARC2.
-  dpm($parser);
   switch ($parser->format) {
     case 'turtle':
       foreach ($parser->parser->prefixes as $prefix => $uri) {
