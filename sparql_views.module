@@ -95,7 +95,9 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
       $select_clause = $view->display['default']->display_options['query']['options']['select_clause'];
     }
     $parsed_clause = _sparql_views_parse_query($select_clause);
-    return $parsed_clause['vars'];
+    if (isset($parsed_clause['vars'])) {
+      $fields = $parsed_clause['vars'];
+    }
   }
 
   //@todo Move this to _sparql_views_get_all_fields which could be Drupal static.
@@ -109,7 +111,9 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
           $select_clause = $display->display_options['query']['options']['select_clause'];
           if (isset($select_clause)) {
             $parsed_clause = _sparql_views_parse_query($select_clause);
-            $fields = array_merge($parsed_clause['vars'], $fields);
+            if (isset($parsed_clause['vars'])) {
+              $fields = array_merge($parsed_clause['vars'], $fields);
+            }
           }
         }
       }
