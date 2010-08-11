@@ -46,7 +46,6 @@ function sparql_views_add_query_modal($ajax = FALSE) {
  */
 function sparql_views_add_form(&$form_state) {
   dialog_add_js();
-  $query = $form_state['query'];
   $form = array();
 
   $form['visual_query'] = array(
@@ -54,14 +53,12 @@ function sparql_views_add_form(&$form_state) {
     '#theme' => 'sparql_views_ui',
     '#title' => t('View description'),
     '#description' => t('This description will appear on the Views administrative UI to tell you what the view is about.'),
-    '#default_value' => $view ? $view->description : '',
   );
 
   $form['select_clause'] = array(
     '#type' => 'textarea',
     '#title' => t('SPARQL query'),
     '#description' => t('The SPARQL query.'),
-    '#default_value' => $view ? $view->select_clause : '',
   );
 
   $form['submit'] = array(
@@ -163,7 +160,7 @@ function sparql_views_predicates_autocomplete($string = '') {
 
 function sparql_views_autocomplete_prefixes($string = '') {
   $matches = array();
-  $ns_mappings = _sparql_views_fetch_prefixes();
+  $ns_mappings = _sparql_views_fetch_standard_prefixes();
   foreach ($ns_mappings as $prefix => $namespace) {
     if (strpos(strtolower($prefix), strtolower($string)) !== FALSE) {
       $matches[$prefix] = "PREFIX $prefix: &lt;$namespace&gt;";
