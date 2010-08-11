@@ -397,7 +397,7 @@
 								sparqlQuery += triple + " .\n";
 				}
 				sparqlQuery += '}';
-				$("#edit-query").html(sparqlQuery);
+				$("#edit-select-clause").html(sparqlQuery);
       },
 			
 			addBoxes : function(text, position, sid) {
