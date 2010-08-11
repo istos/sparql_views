@@ -21,6 +21,7 @@ body {
 #predicate-store {
   background: #fff;
   height: 300px;
+  overflow: scroll;
   padding: 20px;
   position: absolute; right: 30px;
   width: 180px;
