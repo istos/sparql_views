@@ -127,10 +127,13 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
  * Get namespace mappings from prefix.cc.
  * @todo This functionality still needs to be implemented.
  */
-function _sparql_views_fetch_prefixes() {
+function _sparql_views_fetch_standard_prefixes() {
   // @todo Use Drupal cache.
   $results = rdfx_fetch_rdf('http://prefix.cc/popular/all.rdf.plain', 'prefix');
-  return $results[1];
+  // Return as combined prefix => uri and uri => prefix for easy matching.
+  $flipped = array_flip($results[1]);
+  $ns_mappings = array_merge($flipped, $results[1]);
+  return $ns_mappings;
 }
 
 function _sparql_views_parse_query($query) {
