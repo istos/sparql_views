@@ -12,8 +12,10 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
    * Constructor; Create the basic query object and fill with default values.
    */
   function init($base_table = 'sparql_ep', $base_field, $query_options) {
+    $path = drupal_get_path('module', 'sparql_views');
     // @todo Add JS for hiding irrelvant field items.
     dialog_add_js();
+    drupal_add_js("$path/js/sparql_views.js", 'module');
 
     $this->endpoint_url = $query_options['endpoint_url'];
     $this->dataset_url = $query_options['dataset_url'];
