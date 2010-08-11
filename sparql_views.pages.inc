@@ -90,23 +90,25 @@ function sparql_views_add_form_submit($form, &$form_state) {
  */
  
 function sparql_views_get_predicates() {
+  // @todo Cache this.
   $output = '';
-
-  //$result = rdfx_sparql_request("SELECT DISTINCT ?p COUNT(?p) AS ?count WHERE {?s ?p ?o} GROUP BY ?p", "http://lab.linkeddata.deri.ie/ppa/sparql.php", array('store_read_key' => 'imp'));
-  $result = array(
-    'result' => array(
-      'rows' => array(
-        array('p' => 'foaf:name'),
-        array('p' => 'foaf:homepage'),
-      )
-    )
-  );
-  
-  foreach ($result['result']['rows'] as $row) {
-    $output .= "<div id='" . rand(0, 99999999) . "' class='predicate box'>" . $row['p'] . "</div>";
+  $prefixes = array();
+  $query = "SELECT DISTINCT ?p WHERE {?s ?p ?o} ORDER BY ?p LIMIT 50 OFFSET " . $_POST['recurssionCount']*50;
+  $result = rdfx_sparql_request($query, $_POST['endpoint'], array('store_read_key' => 'imp'));
+  if (empty($result)) {
+    print('Sorry, this has timed out.');
   }
-  
-  print($output);
+  if (empty($result['result']['rows'])) {
+    print('done');
+    exit;
+  }
+  else {
+    foreach ($result['result']['rows'] as $row) {
+      $term = $row['p'];
+      $output .= "<div id='" . rand(0, 99999999) . "' class='predicate box'>" . $term . "</div>";
+    }
+    print($output);
+  }
 }
 
 /**

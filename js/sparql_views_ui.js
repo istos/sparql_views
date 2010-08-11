@@ -371,6 +371,7 @@
 			init : function() {
 				endpoints = new Object();
 				this.boxMarginY = 20;
+				Drupal.settings.sparql_views.recurssionCount = 0;
 			},
 
       processSparql : function() {
@@ -451,16 +452,25 @@
       jsPlumb.toggle($(this).attr("rel"));
     });
 
-    $("#dataset").click(function() {
-      $.ajax({
-	  type: 'GET',
-		url: "/sparql-views/get-predicates",
-		dataType: 'html',
+		function ajaxReq() {
+			$.ajax({
+				type: 'POST',
+				url: Drupal.settings.basePath + "get-predicates",
+				dataType: 'html',
+				data: {
+					endpoint: Drupal.settings.sparql_views.endpoint,
+					recurssionCount: Drupal.settings.sparql_views.recurssionCount
+				},
 		success: function(html, textStatus) {
-		  $('#predicate-store').append(html);
-			$('.predicate').draggable({
-			      helper: "clone"
-		      });
+			  if (html != 'done') {
+					setTimeout(function() { ajaxReq(); }, 15000);
+					$('#predicate-store').append(html);
+					window.console.log('not done -'  + Drupal.settings.sparql_views.recurssionCount);
+					Drupal.settings.sparql_views.recurssionCount += 1;
+					$('.predicate').draggable({
+						helper: "clone"
+					});
+				}
 			$('#workspace').droppable({
 			  accept: '.predicate',
 				drop: function(event,ui) {
@@ -476,6 +486,10 @@
 			    alert('An error occurred ' + (errorThrown ? errorThrown : xhr.status));
 		    }
 	    });
+		}
+
+    $("#dataset").click(function() {
+			ajaxReq();
     });
 
 		$(".process").click(function() {

@@ -15,6 +15,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
     $path = drupal_get_path('module', 'sparql_views');
     // @todo Add JS for hiding irrelvant field items.
     dialog_add_js();
+    drupal_add_js(array('sparql_views' => array('endpoint' => '')), 'setting');
     drupal_add_js("$path/js/sparql_views.js", 'module');
 
     $this->endpoint_url = $query_options['endpoint_url'];
