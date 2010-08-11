@@ -102,6 +102,16 @@ function sparql_views_get_predicates() {
   else {
     foreach ($result['result']['rows'] as $row) {
       $term = $row['p'];
+      // Check whether there is a matching NS mapping on prefix.cc.
+      $ns_mappings = _sparql_views_fetch_standard_prefixes();
+      preg_match('/.*\#|.*\//', $term, $matches);
+      $test_uri = $matches[0];
+      if (isset($ns_mappings[$test_uri])) {
+        $term = str_replace($test_uri, $ns_mappings[$test_uri] . ":", $row['p']);
+      }
+      else {
+        $term = "&lt;$term&gt;";
+      }
       $output .= "<div id='" . rand(0, 99999999) . "' class='predicate box'>" . $term . "</div>";
     }
     print($output);
