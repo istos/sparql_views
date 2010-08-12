@@ -299,12 +299,6 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       '#type' => 'markup',
       '#value' => l('Build query', 'admin/build/sparql_views/add/nojs', array('attributes' => array('class' => 'ctools-use-dialog'))),
     );
-    /*$form['load_predicates'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Load predicates used in dataset'),
-      '#default_value' => TRUE,
-      '#description' => t("You can use autocompltion for predicates in your query if you load the predicates used in the dataset. Note, loading predicates will take a while."),
-    );*/
     $form['prefixes'] = array(
       '#type' => 'textarea',
       '#title' => t('Prefixes'),
@@ -318,12 +312,6 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       '#default_value' => $this->select_clause,
       '#description' => t("Prefixes to use for this query."),
     );
-    /*$form['prefixes_testing'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Prefixes'),
-      '#autocomplete_path' => 'sparql_views/prefixes/autocomplete',
-      '#description' => t("Prefixes to use for this query."),
-    );*/
   }
 }
 
