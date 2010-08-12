@@ -475,9 +475,10 @@
 			  accept: '.predicate',
 				drop: function(event,ui) {
 					    sid = null;
-							// @todo Account for #workspace-window border.
-							windowPos = $('#workspace').position();
-							position = {'top': ui.position.top-windowPos.top, 'left': ui.offset.left-windowPos.left};
+							windowPos = $('#workspace-window').offset();
+							window.console.log(windowPos);
+							workspacePos = $('#workspace').position();
+							position = {'top': ui.helper.offset().top-workspacePos.top-windowPos.top, 'left': ui.helper.offset().left-workspacePos.left-windowPos.left};
 				      sparqlViews.addBoxes(ui.draggable.text(), position, sid);
 					  }
 				  });
