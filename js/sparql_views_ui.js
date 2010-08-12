@@ -462,6 +462,7 @@
 					recurssionCount: Drupal.settings.sparql_views.recurssionCount
 				},
 		success: function(html, textStatus) {
+			  $('#predicate-store .loading').hide();
 			  if (html != 'done') {
 					setTimeout(function() { ajaxReq(); }, 15000);
 					$('#predicate-store').append(html);
@@ -488,16 +489,25 @@
 		    }
 	    });
 		}
+		submitButton = $('button');
+		$('#edit-select-clause').slideUp();
+		submitButton.hide();
 
-    $("#dataset").click(function() {
+		$("#dataset").click(function() {
+			$(this).fadeOut(500, function() {
+				$('#predicate-store .loading img').fadeIn(500);
+			});
 			ajaxReq();
     });
 
 		$(".process").click(function() {
+			$('#edit-select-clause').slideDown(500);
       sparqlViews.processSparql();
+			$('button').show();
     });
 
 		$('#workspace').draggable();
+		$('#ui-dialog-title-dialog-main').html('SPARQL Query Builder for ' + Drupal.settings.sparql_views.endpoint);
 
     $("#clear").click(function() { jsPlumb.detachEverything(); });
   });
