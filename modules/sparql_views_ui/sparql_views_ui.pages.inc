@@ -13,7 +13,7 @@ function sparql_views_ui_add_query_modal($ajax = FALSE) {
     ctools_include('ajax');
     $form_state = array(
       'ajax' => TRUE,
-      'title' => 'Foo',
+      'title' => 'SPARQL Query Builder',
     );
     $output = dialog_form_wrapper($form_id, $form_state);
     if (empty($output)) {
@@ -48,11 +48,6 @@ function sparql_views_ui_add_form(&$form_state) {
   dialog_add_js();
   $form = array();
 
-  $form['get_predicates'] = array(
-    '#type' => 'markup',
-    '#value' => '<div>' . l('get predicates', 'get-predicates', array('query' => array('endpoint' => $form_state['storage']['endpoint_url']))) . '</div>',
-  );
-
   $form['visual_query'] = array(
     '#type' => 'markup',
     '#theme' => 'sparql_views_ui',
@@ -63,12 +58,11 @@ function sparql_views_ui_add_form(&$form_state) {
   $form['select_clause'] = array(
     '#type' => 'textarea',
     '#title' => t('SPARQL query'),
-    '#description' => t('The SPARQL query.'),
   );
 
   $form['submit'] = array(
     '#type' => 'submit',
-    '#value' => t('Next'),
+    '#value' => t('Save settings'),
   );
   $form['submit']['#attributes']['class'] = 'ctools-dialog-button';
 
