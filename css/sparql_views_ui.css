@@ -49,7 +49,12 @@ body {
 
 .predicate {
   background: #CDE9E7;
-  left:  50%;
+  border: none;
+  padding: 5px 10px;
+}
+
+#predicate-store .predicate {
+  font-size: .9em;
 }
 
 .rdf-node {
@@ -126,15 +131,25 @@ body {
   position: absolute;
 }
 
-#edit-query-wrapper {
-  position: relative; bottom:0px;
+#edit-select-clause-wrapper {
+  position: absolute; 
+  width: 600px; bottom:0px;
   z-index: 100;
+}
+
+.process {
+  cursor:pointer;
+  float:right;
+  line-height:1.4em;
+  margin:0.5em 0.4em 0.5em 0;
+  overflow:visible;
+  padding:0.2em 0.6em 0.3em;
+  width:auto;
 }
 
 .drag-locked { border:1px solid red; }
 ._jsPlumb_connector { z-index:1; }
 .dropHover { border:1px dotted red; }
 .dragActive { border:2px dotted orange; }
-.cmdLink { font-size:0.80em;}
 #clear { padding:0.3em; }
 #clear:hover { background-color:yellow; }
