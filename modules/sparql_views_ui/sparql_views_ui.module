@@ -1,0 +1,31 @@
+<?php
+// $Id$
+
+/**
+ * SPARQL Views UI
+ *
+ * The SPARQL Views UI gives a graphical user interface to SPARQL Views.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function sparql_views_ui_menu() {
+  $items['get-predicates'] = array(
+    'title' => 'Temporary page for SVUI development',
+    'page callback' => 'sparql_views_ui_get_predicates',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'sparql_views_ui.pages.inc',
+  );
+  $items['admin/build/sparql_views/add/%ctools_js'] = array(
+    'title' => 'Add',
+    'page callback' => 'sparql_views_ui_add_query_modal',
+    'page arguments' => array(4),
+    'access arguments' => array('administer views'),
+    'type' => MENU_CALLBACK,
+    'file' => 'sparql_views_ui.pages.inc',
+  );
+
+  return $items;
+}
