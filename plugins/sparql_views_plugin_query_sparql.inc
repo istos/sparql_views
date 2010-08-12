@@ -257,10 +257,6 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
     $view->execute_time = views_microtime() - $start;
   }
 
-  function add_signature(&$view) {
-    //$view->query->add_field(NULL, "'" . $view->name . ':' . $view->current_display . "'", 'view_name');
-  }
-
   // This can only be displayed in the UI if the patch in
   // http://drupal.org/node/621142 is applied.
   function option_definition() {
