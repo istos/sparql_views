@@ -325,22 +325,5 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       '#description' => t("Prefixes to use for this query."),
     );*/
   }
-
-  function options_validate(&$form, &$form_state) {}
-
-  function options_submit(&$form, &$form_state) {
-    $endpoint = $form_state['values']['query']['options']['endpoint_url'];
-    $access_key = $form_state['values']['query']['options']['endpoint_read_key'];
-
-    // If the user wants to load the predicates, do a SPARQL request and cache
-    // the predicates.
-    //if ($form_state['values']['query']['options']['load_predicates'] === TRUE) {
-    /*$results = rdfx_sparql_request("SELECT DISTINCT ?p WHERE {?s ?p ?o}", $endpoint, array('store_read_key' => $access_key));
-    foreach ($results['result']['rows'] as $result) {
-      $predicates[] = $result['p'];
-    }*/
-    //cache_set();
-    //}
-  }
 }
 
