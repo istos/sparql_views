@@ -283,15 +283,21 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
     );
     $form['dataset_url'] = array(
       '#type' => 'textfield',
-      '#title' => t('SPARQL Endpoint'),
+      '#title' => t('RDFa Dataset'),
       '#default_value' => $this->dataset_url,
       '#description' => t("The SPARQL endpoint that you want to access. For instance, !dbpedia.",
         array('!dbpedia' => l('http://dbpedia.org/sparql', 'http://dbpedia.org/sparql'))
       ),
     );
+    $form['endpoint_read_key'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Read Key'),
+      '#default_value' => $this->endpoint_read_key,
+      '#description' => t("Key for read access to the endpoint."),
+    );
     $form['visual_query'] = array(
       '#type' => 'markup',
-      '#value' => l('New query', 'admin/build/sparql_views/add/nojs', array('attributes' => array('class' => 'ctools-use-dialog'))),
+      '#value' => l('Build query', 'admin/build/sparql_views/add/nojs', array('attributes' => array('class' => 'ctools-use-dialog'))),
     );
     /*$form['load_predicates'] = array(
       '#type' => 'checkbox',
@@ -299,12 +305,6 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       '#default_value' => TRUE,
       '#description' => t("You can use autocompltion for predicates in your query if you load the predicates used in the dataset. Note, loading predicates will take a while."),
     );*/
-    $form['endpoint_read_key'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Read Key'),
-      '#default_value' => $this->endpoint_read_key,
-      '#description' => t("Key for read access to the endpoint."),
-    );
     $form['prefixes'] = array(
       '#type' => 'textarea',
       '#title' => t('Prefixes'),
