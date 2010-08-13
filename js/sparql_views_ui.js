@@ -499,6 +499,7 @@
 				dataType: 'html',
 				data: {
 					endpoint: Drupal.settings.sparql_views.endpoint,
+					storeReadKey: Drupal.settings.sparql_views.readKey,
 					recurssionCount: Drupal.settings.sparql_views.recurssionCount
 				},
 		success: function(html, textStatus) {
