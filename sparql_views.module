@@ -108,17 +108,24 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
   return $fields;
 }
 
+function _sparql_views_get_prefixes($endpoint = NULL) {
+  $ns_mappings = _sparql_views_fetch_standard_prefixes();
+  if ($endpoint != NULL) {
+    // @todo get the additional prefixes for this endpoint.
+  }
+  // Return as combined prefix => uri and uri => prefix for easy matching.
+  $flipped = array_flip($ns_mappings);
+  $ns_mappings = array_merge($flipped, $ns_mappings);
+  return $ns_mappings;
+}
+
 /*
  * Get namespace mappings from prefix.cc.
- * @todo This functionality still needs to be implemented.
  */
 function _sparql_views_fetch_standard_prefixes() {
   // @todo Use Drupal cache.
   $results = rdfx_fetch_rdf('http://prefix.cc/popular/all.rdf.plain', 'prefix');
-  // Return as combined prefix => uri and uri => prefix for easy matching.
-  $flipped = array_flip($results[1]);
-  $ns_mappings = array_merge($flipped, $results[1]);
-  return $ns_mappings;
+  return $results[1];
 }
 
 function _sparql_views_parse_query($query) {

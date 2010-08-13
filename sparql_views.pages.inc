@@ -53,7 +53,7 @@ function sparql_views_predicates_autocomplete($string = '') {
 
 function sparql_views_autocomplete_prefixes($string = '') {
   $matches = array();
-  $ns_mappings = _sparql_views_fetch_standard_prefixes();
+  $ns_mappings = _sparql_views_get_prefixes();
   foreach ($ns_mappings as $prefix => $namespace) {
     if (strpos(strtolower($prefix), strtolower($string)) !== FALSE) {
       $matches[$prefix] = "PREFIX $prefix: &lt;$namespace&gt;";
