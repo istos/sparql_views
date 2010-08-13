@@ -18,6 +18,8 @@ function sparql_views_ui_add_query_modal($ajax = FALSE) {
     $output = dialog_form_wrapper($form_id, $form_state);
     if (empty($output)) {
       // @todo Fix this hack with a innerHTML replace in CTools.
+      $output[] = ctools_ajax_command_replace('#edit-query-options-prefixes', '<div class="resizable-textarea"><span><textarea cols="60" rows="5" name="query[options][prefixes]" class="form-textarea resizable textarea-processed">'.$form_state['input']['prefixes'].'</textarea><div class="grippie" style="margin-right: -2px;"></div></span></div>
+');
       $output[] = ctools_ajax_command_replace('#edit-query-options-select-clause', '<div class="resizable-textarea"><span><textarea cols="60" rows="5" name="query[options][select_clause]" class="form-textarea resizable textarea-processed">'.$form_state['input']['select_clause'].'</textarea><div class="grippie" style="margin-right: -2px;"></div></span></div>
 ');
       $output[] = ctools_ajax_command_submit('#views-ui-edit-display-form');
@@ -58,6 +60,11 @@ function sparql_views_ui_add_form(&$form_state) {
   $form['select_clause'] = array(
     '#type' => 'textarea',
     '#title' => t('SPARQL query'),
+  );
+
+  $form['prefixes'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Prefixes'),
   );
 
   $form['submit'] = array(
@@ -102,7 +109,7 @@ function sparql_views_ui_get_predicates() {
     foreach ($result['result']['rows'] as $row) {
       $term = $row['p'];
       // Check whether there is a matching NS mapping on prefix.cc.
-      $ns_mappings = _sparql_views_fetch_standard_prefixes();
+      $ns_mappings = _sparql_views_get_prefixes();
       preg_match('/.*\#|.*\//', $term, $matches);
       $test_uri = $matches[0];
       if (isset($ns_mappings[$test_uri])) {
@@ -115,4 +122,16 @@ function sparql_views_ui_get_predicates() {
     }
     print($output);
   }
+}
+
+function sparql_views_ui_get_prefix_declaration() {
+  $used_ns = array();
+  $ns_mappings = _sparql_views_get_prefixes();
+  foreach ($_POST['prefixes'] as $prefix) {
+    if (isset($ns_mappings[$prefix])) {
+      $used_ns[$prefix] = $ns_mappings[$prefix];
+    }
+  }
+  $output = theme('prefix_declaration', $used_ns);
+  print($output);
 }

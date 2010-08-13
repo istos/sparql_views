@@ -18,6 +18,13 @@ function sparql_views_ui_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'sparql_views_ui.pages.inc',
   );
+  $items['sparql-views/prefix-declaration'] = array(
+    'title' => 'Format prefix declaration',
+    'page callback' => 'sparql_views_ui_get_prefix_declaration',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'sparql_views_ui.pages.inc',
+  );
   $items['admin/build/sparql_views/add/%ctools_js'] = array(
     'title' => 'Add',
     'page callback' => 'sparql_views_ui_add_query_modal',
@@ -28,4 +35,23 @@ function sparql_views_ui_menu() {
   );
 
   return $items;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function sparql_views_ui_theme($existing, $type, $theme, $path) {
+  return array(
+    'prefix_declaration' => array(
+      'arguments' => array('prefixes' => array()),
+    ),
+  );
+}
+
+function theme_prefix_declaration($ns_mappings) {
+  $output = '';
+  foreach ($ns_mappings as $prefix => $ns) {
+    $output .= "PREFIX $prefix: &lt;$ns&gt;\n";
+  }
+  return $output;
 }

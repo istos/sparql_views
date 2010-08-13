@@ -297,7 +297,6 @@
 		  var predicateLocation = "sourceId";
 		  _addTriple(connection, subjectLocation, predicateLocation, triples);
 	  }
-	
 	  return triples;
   }
 
@@ -342,6 +341,31 @@
 		return object;
   }
 	
+	function _getPrefixes(triples) {
+		var prefixes = new Array();
+		var getPrefix = function(term) {
+			httpRegex = /(ftp|http|https):\/\/*/;
+			if (!httpRegex.test(term)) {
+				splitTerm = term.split(':');
+				if (splitTerm[1]) {
+				window.console.log(splitTerm[0]);
+					return splitTerm[0];
+				}
+			}
+			return null;
+		};
+
+		for (subject in triples) {
+			prefixes.push(getPrefix(subject));
+			for (i in subject) {
+				if (triples[subject][i]) {
+					prefixes.push(getPrefix(triples[subject][i][0]), getPrefix(triples[subject][i][1]));
+				}
+			}
+		}
+		return prefixes;
+	}
+	
 	function _getNodeValue(nid) {
     var nodeValue = null;
     if ($("#" + nid + " input[value=variable]").is(':checked')) {
@@ -378,6 +402,22 @@
 				var sparqlQuery = (sparqlQuery != undefined) ? sparqlQuery : 'SELECT * WHERE {\n';
 				var triples = new Array();
 				triples = _getTriples();
+				prefixes = _getPrefixes(triples);
+				$.ajax({
+					type: 'POST',
+					url: Drupal.settings.basePath + "sparql-views/prefix-declaration",
+					dataType: 'html',
+					data: { prefixes: prefixes },
+					success: function (html, textStatus) {
+						window.console.log(html);
+						$('#edit-prefixes').html(html);
+					},
+					error: function (xhr, textStatus, errorThrown) {
+							
+					}
+				});
+				window.console.log(prefixes);
+
 				for (tripleSubject in triples) {
 								if (triples[tripleSubject].length == 1) {
 												triple = tripleSubject + " " + triples[tripleSubject][0].join(" ");
@@ -477,7 +517,6 @@
 				drop: function(event,ui) {
 					    sid = null;
 							windowPos = $('#workspace-window').offset();
-							window.console.log(windowPos);
 							workspacePos = $('#workspace').position();
 							position = {'top': ui.helper.offset().top-workspacePos.top-windowPos.top, 'left': ui.helper.offset().left-workspacePos.left-windowPos.left};
 				      sparqlViews.addBoxes(ui.draggable.text(), position, sid);
@@ -507,7 +546,11 @@
     });
 
 		$('#workspace').draggable();
+
+		// Initialize values from the last form.
 		$('#ui-dialog-title-dialog-main').html('SPARQL Query Builder for ' + Drupal.settings.sparql_views.endpoint);
+		$('#edit-prefixes').html(Drupal.settings.sparql_views.prefixes).parents('.form-item').hide();
+		
 
     $("#clear").click(function() { jsPlumb.detachEverything(); });
   });
