@@ -409,14 +409,12 @@
 					dataType: 'html',
 					data: { prefixes: prefixes },
 					success: function (html, textStatus) {
-						window.console.log(html);
 						$('#edit-prefixes').html(html);
 					},
 					error: function (xhr, textStatus, errorThrown) {
 							
 					}
 				});
-				window.console.log(prefixes);
 
 				for (tripleSubject in triples) {
 								if (triples[tripleSubject].length == 1) {
