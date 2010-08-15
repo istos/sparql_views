@@ -1,6 +1,17 @@
 // SPARQL Views UI
 // lin.w.clark@gmail.com
 (function($) {
+	var sparqlQueryObj = function () {
+		return {
+			selectClause : "SELECT * WHERE {?s ?p ?o} LIMIT 5",
+			getSelectClause : function() {
+				return this.selectClause;
+			},
+			setSelectClause : function() {
+				return this;
+			}
+		}
+	}
   /**
 	* Class: termBox
 	* A box that can
@@ -399,6 +410,8 @@
 			},
 
       processSparql : function() {
+				var test = sparqlQueryObj();
+				getResultPreview(test);
 				var sparqlQuery = (sparqlQuery != undefined) ? sparqlQuery : 'SELECT * WHERE {\n';
 				var triples = new Array();
 				triples = _getTriples();
