@@ -9,11 +9,19 @@
 ?>
 <?php $path = drupal_get_path('module', 'sparql_views');
 global $base_path;?>
-	<div id="predicate-store"><form><input type="text" id="search"></form><div id="dataset">get predicates</div><div class="loading"><img src="<?php print $base_path . '/' . $path ?>/images/ajax-loader.gif" /></div></div>
-	<div id="workspace-window"><div id="workspace" class="ui-draggable"></div></div>
-
+	<div id="predicate-store-wrapper">
+    <h2>Attributes &amp; Relationships</h2>
+    <div id="predicate-store">
+      <form><input type="text" id="search"></form>
+      <div id="dataset">get predicates</div>
+      <div class="loading">
+        <img src="<?php print $base_path . '/' . $path ?>/images/ajax-loader.gif" />
+      </div>
+    </div>
+  </div>
+	<div id="workspace-window"><div id="preview"></div><div id="workspace" class="ui-draggable"></div>
+</div>
   <span class="process ui-state-default ui-corner-all">Process SPARQL</span>
-  <div id="query"></div>
 <?php
 // For the time being, JS is added in the template. When SV is moved to Drupal 7
 // the JS placement will be handled properly. Unfortunately, in D6, jQuery UI 1.7
