@@ -1,7 +1,7 @@
 /* @override http://localhost/jsplumb/sparql_views_ui.css */
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
+#dialog-main {
+  background: #ddd;
 }
 
 #workspace-window {
@@ -11,20 +11,32 @@ body {
 }
 
 #workspace {
-  background: #eee;
+  background: #fff;
   position: relative; left: -2000px; top: -2000px;
   height: 4000px;
   width: 4000px;
 }
 
-#predicate-store {
-  background: #fff;
-  height: 300px;
-  overflow-y: scroll;
-  padding: 20px;
-  position: absolute; right: 30px;
-  width: 260px;
+#preview {
+  position: relative;
+  z-index: 100;
+}
+
+#predicate-store-wrapper {
+  background: #ddd;
+  padding: 20px 0 0 20px;
+  position: absolute; right: 15px;
+  width: 280px;
   z-index: 200;
+  
+  -webkit-border-bottom-left-radius: 15px;
+  -moz-border-radius-bottomleft: 15px;
+  border-bottom-left-radius: 15px;
+}
+
+#predicate-store {
+  max-height: 360px;
+  overflow-y: scroll;
 }
 
 .box {
