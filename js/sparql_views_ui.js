@@ -559,29 +559,29 @@
 					storeReadKey: Drupal.settings.sparql_views.readKey,
 					recurssionCount: Drupal.settings.sparql_views.recurssionCount
 				},
-		success: function(html, textStatus) {
-			  $('#predicate-store .loading').hide();
-			  if (html != 'done') {
-					setTimeout(function() { getPredicateStore(); }, 15000);
-					$('#predicate-store').append(html);
-					window.console.log('not done -'  + Drupal.settings.sparql_views.recurssionCount);
-					Drupal.settings.sparql_views.recurssionCount += 1;
-					$('.predicate').draggable({
-						helper: "clone"
-					});
-				}
-			$('#workspace').droppable({
-			  accept: '.predicate',
-				drop: function(event,ui) {
-					    sid = null;
+				success: function(html, textStatus) {
+					$('#predicate-store-wrapper .loading').hide();
+					if (html != 'done') {
+						setTimeout(function() { getPredicateStore(); }, 15000);
+						$('#predicate-store').append(html);
+						window.console.log('not done -'  + Drupal.settings.sparql_views.recurssionCount);
+						Drupal.settings.sparql_views.recurssionCount += 1;
+						$('.predicate').draggable({
+							helper: "clone"
+						});
+					}
+					$('#workspace').droppable({
+						accept: '.predicate',
+						drop: function(event,ui) {
+							sid = null;
 							windowPos = $('#workspace-window').offset();
 							workspacePos = $('#workspace').position();
 							position = {'top': ui.helper.offset().top-workspacePos.top-windowPos.top, 'left': ui.helper.offset().left-workspacePos.left-windowPos.left};
-				      sparqlViews.addBoxes(ui.draggable.text(), position, sid);
-					  }
-				  });
+							sparqlViews.addBoxes(ui.draggable.text(), position, sid);
+						}
+					});
 					$('input#search').quicksearch('#predicate-store div.predicate');
-			  },
+				},
 			  error: function(xhr, textStatus, errorThrown) {
 			    alert('An error occurred ' + (errorThrown ? errorThrown : xhr.status));
 		    }
