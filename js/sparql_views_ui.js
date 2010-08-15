@@ -494,7 +494,7 @@
 
 		$('#predicate-store .loading').hide();
 		submitButton = $('button');
-		$('#edit-select-clause').slideUp();
+		$('#edit-select-clause').hide();
 		submitButton.hide();
 
 		$("#dataset").click(function() {
@@ -505,7 +505,7 @@
     });
 
 		$(".process").click(function() {
-			$('#edit-select-clause').slideDown(500);
+			$('#edit-select-clause').show('clip');
       sparqlViews.processSparql();
 
 			$('button').show();
