@@ -492,7 +492,34 @@
       jsPlumb.toggle($(this).attr("rel"));
     });
 
-		function ajaxReq() {
+		$('#predicate-store .loading').hide();
+		submitButton = $('button');
+		$('#edit-select-clause').slideUp();
+		submitButton.hide();
+
+		$("#dataset").click(function() {
+			$(this).fadeOut(500, function() {
+				$('#predicate-store .loading').fadeIn(500);
+			});
+			getPredicateStore();
+    });
+
+		$(".process").click(function() {
+			$('#edit-select-clause').slideDown(500);
+      sparqlViews.processSparql();
+
+			$('button').show();
+    });
+
+		$('#workspace').draggable();
+
+		// Initialize values from the last form.
+		$('#ui-dialog-title-dialog-main').html('SPARQL Query Builder for ' + Drupal.settings.sparql_views.endpoint);
+		$('#edit-prefixes').html(Drupal.settings.sparql_views.prefixes).parents('.form-item').hide();
+
+    $("#clear").click(function() { jsPlumb.detachEverything(); });
+
+		function getPredicateStore() {
 			$.ajax({
 				type: 'POST',
 				url: Drupal.settings.basePath + "get-predicates",
@@ -505,7 +532,7 @@
 		success: function(html, textStatus) {
 			  $('#predicate-store .loading').hide();
 			  if (html != 'done') {
-					setTimeout(function() { ajaxReq(); }, 15000);
+					setTimeout(function() { getPredicateStore(); }, 15000);
 					$('#predicate-store').append(html);
 					window.console.log('not done -'  + Drupal.settings.sparql_views.recurssionCount);
 					Drupal.settings.sparql_views.recurssionCount += 1;
@@ -530,30 +557,5 @@
 		    }
 	    });
 		}
-		$('#predicate-store .loading').hide();
-		submitButton = $('button');
-		$('#edit-select-clause').slideUp();
-		submitButton.hide();
-
-		$("#dataset").click(function() {
-			$(this).fadeOut(500, function() {
-				$('#predicate-store .loading').fadeIn(500);
-			});
-			ajaxReq();
-    });
-
-		$(".process").click(function() {
-			$('#edit-select-clause').slideDown(500);
-      sparqlViews.processSparql();
-			$('button').show();
-    });
-
-		$('#workspace').draggable();
-
-		// Initialize values from the last form.
-		$('#ui-dialog-title-dialog-main').html('SPARQL Query Builder for ' + Drupal.settings.sparql_views.endpoint);
-		$('#edit-prefixes').html(Drupal.settings.sparql_views.prefixes).parents('.form-item').hide();
-
-    $("#clear").click(function() { jsPlumb.detachEverything(); });
   });
 	/* end jQuery */
