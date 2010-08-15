@@ -396,7 +396,27 @@
       options['accept'] = '._jsPlumb_endpoint';
       el.droppable(options);
    };   
-   
+   function getResultPreview(test) {
+			$.ajax({
+				type: 'POST',
+				url: Drupal.settings.basePath + "sparql-views/get-result-preview",
+				dataType: 'html',
+				data: {
+					endpoint: Drupal.settings.sparql_views.endpoint,
+					storeReadKey: Drupal.settings.sparql_views.readKey,
+					selectClause: test.getSelectClause()
+				},
+				success: function(html, textStatus) {
+					workspaceWindow = $('#workspace-window');
+					previewWindow = $('#preview').html(html);
+					previewBottom = previewWindow.height()-workspaceWindow.height();
+					$('#preview').hide().css('bottom', previewBottom).show('clip');
+			  },
+			  error: function(xhr, textStatus, errorThrown) {
+			    alert('An error occurred ' + (errorThrown ? errorThrown : xhr.status));
+		    }
+	    });
+		}
   /*
    Class: sparqlViews
    
