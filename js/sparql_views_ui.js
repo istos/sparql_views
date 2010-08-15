@@ -523,6 +523,7 @@
 				      sparqlViews.addBoxes(ui.draggable.text(), position, sid);
 					  }
 				  });
+					$('input#search').quicksearch('#predicate-store div.predicate');
 			  },
 			  error: function(xhr, textStatus, errorThrown) {
 			    alert('An error occurred ' + (errorThrown ? errorThrown : xhr.status));
