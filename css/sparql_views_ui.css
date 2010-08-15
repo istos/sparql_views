@@ -5,15 +5,14 @@ body {
 }
 
 #workspace-window {
-  border: #fff 20px solid;
-  height: 600px;
+  height: 500px;
   overflow: hidden;
-  width: 95%;
+  width: 100%;
 }
 
 #workspace {
   background: #eee;
-  position: relative;
+  position: relative; left: -2000px; top: -2000px;
   height: 4000px;
   width: 4000px;
 }
@@ -21,10 +20,10 @@ body {
 #predicate-store {
   background: #fff;
   height: 300px;
-  overflow: scroll;
+  overflow-y: scroll;
   padding: 20px;
   position: absolute; right: 30px;
-  width: 180px;
+  width: 260px;
   z-index: 200;
 }
 
