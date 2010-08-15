@@ -530,13 +530,14 @@
 		    }
 	    });
 		}
+		$('#predicate-store .loading').hide();
 		submitButton = $('button');
 		$('#edit-select-clause').slideUp();
 		submitButton.hide();
 
 		$("#dataset").click(function() {
 			$(this).fadeOut(500, function() {
-				$('#predicate-store .loading img').fadeIn(500);
+				$('#predicate-store .loading').fadeIn(500);
 			});
 			ajaxReq();
     });
@@ -552,7 +553,6 @@
 		// Initialize values from the last form.
 		$('#ui-dialog-title-dialog-main').html('SPARQL Query Builder for ' + Drupal.settings.sparql_views.endpoint);
 		$('#edit-prefixes').html(Drupal.settings.sparql_views.prefixes).parents('.form-item').hide();
-		
 
     $("#clear").click(function() { jsPlumb.detachEverything(); });
   });
