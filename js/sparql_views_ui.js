@@ -359,7 +359,6 @@
 			if (!httpRegex.test(term)) {
 				splitTerm = term.split(':');
 				if (splitTerm[1]) {
-				window.console.log(splitTerm[0]);
 					return splitTerm[0];
 				}
 			}
