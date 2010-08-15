@@ -124,14 +124,28 @@ function sparql_views_ui_get_predicates() {
   }
 }
 
-function sparql_views_ui_get_prefix_declaration() {
+function sparql_views_ui_get_prefix_declaration($prefixes = array()) {
   $used_ns = array();
   $ns_mappings = _sparql_views_get_prefixes();
-  foreach ($_POST['prefixes'] as $prefix) {
+  foreach ($prefixes as $prefix) {
     if (isset($ns_mappings[$prefix])) {
       $used_ns[$prefix] = $ns_mappings[$prefix];
     }
   }
   $output = theme('prefix_declaration', $used_ns);
-  print($output);
+  return $output;
+}
+
+function sparql_views_ui_print_prefix_declaration() {
+  if (empty($_POST['prefixes'])) {
+    exit;
+  }
+  else {
+    $output = sparql_views_ui_get_prefix_declaration($_POST['prefixes']);
+    print($output);
+  }
+}
+
+function sparql_views_ui_get_result_preview() {
+  print $_POST['selectClause'];
 }

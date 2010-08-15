@@ -20,7 +20,14 @@ function sparql_views_ui_menu() {
   );
   $items['sparql-views/prefix-declaration'] = array(
     'title' => 'Format prefix declaration',
-    'page callback' => 'sparql_views_ui_get_prefix_declaration',
+    'page callback' => 'sparql_views_ui_print_prefix_declaration',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'sparql_views_ui.pages.inc',
+  );
+  $items['sparql-views/get-result-preview'] = array(
+    'title' => 'Get result preview',
+    'page callback' => 'sparql_views_ui_get_result_preview',
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
     'file' => 'sparql_views_ui.pages.inc',
