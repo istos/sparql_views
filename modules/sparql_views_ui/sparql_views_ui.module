@@ -58,7 +58,7 @@ function sparql_views_ui_theme($existing, $type, $theme, $path) {
 function theme_prefix_declaration($ns_mappings) {
   $output = '';
   foreach ($ns_mappings as $prefix => $ns) {
-    $output .= "PREFIX $prefix: &lt;$ns&gt;\n";
+    $output .= "PREFIX $prefix: <$ns>\n";
   }
   return $output;
 }

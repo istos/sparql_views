@@ -234,7 +234,10 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       /*foreach ($view->args as $arg_num) {
         $query = str_replace('%1', urldecode($view->args[0]), $query);
       }*/
-      $query = "$this->prefixes $query";
+
+      // The prefixes may still be encoded from the transfer between the modal
+      // and the Views form.
+      $query = urldecode($this->prefixes) . " $query";
       $results = rdfx_sparql_request($query, $endpoint, array('store_read_key' => $this->endpoint_read_key));
       if ($results['result']) {
         foreach ($results['result']['rows'] as $resource) {
@@ -298,7 +301,8 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
     $form['prefixes'] = array(
       '#type' => 'textarea',
       '#title' => t('Prefixes'),
-      '#default_value' => $this->prefixes,
+      // Have to encode the prefix value when using it with SPARQL Views UI.
+      '#default_value' => urldecode($this->prefixes),
       '#description' => t("Prefixes to use for this query."),
       '#attributes' => array('class' => 'prefix-store'),
     );
