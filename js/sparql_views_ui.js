@@ -1,7 +1,18 @@
 // SPARQL Views UI
 // lin.w.clark@gmail.com
 (function($) {
-	var sparqlQueryObj = function () {
+	/*
+	 * Class: queryProcessor
+	 * This is a singleton that gets instantiated whenever the Process SPARQL
+	 * button is clicked. It takes the current state of the visual query builder
+	 * and parses SPARQL from that state.
+	 */
+	var queryProcessor = function () {
+		setTriples();
+		setPrefixes();
+		setPrefixDeclaration();
+		setSelectClause();
+
 		function setTriples() {
 			var triples = new Object();
 			// Add the subject.
@@ -156,13 +167,6 @@
 		}
 
 		return {
-			init : function () {
-				setTriples();
-				setPrefixes();
-				setPrefixDeclaration();
-				setSelectClause();
-			},
-
 			getPreviewQuery : function() {
 				$query = _getQuery();
 				return $query + " LIMIT 5";
@@ -471,9 +475,7 @@
 			},
 
       processSparql : function() {
-				var query = sparqlQueryObj();
-				query.init();
-
+				var qp = queryProcessor();
 				var showResultPreview = function() {
 					$.ajax({
 						type: 'POST',
@@ -482,7 +484,7 @@
 						data: {
 							endpoint: Drupal.settings.sparql_views.endpoint,
 							storeReadKey: Drupal.settings.sparql_views.readKey,
-							query: query.getPreviewQuery()
+							query: qp.getPreviewQuery()
 						},
 						success: function(html, textStatus) {
 							workspaceWindow = $('#workspace-window');
@@ -504,9 +506,9 @@
 				// Escape the prefix declaration because otherwise slash URIs get
 				// transformed into HTML tags
 				// (ie. PREFIX foaf: <http://xmlns.com/foaf/0.1></http>).
-				$('#edit-prefixes').text(escape(query.getPrefixDeclaration()));
-				$("#edit-select-clause").html(query.getSelectClause());
-				delete query;
+				$('#edit-prefixes').text(escape(qp.getPrefixDeclaration()));
+				$("#edit-select-clause").html(qp.getSelectClause());
+				delete qp;
       },
 			
 			addBoxes : function(text, position, sid) {
