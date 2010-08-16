@@ -183,7 +183,9 @@
 	}
   /**
 	* Class: termBox
-	* A box that can
+	* The termBox is instantiated for each subject, object, and predicate box.
+	* It controls the placement of the box in the canvas, attaching forms and
+	* making them function, and attaching endpoints.
   */
 	var termBox = function (termPosition, id) {
 		return {
