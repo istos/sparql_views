@@ -1,186 +1,6 @@
 // SPARQL Views UI
 // lin.w.clark@gmail.com
 (function($) {
-	/*
-	 * Class: queryProcessor
-	 * This is a singleton that gets instantiated whenever the Process SPARQL
-	 * button is clicked. It takes the current state of the visual query builder
-	 * and parses SPARQL from that state.
-	 */
-	var queryProcessor = function () {
-		setTriples();
-		setPrefixes();
-		setPrefixDeclaration();
-		setSelectClause();
-
-		function setTriples() {
-			var triples = new Object();
-			// Add the subject.
-			// Get all the subjectEndpoints on this subject.
-			var connections = jsPlumb.getConnections();
-			this.triples = new Object();
-
-			// Get all of the subject values and store the target predicates as an array.
-			for (i in connections['subjectEndpoint']) {
-				var connection = connections['subjectEndpoint'][i];
-				var subjectLocation = "sourceId";
-				var predicateLocation = "targetId";
-				addTriple(connection, subjectLocation, predicateLocation);
-			}
-			for (i in connections['predicateSubjectEndpoint']) {
-				var connection = connections['predicateSubjectEndpoint'][i];
-				var subjectLocation = "targetId";
-				var predicateLocation = "sourceId";
-				addTriple(connection, subjectLocation, predicateLocation);
-			}
-		}
-
-		function addTriple(connection, subjectLocation, predicateLocation) {
-			var subjectId = connection[subjectLocation];
-			var predicateId = connection[predicateLocation];
-			subject = _getNodeValue(subjectId);
-			predicate = $('#' + predicateId).attr("dataset-triplevalue");
-			object = _getObject(connection, predicateId);
-
-			// If there is a full triple, add this triple to the subject's array.
-			if (object) {
-			  if (this.triples[subject] == undefined) {
-			    this.triples[subject] = new Array();
-			  }
-			  this.triples[subject].push(new Array(predicate, object));
-			}
-		}
-
-		function _getObject(connection, predicateId) {
-			var object = null;
-			var options = [];
-			options.source = predicateId;
-			options.scope = "predicateObjectEndpoint";
-			var objectConnection = jsPlumb.getConnections(options);
-
-			if (objectConnection["predicateObjectEndpoint"] && objectConnection["predicateObjectEndpoint"][0]) {
-				objectId = objectConnection["predicateObjectEndpoint"][0].targetId;
-				object = $('#' + objectId).attr("dataset-triplevalue");
-			}
-			else {
-				options = [];
-				options.target = predicateId;
-				options.scope = "objectEndpoint";
-				objectConnection = jsPlumb.getConnections(options);
-				if (objectConnection["objectEndpoint"] && objectConnection["objectEndpoint"][0]) {
-					objectId = objectConnection["objectEndpoint"][0].sourceId;
-					object = _getNodeValue(objectId);
-				}
-			}
-
-			return object;
-		}
-
-		function _getNodeValue(nid) {
-			var nodeValue = null;
-			if ($("#" + nid + " input[value=variable]").is(':checked')) {
-				nodeValue = "?" + $("#" + nid + " input[name=variable_value]").val();
-			}
-			else if ($("#" + nid + " input[value=value]").is(':checked')) {
-				nodeValue = "\"" + $("#" + nid + " input[name=value_value]").val() + "\"";
-			}
-			else {
-				nodeValue = $('#' + nid).attr("dataset-triplevalue");
-			}
-			return nodeValue;
-		}
-
-		function setSelectClause() {
-			var sparqlQuery = "SELECT * WHERE {\n";
-			for (tripleSubject in this.triples) {
-							if (this.triples[tripleSubject].length == 1) {
-											triple = tripleSubject + " " + this.triples[tripleSubject][0].join(" ");
-							}
-							else if (this.triples[tripleSubject].length > 1) {
-											triple = tripleSubject + " ";
-											for (i = 0; i < this.triples[tripleSubject].length; i++) {
-												triple += this.triples[tripleSubject][i].join(" ");
-												if (i+1 == this.triples[tripleSubject].length) {
-													 triple += " .\n"
-												}
-												else {
-													 triple += " ;\n"
-												}
-											}
-							}
-							sparqlQuery += triple + " .\n";
-			}
-			sparqlQuery += '}';
-			this.selectClause = sparqlQuery;
-		}
-
-		function setPrefixes() {
-			var prefixes = new Array();
-			var getPrefix = function(term) {
-				httpRegex = /(ftp|http|https):\/\/*/;
-				if (!httpRegex.test(term)) {
-					splitTerm = term.split(':');
-					if (splitTerm[1]) {
-						return splitTerm[0];
-					}
-				}
-				return null;
-			};
-			for (subject in this.triples) {
-				prefixes.push(getPrefix(subject));
-				for (i in subject) {
-					if (this.triples[subject][i]) {
-						prefixes.push(getPrefix(this.triples[subject][i][0]), getPrefix(this.triples[subject][i][1]));
-					}
-				}
-			}
-			this.prefixes = prefixes;
-		}
-
-		function setPrefixDeclaration() {
-			var that = this;
-			$.ajax({
-				type: 'POST',
-				async: false,
-				url: Drupal.settings.basePath + "sparql-views/prefix-declaration",
-				dataType: 'html',
-				data: { prefixes: this.prefixes },
-				success: function (html, textStatus) {
-					that.prefixDeclaration = html;
-				},
-				error: function (xhr, textStatus, errorThrown) {
-
-				}
-			});
-		}
-
-		function _getQuery() {
-			return this.prefixDeclaration + " " +  this.selectClause;
-		}
-
-		function _getSelectClause() {
-			return this.selectClause;
-		}
-
-		function _getPrefixDeclaration() {
-			return this.prefixDeclaration;
-		}
-
-		return {
-			getPreviewQuery : function() {
-				$query = _getQuery();
-				return $query + " LIMIT 5";
-			},
-
-			getSelectClause : function() {
-				return _getSelectClause();
-			},
-
-			getPrefixDeclaration : function() {
-				return _getPrefixDeclaration();
-			}
-		}
-	}
   /**
 	* Class: termBox
 	* The termBox is instantiated for each subject, object, and predicate box.
@@ -386,6 +206,186 @@
 		}
 	};
 
+		/*
+	 * Class: queryProcessor
+	 * This is a singleton that gets instantiated whenever the Process SPARQL
+	 * button is clicked. It takes the current state of the visual query builder
+	 * and parses SPARQL from that state.
+	 */
+	var queryProcessor = function () {
+		setTriples();
+		setPrefixes();
+		setPrefixDeclaration();
+		setSelectClause();
+
+		function setTriples() {
+			var triples = new Object();
+			// Add the subject.
+			// Get all the subjectEndpoints on this subject.
+			var connections = jsPlumb.getConnections();
+			this.triples = new Object();
+
+			// Get all of the subject values and store the target predicates as an array.
+			for (i in connections['subjectEndpoint']) {
+				var connection = connections['subjectEndpoint'][i];
+				var subjectLocation = "sourceId";
+				var predicateLocation = "targetId";
+				addTriple(connection, subjectLocation, predicateLocation);
+			}
+			for (i in connections['predicateSubjectEndpoint']) {
+				var connection = connections['predicateSubjectEndpoint'][i];
+				var subjectLocation = "targetId";
+				var predicateLocation = "sourceId";
+				addTriple(connection, subjectLocation, predicateLocation);
+			}
+		}
+
+		function addTriple(connection, subjectLocation, predicateLocation) {
+			var subjectId = connection[subjectLocation];
+			var predicateId = connection[predicateLocation];
+			subject = _getNodeValue(subjectId);
+			predicate = $('#' + predicateId).attr("dataset-triplevalue");
+			object = _getObject(connection, predicateId);
+
+			// If there is a full triple, add this triple to the subject's array.
+			if (object) {
+			  if (this.triples[subject] == undefined) {
+			    this.triples[subject] = new Array();
+			  }
+			  this.triples[subject].push(new Array(predicate, object));
+			}
+		}
+
+		function _getObject(connection, predicateId) {
+			var object = null;
+			var options = [];
+			options.source = predicateId;
+			options.scope = "predicateObjectEndpoint";
+			var objectConnection = jsPlumb.getConnections(options);
+
+			if (objectConnection["predicateObjectEndpoint"] && objectConnection["predicateObjectEndpoint"][0]) {
+				objectId = objectConnection["predicateObjectEndpoint"][0].targetId;
+				object = $('#' + objectId).attr("dataset-triplevalue");
+			}
+			else {
+				options = [];
+				options.target = predicateId;
+				options.scope = "objectEndpoint";
+				objectConnection = jsPlumb.getConnections(options);
+				if (objectConnection["objectEndpoint"] && objectConnection["objectEndpoint"][0]) {
+					objectId = objectConnection["objectEndpoint"][0].sourceId;
+					object = _getNodeValue(objectId);
+				}
+			}
+
+			return object;
+		}
+
+		function _getNodeValue(nid) {
+			var nodeValue = null;
+			if ($("#" + nid + " input[value=variable]").is(':checked')) {
+				nodeValue = "?" + $("#" + nid + " input[name=variable_value]").val();
+			}
+			else if ($("#" + nid + " input[value=value]").is(':checked')) {
+				nodeValue = "\"" + $("#" + nid + " input[name=value_value]").val() + "\"";
+			}
+			else {
+				nodeValue = $('#' + nid).attr("dataset-triplevalue");
+			}
+			return nodeValue;
+		}
+
+		function setSelectClause() {
+			var sparqlQuery = "SELECT * WHERE {\n";
+			for (tripleSubject in this.triples) {
+				if (this.triples[tripleSubject].length == 1) {
+					triple = tripleSubject + " " + this.triples[tripleSubject][0].join(" ");
+				}
+				else if (this.triples[tripleSubject].length > 1) {
+					triple = tripleSubject + " ";
+					for (i = 0; i < this.triples[tripleSubject].length; i++) {
+						triple += this.triples[tripleSubject][i].join(" ");
+						if (i+1 == this.triples[tripleSubject].length) {
+							 triple += " .\n"
+						}
+						else {
+							 triple += " ;\n"
+						}
+					}
+				}
+				sparqlQuery += triple + " .\n";
+			}
+			sparqlQuery += '}';
+			this.selectClause = sparqlQuery;
+		}
+
+		function setPrefixes() {
+			var prefixes = new Array();
+			var getPrefix = function(term) {
+				httpRegex = /(ftp|http|https):\/\/*/;
+				if (!httpRegex.test(term)) {
+					splitTerm = term.split(':');
+					if (splitTerm[1]) {
+						return splitTerm[0];
+					}
+				}
+				return null;
+			};
+			for (subject in this.triples) {
+				prefixes.push(getPrefix(subject));
+				for (i in subject) {
+					if (this.triples[subject][i]) {
+						prefixes.push(getPrefix(this.triples[subject][i][0]), getPrefix(this.triples[subject][i][1]));
+					}
+				}
+			}
+			this.prefixes = prefixes;
+		}
+
+		function setPrefixDeclaration() {
+			var that = this;
+			$.ajax({
+				type: 'POST',
+				async: false,
+				url: Drupal.settings.basePath + "sparql-views/prefix-declaration",
+				dataType: 'html',
+				data: { prefixes: this.prefixes },
+				success: function (html, textStatus) {
+					that.prefixDeclaration = html;
+				},
+				error: function (xhr, textStatus, errorThrown) {
+
+				}
+			});
+		}
+
+		function _getQuery() {
+			return this.prefixDeclaration + " " +  this.selectClause;
+		}
+
+		function _getSelectClause() {
+			return this.selectClause;
+		}
+
+		function _getPrefixDeclaration() {
+			return this.prefixDeclaration;
+		}
+
+		return {
+			getPreviewQuery : function() {
+				$query = _getQuery();
+				return $query + " LIMIT 5";
+			},
+
+			getSelectClause : function() {
+				return _getSelectClause();
+			},
+
+			getPrefixDeclaration : function() {
+				return _getPrefixDeclaration();
+			}
+		}
+	}
 	function getPredicates(sid) {
 		var options = [{'source': sid}];
 		var predicates = new Array;
