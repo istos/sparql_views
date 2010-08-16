@@ -148,13 +148,12 @@ function sparql_views_ui_print_prefix_declaration() {
 
 function sparql_views_ui_get_result_preview() {
   $table_rows = array();
+  $header = array();
   $query = $_POST['selectClause'];
   $result = rdfx_sparql_request($query, $_POST['endpoint'], array('store_read_key' => $_POST['storeReadKey']));
   if (isset($result['result'])) {
     $variables = $result['result']['variables'];
-    $header = array(
-      'data' => $variables,
-    );
+    $header = $variables;
     foreach ($result['result']['rows'] as $row) {
       $table_row = array();
       foreach ($variables as $variable){
