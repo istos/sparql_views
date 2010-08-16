@@ -2,13 +2,178 @@
 // lin.w.clark@gmail.com
 (function($) {
 	var sparqlQueryObj = function () {
+		function setTriples() {
+			var triples = new Object();
+			// Add the subject.
+			// Get all the subjectEndpoints on this subject.
+			var connections = jsPlumb.getConnections();
+			this.triples = new Object();
+
+			// Get all of the subject values and store the target predicates as an array.
+			for (i in connections['subjectEndpoint']) {
+				var connection = connections['subjectEndpoint'][i];
+				var subjectLocation = "sourceId";
+				var predicateLocation = "targetId";
+				addTriple(connection, subjectLocation, predicateLocation);
+			}
+			for (i in connections['predicateSubjectEndpoint']) {
+				var connection = connections['predicateSubjectEndpoint'][i];
+				var subjectLocation = "targetId";
+				var predicateLocation = "sourceId";
+				addTriple(connection, subjectLocation, predicateLocation);
+			}
+		}
+
+		function addTriple(connection, subjectLocation, predicateLocation) {
+			var subjectId = connection[subjectLocation];
+			var predicateId = connection[predicateLocation];
+			subject = _getNodeValue(subjectId);
+			predicate = $('#' + predicateId).attr("dataset-triplevalue");
+			object = _getObject(connection, predicateId);
+
+			// If there is a full triple, add this triple to the subject's array.
+			if (object) {
+			  if (this.triples[subject] == undefined) {
+			    this.triples[subject] = new Array();
+			  }
+			  this.triples[subject].push(new Array(predicate, object));
+			}
+		}
+
+		function _getObject(connection, predicateId) {
+			var object = null;
+			var options = [];
+			options.source = predicateId;
+			options.scope = "predicateObjectEndpoint";
+			var objectConnection = jsPlumb.getConnections(options);
+
+			if (objectConnection["predicateObjectEndpoint"] && objectConnection["predicateObjectEndpoint"][0]) {
+				objectId = objectConnection["predicateObjectEndpoint"][0].targetId;
+				object = $('#' + objectId).attr("dataset-triplevalue");
+			}
+			else {
+				options = [];
+				options.target = predicateId;
+				options.scope = "objectEndpoint";
+				objectConnection = jsPlumb.getConnections(options);
+				if (objectConnection["objectEndpoint"] && objectConnection["objectEndpoint"][0]) {
+					objectId = objectConnection["objectEndpoint"][0].sourceId;
+					object = _getNodeValue(objectId);
+				}
+			}
+
+			return object;
+		}
+
+		function _getNodeValue(nid) {
+			var nodeValue = null;
+			if ($("#" + nid + " input[value=variable]").is(':checked')) {
+				nodeValue = "?" + $("#" + nid + " input[name=variable_value]").val();
+			}
+			else if ($("#" + nid + " input[value=value]").is(':checked')) {
+				nodeValue = "\"" + $("#" + nid + " input[name=value_value]").val() + "\"";
+			}
+			else {
+				nodeValue = $('#' + nid).attr("dataset-triplevalue");
+			}
+			return nodeValue;
+		}
+
+		function setSelectClause() {
+			var sparqlQuery = "SELECT * WHERE {\n";
+			for (tripleSubject in this.triples) {
+							if (this.triples[tripleSubject].length == 1) {
+											triple = tripleSubject + " " + this.triples[tripleSubject][0].join(" ");
+							}
+							else if (this.triples[tripleSubject].length > 1) {
+											triple = tripleSubject + " ";
+											for (i = 0; i < this.triples[tripleSubject].length; i++) {
+												triple += this.triples[tripleSubject][i].join(" ");
+												if (i+1 == this.triples[tripleSubject].length) {
+													 triple += " .\n"
+												}
+												else {
+													 triple += " ;\n"
+												}
+											}
+							}
+							sparqlQuery += triple + " .\n";
+			}
+			sparqlQuery += '}';
+			this.selectClause = sparqlQuery;
+		}
+
+		function setPrefixes() {
+			var prefixes = new Array();
+			var getPrefix = function(term) {
+				httpRegex = /(ftp|http|https):\/\/*/;
+				if (!httpRegex.test(term)) {
+					splitTerm = term.split(':');
+					if (splitTerm[1]) {
+						return splitTerm[0];
+					}
+				}
+				return null;
+			};
+			for (subject in this.triples) {
+				prefixes.push(getPrefix(subject));
+				for (i in subject) {
+					if (this.triples[subject][i]) {
+						prefixes.push(getPrefix(this.triples[subject][i][0]), getPrefix(this.triples[subject][i][1]));
+					}
+				}
+			}
+			this.prefixes = prefixes;
+		}
+
+		function setPrefixDeclaration() {
+			var that = this;
+			$.ajax({
+				type: 'POST',
+				async: false,
+				url: Drupal.settings.basePath + "sparql-views/prefix-declaration",
+				dataType: 'html',
+				data: { prefixes: this.prefixes },
+				success: function (html, textStatus) {
+					that.prefixDeclaration = html;
+				},
+				error: function (xhr, textStatus, errorThrown) {
+
+				}
+			});
+		}
+
+		function _getQuery() {
+			return this.prefixDeclaration + " " +  this.selectClause;
+		}
+
+		function _getSelectClause() {
+			return this.selectClause;
+		}
+
+		function _getPrefixDeclaration() {
+			return this.prefixDeclaration;
+		}
+
 		return {
-			selectClause : "SELECT * WHERE {?s ?p ?o} LIMIT 5",
-			getSelectClause : function() {
-				return this.selectClause;
+			init : function () {
+				setTriples();
+				setPrefixes();
+				setPrefixDeclaration();
+				setSelectClause();
 			},
-			setSelectClause : function() {
-				return this;
+
+			getPreviewQuery : function() {
+				$query = _getQuery();
+				return $query + " LIMIT 5";
+			},
+
+			getSelectClause : function() {
+				return _getSelectClause();
+			},
+
+			getPrefixDeclaration : function() {
+				return _getPrefixDeclaration();
 			}
 		}
 	}
@@ -287,135 +452,12 @@
 			o.addForm();
 		});
 	}
-
-  function _getTriples() {
-    var sparqlQuery = (sparqlQuery != undefined) ? sparqlQuery : '';
-	  var triples = new Object();
-    // Add the subject.
-    // Get all the subjectEndpoints on this subject.
-	  var connections = jsPlumb.getConnections();
-
-	  // Get all of the subject values and store the target predicates as an array.
-	  for (i in connections['subjectEndpoint']) {
-	    var connection = connections['subjectEndpoint'][i];
-		  var subjectLocation = "sourceId";
-		  var predicateLocation = "targetId";
-		  _addTriple(connection, subjectLocation, predicateLocation, triples);
-	  }
-	  for (i in connections['predicateSubjectEndpoint']) {
-	    var connection = connections['predicateSubjectEndpoint'][i];
-		  var subjectLocation = "targetId";
-		  var predicateLocation = "sourceId";
-		  _addTriple(connection, subjectLocation, predicateLocation, triples);
-	  }
-	  return triples;
-  }
-
-  function _addTriple(connection, subjectLocation, predicateLocation, triples) {
-    var subjectId = connection[subjectLocation];
-    var predicateId = connection[predicateLocation];
-    subject = _getNodeValue(subjectId);
-	  predicate = $('#' + predicateId).attr("dataset-triplevalue");
-	  object = _getObject(connection, predicateId);
-
-	  // If there is a full triple, add this triple to the subject's array.
-	  if (object) {
-	    if (triples[subject] == undefined) {
-        triples[subject] = new Array();
-	    }
-	    triples[subject].push(new Array(predicate, object));
-	  }
-  }
-
-  function _getObject(connection, predicateId) {
-		var object = null;
-		var options = [];
-		options.source = predicateId;
-		options.scope = "predicateObjectEndpoint";
-		var objectConnection = jsPlumb.getConnections(options);
-		
-		if (objectConnection["predicateObjectEndpoint"] && objectConnection["predicateObjectEndpoint"][0]) {
-		  objectId = objectConnection["predicateObjectEndpoint"][0].targetId;
-			object = $('#' + objectId).attr("dataset-triplevalue");
-		}
-		else {
-		  options = [];
-			options.target = predicateId;
-      options.scope = "objectEndpoint";
-			objectConnection = jsPlumb.getConnections(options);
-			if (objectConnection["objectEndpoint"] && objectConnection["objectEndpoint"][0]) {
-			  objectId = objectConnection["objectEndpoint"][0].sourceId;
-			  object = _getNodeValue(objectId);
-			}
-		}
-		
-		return object;
-  }
-	
-	function _getPrefixes(triples) {
-		var prefixes = new Array();
-		var getPrefix = function(term) {
-			httpRegex = /(ftp|http|https):\/\/*/;
-			if (!httpRegex.test(term)) {
-				splitTerm = term.split(':');
-				if (splitTerm[1]) {
-					return splitTerm[0];
-				}
-			}
-			return null;
-		};
-
-		for (subject in triples) {
-			prefixes.push(getPrefix(subject));
-			for (i in subject) {
-				if (triples[subject][i]) {
-					prefixes.push(getPrefix(triples[subject][i][0]), getPrefix(triples[subject][i][1]));
-				}
-			}
-		}
-		return prefixes;
-	}
-	
-	function _getNodeValue(nid) {
-    var nodeValue = null;
-    if ($("#" + nid + " input[value=variable]").is(':checked')) {
-      nodeValue = "?" + $("#" + nid + " input[name=variable_value]").val();
-		}
-		else if ($("#" + nid + " input[value=value]").is(':checked')) {
-      nodeValue = "\"" + $("#" + nid + " input[name=value_value]").val() + "\"";
-		}
-    else {
-      nodeValue = $('#' + nid).attr("dataset-triplevalue");
-		}
-		return nodeValue;
-	}
   
-   window.jsPlumb.CurrentLibrary.initDroppable = function(el, options) {
+  /*window.jsPlumb.CurrentLibrary.initDroppable = function(el, options) {
       options['scope'] = options['scope'] || jsPlumb.Defaults.Scope;
       options['accept'] = '._jsPlumb_endpoint';
       el.droppable(options);
-   };   
-   function getResultPreview(test) {
-			$.ajax({
-				type: 'POST',
-				url: Drupal.settings.basePath + "sparql-views/get-result-preview",
-				dataType: 'html',
-				data: {
-					endpoint: Drupal.settings.sparql_views.endpoint,
-					storeReadKey: Drupal.settings.sparql_views.readKey,
-					selectClause: test.getSelectClause()
-				},
-				success: function(html, textStatus) {
-					workspaceWindow = $('#workspace-window');
-					previewWindow = $('#preview').html(html);
-					previewBottom = previewWindow.height()-workspaceWindow.height();
-					$('#preview').hide().css('bottom', previewBottom).show('clip');
-			  },
-			  error: function(xhr, textStatus, errorThrown) {
-			    alert('An error occurred ' + (errorThrown ? errorThrown : xhr.status));
-		    }
-	    });
-		}
+   };   */
   /*
    Class: sparqlViews
    
@@ -429,45 +471,42 @@
 			},
 
       processSparql : function() {
-				var test = sparqlQueryObj();
-				getResultPreview(test);
-				var sparqlQuery = (sparqlQuery != undefined) ? sparqlQuery : 'SELECT * WHERE {\n';
-				var triples = new Array();
-				triples = _getTriples();
-				prefixes = _getPrefixes(triples);
-				$.ajax({
-					type: 'POST',
-					url: Drupal.settings.basePath + "sparql-views/prefix-declaration",
-					dataType: 'html',
-					data: { prefixes: prefixes },
-					success: function (html, textStatus) {
-						$('#edit-prefixes').html(html);
-					},
-					error: function (xhr, textStatus, errorThrown) {
-							
-					}
-				});
+				var query = sparqlQueryObj();
+				query.init();
 
-				for (tripleSubject in triples) {
-								if (triples[tripleSubject].length == 1) {
-												triple = tripleSubject + " " + triples[tripleSubject][0].join(" ");
-								}
-								else if (triples[tripleSubject].length > 1) {
-												triple = tripleSubject + " ";
-												for (i = 0; i < triples[tripleSubject].length; i++) {
-													triple += triples[tripleSubject][i].join(" ");
-													if (i+1 == triples[tripleSubject].length) {
-													   triple += " .\n"
-													}
-													else {
-													   triple += " ;\n"
-													}
-												}
-								}
-								sparqlQuery += triple + " .\n";
+				var showResultPreview = function() {
+					$.ajax({
+						type: 'POST',
+						url: Drupal.settings.basePath + "sparql-views/get-result-preview",
+						dataType: 'html',
+						data: {
+							endpoint: Drupal.settings.sparql_views.endpoint,
+							storeReadKey: Drupal.settings.sparql_views.readKey,
+							query: query.getPreviewQuery()
+						},
+						success: function(html, textStatus) {
+							workspaceWindow = $('#workspace-window');
+							previewWindow = $('#preview').html(html);
+							previewBottom = previewWindow.height()-workspaceWindow.height();
+							$('#preview').hide().css('bottom', previewBottom).show('clip');
+							$('body').one('click', function() {
+								$('#preview').hide('clip');
+								$("#edit-select-clause").hide('clip');
+							});
+						},
+						error: function(xhr, textStatus, errorThrown) {
+							alert('An error occurred ' + (errorThrown ? errorThrown : xhr.status));
+						}
+					});
 				}
-				sparqlQuery += '}';
-				$("#edit-select-clause").html(sparqlQuery);
+
+				showResultPreview();
+				// Escape the prefix declaration because otherwise slash URIs get
+				// transformed into HTML tags
+				// (ie. PREFIX foaf: <http://xmlns.com/foaf/0.1></http>).
+				$('#edit-prefixes').text(escape(query.getPrefixDeclaration()));
+				$("#edit-select-clause").html(query.getSelectClause());
+				delete query;
       },
 			
 			addBoxes : function(text, position, sid) {
@@ -492,6 +531,7 @@
 
   $(document).ready(function() {
 		sparqlViews.init();
+		$('#predicate-store').hide();
 
 		// We do not want to have predicates connected to more than one object.
     // Because jsPlumb maxConnections only checks whether this endpoint is
@@ -522,17 +562,13 @@
       jsPlumb.toggle($(this).attr("rel"));
     });
 
-		$('#predicate-store .loading').hide();
+		$('#predicate-store-wrapper .loading').hide();
 		submitButton = $('button');
 		$('#edit-select-clause').hide();
 		submitButton.hide();
 
-		$("#dataset").click(function() {
-			$(this).fadeOut(500, function() {
-				$('#predicate-store .loading').fadeIn(500);
-			});
-			getPredicateStore();
-    });
+		$('#predicate-store-wrapper .loading').fadeIn(500);
+		getPredicateStore();
 
 		$(".process").click(function() {
 			$('#edit-select-clause').show('clip');
@@ -549,6 +585,10 @@
 
     $("#clear").click(function() { jsPlumb.detachEverything(); });
 
+		$('#predicate-store-wrapper').click(function () {
+			$('#predicate-store').toggle("slow");
+		});
+
 		function getPredicateStore() {
 			$.ajax({
 				type: 'POST',
@@ -560,24 +600,29 @@
 					recurssionCount: Drupal.settings.sparql_views.recurssionCount
 				},
 				success: function(html, textStatus) {
-					$('#predicate-store-wrapper .loading').hide();
 					if (html != 'done') {
-						setTimeout(function() { getPredicateStore(); }, 15000);
-						$('#predicate-store').append(html);
+						setTimeout(function() { getPredicateStore(); }, 5000);
+						$('#predicate-store').append(html).show();
 						window.console.log('not done -'  + Drupal.settings.sparql_views.recurssionCount);
 						Drupal.settings.sparql_views.recurssionCount += 1;
 						$('.predicate').draggable({
 							helper: "clone"
 						});
 					}
+					else if (html == 'done') {
+						$('#predicate-store-wrapper .loading').hide();
+					}
 					$('#workspace').droppable({
 						accept: '.predicate',
 						drop: function(event,ui) {
+							// Position the subject, predicate, and object in the workspace.
 							sid = null;
 							windowPos = $('#workspace-window').offset();
 							workspacePos = $('#workspace').position();
 							position = {'top': ui.helper.offset().top-workspacePos.top-windowPos.top, 'left': ui.helper.offset().left-workspacePos.left-windowPos.left};
 							sparqlViews.addBoxes(ui.draggable.text(), position, sid);
+							// Close the predicate store.
+							$('#predicate-store').toggle("slow");
 						}
 					});
 					$('input#search').quicksearch('#predicate-store div.predicate');
