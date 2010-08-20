@@ -75,11 +75,13 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
   $display_name = ($view != NULL && $display_name == NULL) ? 'default' : $display_name;
 
   if ($view != NULL) {
+    $prefixes = $view->display[$display_name]->display_options['query']['options']['prefixes'];
     $select_clause = $view->display[$display_name]->display_options['query']['options']['select_clause'];
     if ($select_clause == NULL) {
+      $prefixes = $view->display['default']->display_options['query']['options']['prefixes'];
       $select_clause = $view->display['default']->display_options['query']['options']['select_clause'];
     }
-    $parsed_clause = _sparql_views_parse_query($select_clause);
+    $parsed_clause = _sparql_views_parse_query($prefixes, $select_clause);
     if (isset($parsed_clause['vars'])) {
       $fields = $parsed_clause['vars'];
     }
@@ -93,9 +95,10 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
       $query_type = $view->display['default']->display_options['query']['type'];
       if ($query_type == 'sparql_query') {
         foreach ($view->display as $display) {
+          $prefixes = $display->display_options['query']['options']['prefixes'];
           $select_clause = $display->display_options['query']['options']['select_clause'];
           if (isset($select_clause)) {
-            $parsed_clause = _sparql_views_parse_query($select_clause);
+            $parsed_clause = _sparql_views_parse_query($prefixes, $select_clause);
             if (isset($parsed_clause['vars'])) {
               $fields = array_merge($parsed_clause['vars'], $fields);
             }
@@ -128,10 +131,9 @@ function _sparql_views_fetch_standard_prefixes() {
   return $results[1];
 }
 
-function _sparql_views_parse_query($query) {
+function _sparql_views_parse_query($prefixes, $select_clause) {
   $parser = ARC2::getSPARQLParser();
-  // @todo Actually pull in prefixes.
-  $q = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> $query";
+  $q = "$prefixes $select_clause";
   $parser->parse($q);
   if (!$parser->getErrors()) {
     $parsed_query = $parser->getQueryInfos();

@@ -577,7 +577,12 @@
 
 		$('#predicate-store-wrapper .loading').hide();
 		submitButton = $('button');
-		$('#edit-select-clause').hide();
+		if (Drupal.settings.sparql_views.selectClause !== '') {
+			$('#edit-select-clause').html(Drupal.settings.sparql_views.selectClause);
+		}
+		else {
+			$('#edit-select-clause').hide();
+		}
 		submitButton.hide();
 
 		$('#predicate-store-wrapper .loading').fadeIn(500);
