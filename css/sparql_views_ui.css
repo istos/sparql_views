@@ -24,7 +24,7 @@
 
 #predicate-store-wrapper {
   background: #ddd;
-  padding: 20px 0 0 20px;
+  padding: 10px 0 10px 10px;
   position: absolute; right: 15px;
   width: 280px;
   z-index: 200;
@@ -35,8 +35,18 @@
 }
 
 #predicate-store {
+  background:#eee;
+  margin-bottom: 10px;
   max-height: 360px;
   overflow-y: scroll;
+}
+
+#predicate-store-toggle-wrapper {
+  text-align: center;
+}
+
+#predicate-store-toggle {
+  width: 60px;
 }
 
 .box {
