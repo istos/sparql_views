@@ -598,7 +598,7 @@
 
     $("#clear").click(function() { jsPlumb.detachEverything(); });
 
-		$('#predicate-store-wrapper').click(function () {
+		$('#predicate-store-toggle-wrapper').click(function () {
 			$('#predicate-store').toggle("slow");
 		});
 
