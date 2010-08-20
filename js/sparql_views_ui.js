@@ -1,6 +1,70 @@
 // SPARQL Views UI
 // lin.w.clark@gmail.com
 (function($) {
+	/**
+	* Class: queryBuilder
+	* The queryBuilder is instantiated when the window opens.
+  */
+	var queryBuilder = function () {
+		return {
+			addBoxes : function(text, position, sid) {
+				// ID variables.
+				var id = Math.floor(Math.random()*999999);
+
+				// Layout variables.
+				var width = 200;
+				var top = position['top'];
+				var left = position['left'];
+				var boxMargin = 100;
+
+				// Create and position boxes. If this isn't being created from an exisitng
+				// subject, create a new subject.
+				if (sid == null) {
+					s = termBox('subject', id).create().position(top, left - width - boxMargin);
+					subjectBox = $('#' + s.getTid());
+				}
+				else {
+					var s = new Object;
+					s.getTid = function() {
+						return sid;
+					}
+					s.getEndpoints = function() {
+						return endpoints[sid];
+					}
+				}
+				p = termBox('predicate', id).create().position(top, left);
+				predicateBox = $('#' + p.getTid())
+					.append("<span class='form'>" + text + "</span>")
+					.attr("dataset-triplevalue", text);
+				o = termBox('object', id).create().position(top, left + width + boxMargin);
+				objectBox = $('#' + o.getTid());
+
+				predicateBox.fadeIn(1000, function(){
+					// Add endpoints to the boxes.
+					p.addEndpoints();
+					if (sid == null) {
+						subjectBox.fadeIn(1000);
+						s.addEndpoints();
+						s.addForm();
+					}
+					objectBox.fadeIn(1000);
+					o.addEndpoints();
+
+					// Add the connections between the predicate and the nodes.
+					sConnection = jsPlumb.connect({ source:s.getTid(), target:p.getTid(), sourceEndpoint:s.getEndpoints().right, targetEndpoint:p.getEndpoints().left});
+					sConnection.canvas.style.display = 'none';
+					oConnection = jsPlumb.connect({ source:o.getTid(), target:p.getTid(), sourceEndpoint:o.getEndpoints().left, targetEndpoint:p.getEndpoints().right});
+					oConnection.canvas.style.display = 'none';
+
+					$(sConnection.canvas).fadeIn(500);
+					$(oConnection.canvas).fadeIn(500);
+					// Add the forms. We don't do this at first because the extra height
+					// would make the endpoints center weirdly.
+					o.addForm();
+				});
+			}
+		}
+	}
   /**
 	* Class: termBox
 	* The termBox is instantiated for each subject, object, and predicate box.
@@ -402,62 +466,6 @@
 		return predicates;
 	}
 
-	function _addBoxes(text, position, sid) {
-		// ID variables.
-		var id = Math.floor(Math.random()*999999);
-
-		// Layout variables.
-		var width = 200;
-		var top = position['top'];
-		var left = position['left'];
-		var boxMargin = 100;
-
-		// Create and position boxes. If this isn't being created from an exisitng
-		// subject, create a new subject.
-		if (sid == null) {
-		  s = termBox('subject', id).create().position(top, left - width - boxMargin);
-			subjectBox = $('#' + s.getTid());
-	  }
-		else {
-			var s = new Object;
-			s.getTid = function() {
-				return sid;
-			}
-			s.getEndpoints = function() {
-				return endpoints[sid];
-			}
-		}
-		p = termBox('predicate', id).create().position(top, left);
-		predicateBox = $('#' + p.getTid())
-			.append("<span class='form'>" + text + "</span>")
-			.attr("dataset-triplevalue", text);
-		o = termBox('object', id).create().position(top, left + width + boxMargin);
-		objectBox = $('#' + o.getTid());
-
-		predicateBox.fadeIn(1000, function(){
-			// Add endpoints to the boxes.
-			p.addEndpoints();
-			if (sid == null) {
-				subjectBox.fadeIn(1000);
-				s.addEndpoints();
-				s.addForm();
-			}
-			objectBox.fadeIn(1000);
-			o.addEndpoints();
-
-			// Add the connections between the predicate and the nodes.
-			sConnection = jsPlumb.connect({ source:s.getTid(), target:p.getTid(), sourceEndpoint:s.getEndpoints().right, targetEndpoint:p.getEndpoints().left});
-			sConnection.canvas.style.display = 'none';
-			oConnection = jsPlumb.connect({ source:o.getTid(), target:p.getTid(), sourceEndpoint:o.getEndpoints().left, targetEndpoint:p.getEndpoints().right});
-			oConnection.canvas.style.display = 'none';
-
-			$(sConnection.canvas).fadeIn(500);
-			$(oConnection.canvas).fadeIn(500);
-			// Add the forms. We don't do this at first because the extra height
-			// would make the endpoints center weirdly.
-			o.addForm();
-		});
-	}
   
   /*window.jsPlumb.CurrentLibrary.initDroppable = function(el, options) {
       options['scope'] = options['scope'] || jsPlumb.Defaults.Scope;
@@ -514,8 +522,9 @@
       },
 			
 			addBoxes : function(text, position, sid) {
+				qb = queryBuilder();
 				source = null;
-				_addBoxes(text, position, sid);
+				qb.addBoxes(text, position, sid);
 			},
 
 			setDroppable : function(id) {
