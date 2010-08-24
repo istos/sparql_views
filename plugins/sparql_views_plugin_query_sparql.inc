@@ -294,15 +294,17 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       '#default_value' => $this->endpoint_read_key,
       '#description' => t("Key for read access to the endpoint."),
     );
-    $form['visual_query'] = array(
-      '#type' => 'markup',
-      '#value' => l('Build query', 'admin/build/sparql_views/add/nojs', array('attributes' => array('class' => 'ctools-use-dialog'))),
-    );
+    if (function_exists('sparql_views_ui_menu')) {
+      $form['visual_query'] = array(
+        '#type' => 'markup',
+        '#value' => l('Build query', 'admin/build/sparql_views/add/nojs', array('attributes' => array('class' => 'ctools-use-dialog'))),
+      );
+    }
     $form['prefixes'] = array(
       '#type' => 'textarea',
       '#title' => t('Prefixes'),
       // Have to encode the prefix value when using it with SPARQL Views UI.
-      '#default_value' => urldecode($this->prefixes),
+      '#default_value' => $this->prefixes,
       '#description' => t("Prefixes to use for this query."),
       '#attributes' => array('class' => 'prefix-store'),
     );
