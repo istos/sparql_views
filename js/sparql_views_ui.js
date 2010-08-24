@@ -90,8 +90,8 @@
 
 			create : function() {
 				var box = $("<div class='box'></div>");
-				var detachButton = $("<span class='detach'>X</span>");
-				var minimizeButton = $("<span class='minimize'>&ndash;</span>");
+				var detachButton = $("<a class='detach'>X</a>");
+				var minimizeButton = $("<a class='minimize'>&ndash;</a>");
 				var headerBar = $("<div class='header-bar'></div>")
 					.append(detachButton)
 					.append(minimizeButton);
