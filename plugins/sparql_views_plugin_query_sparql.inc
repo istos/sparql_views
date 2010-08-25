@@ -217,7 +217,8 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
    * $view->pager['current_page'].
    */
   function execute(&$view) {
-    $query = $view->query->select_clause;
+    $query = urlencode($view->query->select_clause);
+    $prefixes = urlencode($view->query->prefixes);
     if ($query) {
       $replacements = module_invoke_all('views_query_substitutions', $view);
       $query = str_replace(array_keys($replacements), $replacements, $query);
@@ -235,9 +236,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
         $query = str_replace('%1', urldecode($view->args[0]), $query);
       }*/
 
-      // The prefixes may still be encoded from the transfer between the modal
-      // and the Views form.
-      $query = urldecode($this->prefixes) . " $query";
+      $query = urldecode($prefixes . ' ' . $query);
       $results = rdfx_sparql_request($query, $endpoint, array('store_read_key' => $this->endpoint_read_key));
       if ($results['result']) {
         foreach ($results['result']['rows'] as $resource) {
@@ -314,6 +313,9 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       '#default_value' => $this->select_clause,
       '#description' => t("Prefixes to use for this query."),
     );
+  }
+  function options_submit(&$form, &$form_state) {
+    $form_state['values']['query']['options']['prefixes'] = urldecode($form_state['input']['query']['options']['prefixes']);
   }
 }
 
