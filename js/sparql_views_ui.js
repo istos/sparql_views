@@ -397,7 +397,7 @@
 			};
 			for (subject in this.triples) {
 				prefixes.push(getPrefix(subject));
-				for (i in subject) {
+				for (i in this.triples[subject]) {
 					if (this.triples[subject][i]) {
 						prefixes.push(getPrefix(this.triples[subject][i][0]), getPrefix(this.triples[subject][i][1]));
 					}
