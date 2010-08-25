@@ -10,7 +10,7 @@
  * Implementation of hook_views_plugins().
  */
 function sparql_views_exhibit_views_plugins() {
-  $path = drupal_get_path('module', 'sparql_views') . '/plugins';
+  $path = drupal_get_path('module', 'sparql_views') .'/plugins';
   return array(
     // Style plugins
     'style' => array(
@@ -26,7 +26,6 @@ function sparql_views_exhibit_views_plugins() {
         'type' => 'feed',
       ),
     ),
-    
     // Row plugins
     'row' => array(
       'exhibit' => array(
@@ -42,3 +41,4 @@ function sparql_views_exhibit_views_plugins() {
     ),
   );
 }
+

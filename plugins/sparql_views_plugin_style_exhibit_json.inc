@@ -24,13 +24,14 @@ class sparql_views_plugin_style_exhibit_json extends views_plugin_style_exhibit_
 
     // Setup item types
     $types[$this->view->base_table] = array('label' => $this->options['type_label'],
-                                      'pluralLabel' => $this->options['type_plural_label']);
+      'pluralLabel' => $this->options['type_plural_label'],
+    );
 
     // Setup item properties
     $props = array();
     foreach ($this->view->field as $id => $field) {
       $props[$id] = array('label' => $field->options['label']);
-      
+
       // @todo Add date and number handling.
       /*
       // Set format for default node fields
@@ -64,3 +65,4 @@ class sparql_views_plugin_style_exhibit_json extends views_plugin_style_exhibit_
     exit;
   }
 }
+
