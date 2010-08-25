@@ -621,7 +621,7 @@
 					if (html != 'done') {
 						setTimeout(function() { getPredicateStore(); }, 5000);
 						$('#predicate-store').append(html).show();
-						window.console.log('not done -'  + Drupal.settings.sparql_views.recurssionCount);
+						//window.console.log('not done -'  + Drupal.settings.sparql_views.recurssionCount);
 						Drupal.settings.sparql_views.recurssionCount += 1;
 						$('.predicate').draggable({
 							helper: "clone"

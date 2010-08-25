@@ -116,7 +116,7 @@ function sparql_views_ui_get_predicates() {
         $term = str_replace($test_uri, $ns_mappings[$test_uri] . ":", $row['p']);
       }
       else {
-        $term = "&lt;$term&gt;";
+        //$term = "&lt;$term&gt;";
       }
       $output .= "<div id='" . rand(0, 99999999) . "' class='predicate box'>" . $term . "</div>";
     }
