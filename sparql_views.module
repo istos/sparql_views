@@ -25,13 +25,6 @@ function sparql_views_views_api() {
  * Implements hook_menu().
  */
 function sparql_views_menu() {
-  $items['get-predicates'] = array(
-    'title' => 'Temporary page for SVUI development',
-    'page callback' => 'sparql_views_get_predicates',
-    'access arguments' => array('access content'),
-    'type' => MENU_CALLBACK,
-    'file' => 'sparql_views.pages.inc',
-  );
   $items['sparql_views/autocomplete/subject-object/%/%'] = array(
     'title' => 'SPARQL variables autocomplete',
     'page callback' => 'sparql_views_variables_autocomplete',
@@ -57,6 +50,20 @@ function sparql_views_menu() {
   return $items;
 }
 
+function sparql_views_theme($existing, $type, $theme, $path) {
+  $path = drupal_get_path('module', 'sparql_views');
+  $base = array(
+    'path' => "$path/theme",
+  );
+
+  $hooks['sparql_views_ui'] = $base + array(
+    'template' => 'sparql_views_ui',
+    'arguments' => array(),
+  );
+
+  return $hooks;
+}
+
 /*
  * Helper function to retrieve the variables that have been entered in filters.
  * These variables are used as the fields in Views.
@@ -65,60 +72,37 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
   $fields = array();
   $sparql_view_names = array();
 
-  if ($view != NULL && $display_name != NULL) {
-    $fields = _sparql_views_get_filters($view, $display_name);
-  }
-  else if ($view != NULL) {
-    $fields = _sparql_views_get_filters($view, 'default');
+  $display_name = ($view != NULL && $display_name == NULL) ? 'default' : $display_name;
+
+  if ($view != NULL) {
+    $prefixes = $view->display[$display_name]->display_options['query']['options']['prefixes'];
+    $select_clause = $view->display[$display_name]->display_options['query']['options']['select_clause'];
+    if ($select_clause == NULL) {
+      $prefixes = $view->display['default']->display_options['query']['options']['prefixes'];
+      $select_clause = $view->display['default']->display_options['query']['options']['select_clause'];
+    }
+    $parsed_clause = _sparql_views_parse_query($prefixes, $select_clause);
+    if (isset($parsed_clause['vars'])) {
+      $fields = $parsed_clause['vars'];
+    }
   }
 
   //@todo Move this to _sparql_views_get_all_fields which could be Drupal static.
+  // @todo make logic more elegant.
   else {
     $views = views_get_all_views();
     foreach ($views as $view_name => $view) {
       $query_type = $view->display['default']->display_options['query']['type'];
       if ($query_type == 'sparql_query') {
-        $sparql_view_names[] = $view_name;
-      }
-    }
-    foreach ($sparql_view_names as $view_name) {
-      // Get the view the user is editing based on the URL.
-      $view = views_ui_cache_load($view_name);
-
-      foreach ($view->display as $display_name => $display) {
-        $fields = array_merge(_sparql_views_get_filters($view, $display_name), $fields);
-      }
-    }
-  }
-
-  return $fields;
-}
-
-function _sparql_views_get_filters($view = NULL, $display_name = NULL) {
-  $fields = array();
-
-  $default_filters = $view->display['default']->display_options['filters'];
-  $display_filters = $view->display[$display_name]->display_options['filters'];
-
-  // If where clauses haven't been added to the default or the display, there
-  // are no added fields.
-  if (empty($default_filters) && empty($display_filters)) {
-    return array();
-  }
-  // Else, if where clauses have been added to the default but not to the
-  // display, use the default where clauses.
-  else if (empty($display_filters)) {
-    $display_filters = $default_filters;
-  }
-
-  // Iterate through the where clauses and pull out the variables.
-  foreach ($display_filters as $filter) {
-    // If there is an empty Where clause, $filter will not have values.
-    if (!empty($filter['value'])) {
-      foreach ($filter['value'] as $value) {
-        if (strpos($value, '?') === 0) {
-          $field = substr($value, 1);
-          $fields[$field] = $field;
+        foreach ($view->display as $display) {
+          $prefixes = $display->display_options['query']['options']['prefixes'];
+          $select_clause = $display->display_options['query']['options']['select_clause'];
+          if (isset($select_clause)) {
+            $parsed_clause = _sparql_views_parse_query($prefixes, $select_clause);
+            if (isset($parsed_clause['vars'])) {
+              $fields = array_merge($parsed_clause['vars'], $fields);
+            }
+          }
         }
       }
     }
@@ -127,13 +111,32 @@ function _sparql_views_get_filters($view = NULL, $display_name = NULL) {
   return $fields;
 }
 
+function _sparql_views_get_prefixes($endpoint = NULL) {
+  $ns_mappings = _sparql_views_fetch_standard_prefixes();
+  if ($endpoint != NULL) {
+    // @todo get the additional prefixes for this endpoint.
+  }
+  // Return as combined prefix => uri and uri => prefix for easy matching.
+  $flipped = array_flip($ns_mappings);
+  $ns_mappings = array_merge($flipped, $ns_mappings);
+  return $ns_mappings;
+}
+
 /*
  * Get namespace mappings from prefix.cc.
- * @todo This functionality still needs to be implemented.
  */
-function _sparql_views_fetch_prefixes() {
+function _sparql_views_fetch_standard_prefixes() {
   // @todo Use Drupal cache.
   $results = rdfx_fetch_rdf('http://prefix.cc/popular/all.rdf.plain', 'prefix');
   return $results[1];
 }
 
+function _sparql_views_parse_query($prefixes, $select_clause) {
+  $parser = ARC2::getSPARQLParser();
+  $q = "$prefixes $select_clause";
+  $parser->parse($q);
+  if (!$parser->getErrors()) {
+    $parsed_query = $parser->getQueryInfos();
+  }
+  return $parsed_query;
+}

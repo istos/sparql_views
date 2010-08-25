@@ -12,12 +12,17 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
    * Constructor; Create the basic query object and fill with default values.
    */
   function init($base_table = 'sparql_ep', $base_field, $query_options) {
+    $path = drupal_get_path('module', 'sparql_views');
     // @todo Add JS for hiding irrelvant field items.
+    dialog_add_js();
+    drupal_add_js(array('sparql_views' => array('endpoint' => '')), 'setting');
+    drupal_add_js("$path/js/sparql_views.js", 'module');
 
     $this->endpoint_url = $query_options['endpoint_url'];
     $this->dataset_url = $query_options['dataset_url'];
     $this->endpoint_read_key = $query_options['endpoint_read_key'];
     $this->prefixes = $query_options['prefixes'];
+    $this->select_clause = $query_options['select_clause'];
   }
 
   /**
@@ -212,8 +217,8 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
    * $view->pager['current_page'].
    */
   function execute(&$view) {
-    $query = $view->build_info['query'];
-
+    $query = urlencode($view->query->select_clause);
+    $prefixes = urlencode($view->query->prefixes);
     if ($query) {
       $replacements = module_invoke_all('views_query_substitutions', $view);
       $query = str_replace(array_keys($replacements), $replacements, $query);
@@ -230,10 +235,9 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       /*foreach ($view->args as $arg_num) {
         $query = str_replace('%1', urldecode($view->args[0]), $query);
       }*/
-      $query_test = array('type' => 'property',
-        'query' => "$this->prefixes SELECT * $query",
-      );
-      $results = rdfx_sparql_request($query_test['query'], $endpoint, array('store_read_key' => $this->endpoint_read_key));
+
+      $query = urldecode($prefixes . ' ' . $query);
+      $results = rdfx_sparql_request($query, $endpoint, array('store_read_key' => $this->endpoint_read_key));
       if ($results['result']) {
         foreach ($results['result']['rows'] as $resource) {
           $view->result[] = $resource;
@@ -253,10 +257,6 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
     }
 
     $view->execute_time = views_microtime() - $start;
-  }
-
-  function add_signature(&$view) {
-    //$view->query->add_field(NULL, "'" . $view->name . ':' . $view->current_display . "'", 'view_name');
   }
 
   // This can only be displayed in the UI if the patch in
@@ -281,54 +281,41 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
     );
     $form['dataset_url'] = array(
       '#type' => 'textfield',
-      '#title' => t('SPARQL Endpoint'),
+      '#title' => t('RDFa Dataset'),
       '#default_value' => $this->dataset_url,
       '#description' => t("The SPARQL endpoint that you want to access. For instance, !dbpedia.",
         array('!dbpedia' => l('http://dbpedia.org/sparql', 'http://dbpedia.org/sparql'))
       ),
     );
-    /*$form['load_predicates'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Load predicates used in dataset'),
-      '#default_value' => TRUE,
-      '#description' => t("You can use autocompltion for predicates in your query if you load the predicates used in the dataset. Note, loading predicates will take a while."),
-    );*/
     $form['endpoint_read_key'] = array(
       '#type' => 'textfield',
       '#title' => t('Read Key'),
       '#default_value' => $this->endpoint_read_key,
       '#description' => t("Key for read access to the endpoint."),
     );
+    if (function_exists('sparql_views_ui_menu')) {
+      $form['visual_query'] = array(
+        '#type' => 'markup',
+        '#value' => l('Build query', 'admin/build/sparql_views/add/nojs', array('attributes' => array('class' => 'ctools-use-dialog'))),
+      );
+    }
     $form['prefixes'] = array(
       '#type' => 'textarea',
       '#title' => t('Prefixes'),
+      // Have to encode the prefix value when using it with SPARQL Views UI.
       '#default_value' => $this->prefixes,
       '#description' => t("Prefixes to use for this query."),
       '#attributes' => array('class' => 'prefix-store'),
     );
-    /*$form['prefixes_testing'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Prefixes'),
-      '#autocomplete_path' => 'sparql_views/prefixes/autocomplete',
+    $form['select_clause'] = array(
+      '#type' => 'textarea',
+      '#title' => t('Select query'),
+      '#default_value' => $this->select_clause,
       '#description' => t("Prefixes to use for this query."),
-    );*/
+    );
   }
-
-  function options_validate(&$form, &$form_state) {}
-
   function options_submit(&$form, &$form_state) {
-    $endpoint = $form_state['values']['query']['options']['endpoint_url'];
-    $access_key = $form_state['values']['query']['options']['endpoint_read_key'];
-
-    // If the user wants to load the predicates, do a SPARQL request and cache
-    // the predicates.
-    //if ($form_state['values']['query']['options']['load_predicates'] === TRUE) {
-    /*$results = rdfx_sparql_request("SELECT DISTINCT ?p WHERE {?s ?p ?o}", $endpoint, array('store_read_key' => $access_key));
-    foreach ($results['result']['rows'] as $result) {
-      $predicates[] = $result['p'];
-    }*/
-    //cache_set();
-    //}
+    $form_state['values']['query']['options']['prefixes'] = urldecode($form_state['input']['query']['options']['prefixes']);
   }
 }
 
