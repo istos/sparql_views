@@ -9,14 +9,10 @@ soon as there are stable versions of all of the required modules.
 INSTALL
 =======
 These are temp installation instructions while SPARQL Views is in heavy
-development.
+development. This requires Drush.
 
-1. Download Views 3 dev.
-2. Apply the following patch to Views,
-   http://drupal.org/files/issues/views_621142-16.patch.
-3. Download the ARC library from http://code.semsol.org/source/arc.tar.gz
-   and place it in sparql_views/lib/rdfx/vendor/
-4. After enabling Views, turn off Views data caching.
+1. In the command line from the site root, run this command:
+   drush make --no-core sites/all/modules/sparql_views/sparql_views.make
 
 HACKS
 =====
