@@ -184,6 +184,10 @@
   width:auto;
 }
 
+.add-predicate .list div {
+  margin: 5px;
+}
+
 .drag-locked { border:1px solid red; }
 ._jsPlumb_connector { z-index:1; }
 .dropHover { border:1px dotted red; }
