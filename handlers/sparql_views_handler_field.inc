@@ -251,7 +251,7 @@ class sparql_views_handler_field extends views_handler_field {
           // are linked to eachother. We know that the first key of $array_diff
           // would be the $link_path because tokens for linking a field in Views
           // are only available for the fields that came before it.
-          else if (count($array_diff) == 2) {
+          elseif (count($array_diff) == 2) {
             if (isset($linked_fields[$diff_fields[0]]) && $linked_fields[$diff_fields[0]] == $diff_fields[1]) {
               $different_field = $diff_fields[1];
             }

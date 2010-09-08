@@ -5,7 +5,6 @@
  * @file
  * Views query plugin to build and transmit a SPARQL query to an endpoint.
  */
-
 class sparql_views_plugin_query_sparql extends views_plugin_query {
 
   /**
@@ -14,7 +13,9 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
   function init($base_table = 'sparql_ep', $base_field, $query_options) {
     $path = drupal_get_path('module', 'sparql_views');
     // @todo Add JS for hiding irrelvant field items.
-    dialog_add_js();
+    if (function_exists('sparql_views_ui')) {
+      dialog_add_js();
+    }
     drupal_add_js(array('sparql_views' => array('endpoint' => '')), 'setting');
     drupal_add_js("$path/js/sparql_views.js", 'module');
 
@@ -84,7 +85,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
         if ($key == 'q') {
           array_unshift($items, 'query='. urlencode($value));
         }
-        else if ($key == 'WHERE') {
+        elseif ($key == 'WHERE') {
           $where_condition = "{". $value ."}";
           $items[] = $key . $where_condition;
         }
@@ -146,7 +147,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       $groups[$group] = array('clauses' => array(), 'args' => array());
     }
 
-    $groups[$group]['type'] = strtoupper($type);
+    $groups[$group]['type'] = drupal_strtoupper($type);
     return $group;
   }
 
@@ -232,11 +233,12 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
         $dataset = $this->dataset_url;
       }
       // @todo fix this after demo to replace all args, not just one
-      /*foreach ($view->args as $arg_num) {
+      /* foreach ($view->args as $arg_num) {
         $query = str_replace('%1', urldecode($view->args[0]), $query);
       }*/
 
-      $query = urldecode($prefixes . ' ' . $query);
+
+      $query = urldecode($prefixes .' '. $query);
       $results = rdfx_sparql_request($query, $endpoint, array('store_read_key' => $this->endpoint_read_key));
       if ($results['result']) {
         foreach ($results['result']['rows'] as $resource) {
@@ -267,7 +269,8 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
   }
 
   function admin_summary() {
-    if (!empty($this->options['exposed'])) {}
+    if (!empty($this->options['exposed']))
+      {}
   }
 
   function options_form(&$form, &$form_state) {
@@ -296,7 +299,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
     if (function_exists('sparql_views_ui_menu')) {
       $form['visual_query'] = array(
         '#type' => 'markup',
-        '#value' => l('Build query', 'admin/build/sparql_views/add/nojs', array('attributes' => array('class' => 'ctools-use-dialog'))),
+        '#value' => l(t('Build query'), 'admin/build/sparql_views/add/nojs', array('attributes' => array('class' => 'ctools-use-dialog'))),
       );
     }
     $form['prefixes'] = array(
@@ -314,6 +317,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       '#description' => t("Prefixes to use for this query."),
     );
   }
+
   function options_submit(&$form, &$form_state) {
     $form_state['values']['query']['options']['prefixes'] = urldecode($form_state['input']['query']['options']['prefixes']);
   }

@@ -2,6 +2,7 @@
 // $Id$
 
 /**
+ * @file
  * Menu callback; Retrieve a JSON object containing autocomplete suggestions
  * for SPARQL variables.
  */
@@ -18,7 +19,7 @@ function sparql_views_variables_autocomplete($string = '') {
     else {
       foreach ($fields as $field) {
         $string = str_replace('?', '', $string);
-        if (strpos(strtolower($field), strtolower($string)) !== FALSE) {
+        if (strpos(drupal_strtolower($field), drupal_strtolower($string)) !== FALSE) {
           $matches[$field] = $field;
         }
       }
@@ -44,7 +45,7 @@ function sparql_views_predicates_autocomplete($string = '') {
     'rdfs:label' => 'rdfs:label',
   );
   foreach ($predicates as $predicate) {
-    if (strpos(strtolower($predicate), strtolower($string)) !== FALSE) {
+    if (strpos(drupal_strtolower($predicate), drupal_strtolower($string)) !== FALSE) {
       $matches[$predicate] = $predicate;
     }
   }
@@ -55,7 +56,7 @@ function sparql_views_autocomplete_prefixes($string = '') {
   $matches = array();
   $ns_mappings = _sparql_views_get_prefixes();
   foreach ($ns_mappings as $prefix => $namespace) {
-    if (strpos(strtolower($prefix), strtolower($string)) !== FALSE) {
+    if (strpos(drupal_strtolower($prefix), drupal_strtolower($string)) !== FALSE) {
       $matches[$prefix] = "PREFIX $prefix: &lt;$namespace&gt;";
     }
   }
