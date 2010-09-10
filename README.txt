@@ -13,6 +13,32 @@ development. This requires Drush.
 
 1. In the command line from the site root, run this command:
    drush make --no-core sites/all/modules/sparql_views/sparql_views.make
+2. Enable SPARQL Views, RDFx, Views, and Views UI. If you want to use the
+   SPARQL Views drag-and-drop interface, enable SPARQL Views UI and it's
+   dependencies.
+3. Go to the Tools tab in Views and Disable the Views data cache. If you want
+   to use SPARQL Views UI, you unfortunately have to turn off Views JavaScript
+   currently as well.
+
+CREATING A SPARQL QUERY
+=======================
+Go to the Settings pane in Views, in left hand column under Advanced Settings.
+
+Queries can be input in two ways:
+
+1. Enter your prefixes and select query directly in the Settings pane. The
+   select query should be in the form SELECT * WHERE {?s ?p ?o} LIMIT 100. You
+   will want to limit your query if it returns a large result, otherwise you
+   might get the white screen of death because of PHP timeout.
+2. Use the drag-and-drop interface by clicking on 'Build query'. This is
+   currently very limited and can only create conjunctive queries.
+   
+After entering the query, any variables used will show up as fields. If you do
+not see fields, check to ensure your query saved. If it did, ensure that you
+have the Views data cache turned off as described in Install step 3.
+
+
+
 
 HACKS
 =====
@@ -45,8 +71,8 @@ DRUPAL 6 HACKS
 ==============
 These hacks are necessary because of the differences between Drupal 6 and 7.
 
-1. rdfx_ functions are included in SPARQL Views because they differ from the rdf
-functions in 6.
+1. rdfx is included in SPARQL Views as a pseudo library. These functions are
+part of the contrib RDF module in Drupal 7, this is a hackish backport.
 
 2. The ARC library needs to be placed in SPARQL Views folder, but in D7 the
 library is in rdfx.
