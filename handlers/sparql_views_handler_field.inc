@@ -184,6 +184,9 @@ class sparql_views_handler_field extends views_handler_field {
         }
 
         $value = $this->render_items($items);
+        if (!empty($alter['strip_tags'])) {
+          $value = strip_tags($value);
+        }
       }
       else {
         $value = $this->render_text($this->options['alter']);
