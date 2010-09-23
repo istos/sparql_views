@@ -81,10 +81,8 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
       $prefixes = $view->display['default']->display_options['query']['options']['prefixes'];
       $select_clause = $view->display['default']->display_options['query']['options']['select_clause'];
     }
-    $parsed_clause = _sparql_views_parse_query($prefixes, $select_clause);
-    if (isset($parsed_clause['vars'])) {
-      $fields = $parsed_clause['vars'];
-    }
+    preg_match_all('/((?<=\?)|(?<=\$))\w+/', $select_clause, $vars);
+    $fields = array_merge($vars[0], $fields);
   }
 
   //@todo Move this to _sparql_views_get_all_fields which could be Drupal static.
@@ -98,10 +96,8 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
           $prefixes = $display->display_options['query']['options']['prefixes'];
           $select_clause = $display->display_options['query']['options']['select_clause'];
           if (isset($select_clause)) {
-            $parsed_clause = _sparql_views_parse_query($prefixes, $select_clause);
-            if (isset($parsed_clause['vars'])) {
-              $fields = array_merge($parsed_clause['vars'], $fields);
-            }
+            preg_match_all('/((?<=\?)|(?<=\$))\w+/', $select_clause, $vars);
+            $fields = array_merge($vars[0], $fields);
           }
         }
       }
