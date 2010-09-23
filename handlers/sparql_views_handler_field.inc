@@ -203,7 +203,7 @@ class sparql_views_handler_field extends views_handler_field {
       }
     }
 
-    return $this->last_render;
+    return trim($this->last_render);
   }
 
   /**
