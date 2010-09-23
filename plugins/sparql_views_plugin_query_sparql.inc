@@ -200,11 +200,10 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
    * Builds the necessary info to execute the query.
    */
   function build(&$view) {
-    $this->init_pager($view);
+    /*$this->init_pager($view);
     if ($this->pager->use_pager()) {
       $this->pager->set_current_page($view->current_page);
-    }
-
+    }*/
     $view->build_info['query'] = $this->query($view);
     $view->build_info['count_query'] = $this->query($view, TRUE);
     $view->build_info['query_args'] = $this->get_where_args();
@@ -237,8 +236,13 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
         $query = str_replace('%1', urldecode($view->args[0]), $query);
       }*/
 
-
       $query = urldecode($prefixes .' '. $query);
+      if (function_exists('token_replace')) {
+        // We need the array keys from token_get_list, but we need them to have
+        // NULL values.
+        $token_types = array_fill_keys(array_keys(token_get_list('all')), NULL);
+        $query = token_replace_multiple($query, $type = $token_types, $leading = '[', $trailing = ']');
+      }
       $results = rdfx_sparql_request($query, $endpoint, array('store_read_key' => $this->endpoint_read_key));
       if ($results['result']) {
         foreach ($results['result']['rows'] as $resource) {
