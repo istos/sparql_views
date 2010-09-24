@@ -1,0 +1,146 @@
+<?php
+// $Id$
+module_load_include('test', 'sparql_views', 'tests/sparql_views_query');
+
+/**
+ * Basic test class for SPARQL Views query tests.
+ */
+class SparqlViewsBasicQueryTest extends SparqlViewsTest {
+  public static function getInfo() {
+    return array(
+      'name' => t('Basic query test'),
+      'description' => t('A basic query test for SPARQL Views.'),
+      'group' => t('SPARQL Views')
+    );
+  }
+
+  /**
+   * Test against a Remote Endpoint.
+   */
+  public function testRemoteEndpoint() {
+    $view = views_get_view('remote_endpoint');
+    // Execute the view.
+    $view->execute_display('page_1', array());
+    $this->assertEqual($this->num_results, count($view->result), t('Remote endpoint query returns correct number of rows.'));
+  }
+  
+  /**
+   * Test against an RDFa page.
+   */
+  public function testRdfaPage() {
+    $view = views_get_view('rdfa_page');
+    // Execute the view.
+    $view->execute_display('page_1', array());
+    $this->assertEqual($view->result[0]['name'], 'Lin Clark', t('RDFa query returns correct value.'));
+  }
+}
+
+/**
+ * Basic test class for Views field options.
+ */
+class SparqlViewsBasicFieldTest extends SparqlViewsTest {
+  protected function setUp() {
+    parent::setUp();
+    
+    $admin_user = $this->drupalCreateUser(array('administer views', 'administer site configuration'));
+    $this->drupalLogin($admin_user);
+    $this->view_path = 'rdfa_page';
+    $this->query_value = 'Lin Clark';
+    $this->admin_path = 'admin/build/views/edit/rdfa_page';
+    $this->display_path = 'admin/build/views/nojs/display/rdfa_page/page_1/';
+    $this->config_path = 'admin/build/views/nojs/config-item/rdfa_page/page_1/';
+    $this->no_edit = array();
+    $this->drupalPost($this->display_path . 'path', $this->no_edit, t('Update'));
+    $this->drupalPost($admin_path, $edit, t('Save'));
+  }
+
+  public static function getInfo() {
+    return array(
+      'name' => t('Views field options test'),
+      'description' => t('Tests for field options provided by Views.'),
+      'group' => t('SPARQL Views')
+    );
+  }
+
+  /**
+   * Test that field displays.
+   */
+  public function testField() {
+    $this->drupalGet($this->view_path);
+    $this->assertText($this->query_value, t('Field in SPARQL View displays.'));
+  }
+
+    /**
+   * Test that Make Link option works.
+   */
+  public function testAlterText() {
+    $test_string = 'drinks at the Foobar';
+
+    // Test simple alter.
+    $edit = array(
+      'options[alter][alter_text]' => 1,
+      'options[alter][text]' => $test_string,
+    );
+    $this->postChange($edit);
+    $this->assertText($test_string, t('Alter text works.'));
+
+    $edit = array(
+      'options[alter][text]' => '[name] ' . $test_string,
+    );
+    $this->postChange($edit);
+    $this->assertText($this->query_value . " " . $test_string, t('Alter text works with replacement.'));
+  }
+
+  /**
+   * Test that Make Link option works.
+   */
+  public function testMakeLink() {
+    $edit = array(
+      'options[alter][make_link]' => 1,
+      'options[alter][path]' => '[person]',
+    );
+    $this->postChange($edit);
+    $this->assertPattern('/href="http:\/\/lin-clark.com\/#me"\>Lin Clark/', t('Make Link links to replacement token.'));
+  }
+
+  /**
+   * Test that Trim option works.
+   */
+  public function testTrim() {
+    $edit = array(
+      'options[alter][trim]' => 1,
+      'options[alter][max_length]' => '4',
+    );
+    $this->postChange($edit);
+    $this->assertText('Lin...', t('Query value trimmed to 3 characters.'));
+  }
+
+    /**
+   * Test that Strip Tags option works.
+   */
+  public function testStripTags() {
+    $edit = array(
+      'options[alter][strip_tags]' => 1,
+    );
+    $this->postChange($edit);
+    //Check the surrounding tag to ensure there is no extraneous line feed.
+    $this->assertPattern('/\>' . $this->query_value .'\<\/span/', t('Stripped of HTML. No line feeds.'));
+  }
+  
+  protected function postChange($edit) {
+    $this->drupalPost($this->config_path . 'field/name', $edit, t('Update default display'));
+    $this->drupalPost($admin_path, $this->no_edit, t('Save'));
+    $this->drupalGet($this->view_path);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+

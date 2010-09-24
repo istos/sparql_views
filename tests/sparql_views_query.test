@@ -1,0 +1,108 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Tests for SPARQL Views query.
+ */
+module_load_include('test', 'views', 'tests/views_query');
+
+/**
+ * Abstract class for views testing
+ */
+abstract class SparqlViewsTest extends ViewsTestCase {
+  protected function setUp() {
+    parent::setUp('views', 'views_ui', 'sparql_views', 'rdfx');
+    
+    $this->num_results = 4;
+    $this->setRdfaPageView();
+    $this->setRemoteEndpointView();
+  }
+  
+  /**
+   * Build and save a basic view of the remote endpoint.
+   */
+  protected function setRemoteEndpointView() {
+    views_include('view');
+
+    $view = views_new_view();
+    $view->name = 'remote_endpoint';
+    $view->base_table = 'sparql_ep';
+    $view->is_cacheable = FALSE;
+    $view->api_version = '3.0-alpha3';
+    $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+    
+    /* Display: Defaults */
+    $handler = $view->new_display('default', 'Defaults', 'default');
+    $handler->display->display_options['query']['type'] = 'views_query';
+    // @TODO change to sparql endpoint on site. 
+    $handler->display->display_options['query']['options'] = array(
+      'endpoint_url' => 'http://dbpedia.org/sparql',
+      'dataset_url' => '',
+      'endpoint_read_key' => '',
+      'prefixes' => '',
+      'select_clause' => "SELECT * WHERE {?s ?p ?o} LIMIT $this->num_results",
+    );
+    $handler->display->display_options['exposed_form']['type'] = 'basic';
+    $handler->display->display_options['pager']['type'] = 'full';
+    $handler->display->display_options['style_plugin'] = 'default';
+    $handler->display->display_options['row_plugin'] = 'fields';
+    /* Field: SPARQL: s */
+    $handler->display->display_options['fields']['s']['id'] = 's';
+    $handler->display->display_options['fields']['s']['table'] = 'sparql_ep';
+    $handler->display->display_options['fields']['s']['field'] = 's';
+    
+    /* Display: Page */
+    $handler = $view->new_display('page', 'Page', 'page_1');
+    $handler->display->display_options['path'] = 'remote_endpoint';
+    $view->save();
+  }
+  
+   /**
+   * Build and save a basic view of an RDFa page.
+   */
+  protected function setRdfaPageView() {
+    views_include('view');
+
+    $view = views_new_view();
+    $view->name = 'rdfa_page';
+    $view->base_table = 'sparql_ep';
+    $view->is_cacheable = FALSE;
+    $view->api_version = '3.0-alpha3';
+    $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+    
+    /* Display: Defaults */
+    $handler = $view->new_display('default', 'Defaults', 'default');
+    /*$handler->display->display_options['access']['type'] = 'none';
+    $handler->display->display_options['cache']['type'] = 'none';*/
+    $handler->display->display_options['query']['type'] = 'views_query';
+    $handler->display->display_options['query']['options'] = array(
+      'endpoint_url' => '',
+      'dataset_url' => 'http://lin-clark.com',
+      'endpoint_read_key' => '',
+      'prefixes' => '',
+      'select_clause' => "SELECT * WHERE {?person <http://xmlns.com/foaf/0.1/name> ?name}",
+    );
+    $handler->display->display_options['exposed_form']['type'] = 'basic';
+    $handler->display->display_options['pager']['type'] = 'full';
+    $handler->display->display_options['style_plugin'] = 'default';
+    $handler->display->display_options['row_plugin'] = 'fields';
+    /* Field: SPARQL: person */
+    $handler->display->display_options['fields']['person']['id'] = 'person';
+    $handler->display->display_options['fields']['person']['table'] = 'sparql_ep';
+    $handler->display->display_options['fields']['person']['field'] = 'person';
+    /* Field: SPARQL: name */
+    $handler->display->display_options['fields']['name']['id'] = 'name';
+    $handler->display->display_options['fields']['name']['table'] = 'sparql_ep';
+    $handler->display->display_options['fields']['name']['field'] = 'name';
+    /*
+    $handler->display->display_options['fields']['s']['alter']['combine_values'] = 0;
+    $handler->display->display_options['fields']['s']['alter']['separator'] = '';/*
+    
+    /* Display: Page */
+    $handler = $view->new_display('page', 'Page', 'page_1');
+    $handler->display->display_options['path'] = 'rdfa_page';
+    $view->save();
+  }
+}
+
