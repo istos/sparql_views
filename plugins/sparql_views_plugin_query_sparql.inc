@@ -225,7 +225,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
 
       $start = views_microtime();
 
-      if (isset($this->endpoint_url)) {
+      if (!empty($this->endpoint_url)) {
         $endpoint = $this->endpoint_url;
       }
       else {
@@ -243,7 +243,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
         $token_types = array_fill_keys(array_keys(token_get_list('all')), NULL);
         $query = token_replace_multiple($query, $type = $token_types, $leading = '[', $trailing = ']');
       }
-      $results = rdfx_sparql_request($query, $endpoint, array('store_read_key' => $this->endpoint_read_key));
+      $results = rdfx_sparql_request($query, $endpoint, array('store_read_key' => $this->endpoint_read_key), array($dataset));
       if ($results['result']) {
         foreach ($results['result']['rows'] as $resource) {
           $view->result[] = $resource;
