@@ -90,8 +90,7 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
   else {
     $views = views_get_all_views();
     foreach ($views as $view_name => $view) {
-      $query_type = $view->display['default']->display_options['query']['type'];
-      if ($query_type == 'sparql_query') {
+      if (isset($view->display['default']->display_options['query']['options']['select_clause'])) {
         foreach ($view->display as $display) {
           $prefixes = $display->display_options['query']['options']['prefixes'];
           $select_clause = $display->display_options['query']['options']['select_clause'];
