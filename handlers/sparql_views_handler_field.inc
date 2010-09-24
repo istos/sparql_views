@@ -217,7 +217,9 @@ class sparql_views_handler_field extends views_handler_field {
     foreach ($this->view->display_handler->get_handlers('field') as $field => $handler) {
       $tokens = array_merge($tokens, $item['token']);
     }
-    return $tokens;
+    // Filter out NULL values. Otherwise, Views field options like alter text
+    // won't work.
+    return array_filter($tokens);
   }
 
   /****************************************************************************
