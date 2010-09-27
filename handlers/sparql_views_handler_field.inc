@@ -28,7 +28,7 @@ class sparql_views_handler_field extends views_handler_field {
     $form['alter']['combine_values'] = array(
       '#type' => 'checkbox',
       '#title' => t('Combine multiple values'),
-      '#description' => t('If checked, rows that contain all the same values except for this field will be combined and this field will become a multivalue field.'),
+      '#description' => t('If unchecked, each item in the field will create a new row, which may appear to cause duplicates. This setting is not compatible with click-sorting in table displays.'),
       '#default_value' => $this->options['alter']['combine_values'],
     );
     $form['alter']['separator'] = array(
@@ -273,6 +273,7 @@ class sparql_views_handler_field extends views_handler_field {
           }
         }
       }
+      unset($different_field);
     }
     return $combine_rows;
   }
