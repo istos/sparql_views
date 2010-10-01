@@ -200,10 +200,10 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
    * Builds the necessary info to execute the query.
    */
   function build(&$view) {
-    /*$this->init_pager($view);
+    $view->init_pager($view);
     if ($this->pager->use_pager()) {
       $this->pager->set_current_page($view->current_page);
-    }*/
+    }
     $view->build_info['query'] = $this->query($view);
     $view->build_info['count_query'] = $this->query($view, TRUE);
     $view->build_info['query_args'] = $this->get_where_args();
