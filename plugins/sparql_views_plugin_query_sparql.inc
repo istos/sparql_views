@@ -269,6 +269,13 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
   // http://drupal.org/node/621142 is applied.
   function option_definition() {
     $options = parent::option_definition();
+
+    $options['endpoint_url'] = array('default' => '');
+    $options['dataset_url'] = array('default' => '');
+    $options['endpoint_read_key'] = array('default' => '');
+    $options['prefixes'] = array('default' => '');
+    $options['select_clause'] = array('default' => '');
+
     return $options;
   }
 
