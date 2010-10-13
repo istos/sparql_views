@@ -74,6 +74,7 @@ function rdfx_sparql_request($query, $endpoint = NULL, $options = array(), $data
       }
     }
   }
+  $store->reset();
 
   return $rows;
 }
