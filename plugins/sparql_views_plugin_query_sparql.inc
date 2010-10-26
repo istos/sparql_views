@@ -225,6 +225,10 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
     $prefixes = urlencode($view->query->prefixes);
     if ($query) {
       $replacements = module_invoke_all('views_query_substitutions', $view);
+      // Add any basic restrictions set by the filters.
+      if (is_array($this->params)) {
+        $replacements = array_merge($replacements, $this->params);
+      }
       $query = str_replace(array_keys($replacements), $replacements, $query);
 
       $start = views_microtime();

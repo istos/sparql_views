@@ -29,10 +29,10 @@ function sparql_views_views_data() {
   );
 
   $data['sparql_ep']['where'] = array(
-    'title' => t('Where'),
-    'help' => t('Add a triple pattern where clause.'),
+    'title' => t('Variable value'),
+    'help' => t('Add an equality constraint to a field.'),
     'filter' => array(
-      'handler' => 'sparql_views_handler_filter_where',
+      'handler' => 'sparql_views_handler_filter_field_value',
     ),
   );
 
@@ -81,6 +81,10 @@ function sparql_views_views_handlers() {
       // Fields
       'sparql_views_handler_field' => array(
         'parent' => 'views_handler_field',
+      ),
+      // Filters
+      'sparql_views_handler_filter_field_value' => array(
+        'parent' => 'views_handler_filter_string',
       ),
     ),
   );
