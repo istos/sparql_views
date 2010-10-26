@@ -315,12 +315,12 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       '#default_value' => $this->endpoint_read_key,
       '#description' => t("Key for read access to the endpoint."),
     );
-    if (function_exists('sparql_views_ui_menu')) {
-      $form['visual_query'] = array(
-        '#type' => 'markup',
-        '#value' => l(t('Build query'), 'admin/build/sparql_views/add/nojs', array('attributes' => array('class' => 'ctools-use-dialog'))),
-      );
-    }
+    $form['visual_query'] = array();
+    $form['handwritten_query'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Write your own SPARQL query'),
+      '#default_value' => $this->handwritten_query,
+    );
     $form['prefixes'] = array(
       '#type' => 'textarea',
       '#title' => t('Prefixes'),
@@ -328,13 +328,34 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       '#default_value' => $this->prefixes,
       '#description' => t("Prefixes to use for this query."),
       '#attributes' => array('class' => 'prefix-store'),
+      '#process' => array('views_process_dependency'),
+      '#dependency' => array(
+        'edit-query-options-handwritten-query' => array(1),
+      ),
     );
     $form['select_clause'] = array(
       '#type' => 'textarea',
       '#title' => t('Select query'),
       '#default_value' => $this->select_clause,
       '#description' => t("Prefixes to use for this query."),
+      '#process' => array('views_process_dependency'),
+      '#dependency' => array(
+        'edit-query-options-handwritten-query' => array(1),
+      ),
     );
+
+    if (module_exists('sparql_views_ui')) {
+      $form['visual_query'] = array(
+        '#type' => 'markup',
+        '#value' => l(t('Build graph'), 'admin/build/sparql_views/add/nojs', array('attributes' => array('class' => 'ctools-use-dialog'))),
+      );
+    }
+    else {
+      $form['visual_query'] = array(
+        '#type' => 'markup',
+        '#value' => t("<strong>New to SPARQL?</strong> A visual SPARQL query builder is available when you enable SPARQL Views UI on the !modules page.", array('!modules' => l('module administration', 'admin/build/modules'))),
+      );
+    }
   }
 
   function options_submit(&$form, &$form_state) {
