@@ -93,8 +93,8 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
       if (isset($view->display['default']->display_options['query']['options']['select_clause'])) {
         foreach ($view->display as $display) {
           $prefixes = $display->display_options['query']['options']['prefixes'];
-          $select_clause = $display->display_options['query']['options']['select_clause'];
-          if (isset($select_clause)) {
+          if (isset($display->display_options['query']['options']['select_clause'])) {
+            $select_clause = $display->display_options['query']['options']['select_clause'];
             preg_match_all('/((?<=\?)|(?<=\$))\w+/', $select_clause, $vars);
             $fields = array_merge($vars[0], $fields);
           }

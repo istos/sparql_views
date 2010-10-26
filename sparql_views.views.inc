@@ -17,6 +17,9 @@
  * requires more complicated logic than usual.
  */
 function sparql_views_views_data() {
+  $view = NULL;
+  $display_name = NULL;
+
   $data['sparql_ep']['table']['group'] = t('SPARQL');
 
   $data['sparql_ep']['table']['base'] = array(
