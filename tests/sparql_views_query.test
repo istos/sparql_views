@@ -81,7 +81,10 @@ abstract class SparqlViewsTest extends ViewsTestCase {
       'dataset_url' => 'http://lin-clark.com',
       'endpoint_read_key' => '',
       'prefixes' => '',
-      'select_clause' => "SELECT * WHERE {?person <http://xmlns.com/foaf/0.1/name> ?name}",
+      'select_clause' => "SELECT * WHERE
+        {?person <http://xmlns.com/foaf/0.1/name> ?name ;
+            <http://xmlns.com/foaf/0.1/holdsAccount> ?account .
+         ?account <http://xmlns.com/foaf/0.1/accountServiceHomepage> ?webpage} LIMIT 10",
     );
     $handler->display->display_options['exposed_form']['type'] = 'basic';
     $handler->display->display_options['pager']['type'] = 'full';
@@ -95,6 +98,10 @@ abstract class SparqlViewsTest extends ViewsTestCase {
     $handler->display->display_options['fields']['name']['id'] = 'name';
     $handler->display->display_options['fields']['name']['table'] = 'sparql_ep';
     $handler->display->display_options['fields']['name']['field'] = 'name';
+    /* Field: SPARQL: webpage */
+    $handler->display->display_options['fields']['webpage']['id'] = 'webpage';
+    $handler->display->display_options['fields']['webpage']['table'] = 'sparql_ep';
+    $handler->display->display_options['fields']['webpage']['field'] = 'webpage';
     /*
     $handler->display->display_options['fields']['s']['alter']['combine_values'] = 0;
     $handler->display->display_options['fields']['s']['alter']['separator'] = '';/*

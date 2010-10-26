@@ -71,7 +71,7 @@ class SparqlViewsBasicFieldTest extends SparqlViewsTest {
   }
 
     /**
-   * Test that Make Link option works.
+   * Test that Alter Text option works.
    */
   public function testAlterText() {
     $test_string = 'drinks at the Foobar';
@@ -134,8 +134,21 @@ class SparqlViewsBasicFieldTest extends SparqlViewsTest {
   }
 }
 
-
-
+/**
+ * Basic test class for SPARQL Views' custom field options.
+ */
+class SparqlViewsCustomFieldTest extends SparqlViewsBasicFieldTest {
+  protected function setUp() {
+    parent::setUp();
+  }
+  
+  /**
+   * Test that Group Multiple Values option works.
+   */
+  public function testGroupMultipleValues() {
+    
+  }
+}
 
 
 
