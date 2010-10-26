@@ -75,10 +75,8 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
   $display_name = ($view != NULL && $display_name == NULL) ? 'default' : $display_name;
 
   if ($view != NULL) {
-    $prefixes = $view->display[$display_name]->display_options['query']['options']['prefixes'];
     $select_clause = $view->display[$display_name]->display_options['query']['options']['select_clause'];
     if ($select_clause == NULL) {
-      $prefixes = $view->display['default']->display_options['query']['options']['prefixes'];
       $select_clause = $view->display['default']->display_options['query']['options']['select_clause'];
     }
     preg_match_all('/((?<=\?)|(?<=\$))\w+/', $select_clause, $vars);
@@ -92,7 +90,6 @@ function _sparql_views_get_fields($view = NULL, $display_name = NULL) {
     foreach ($views as $view_name => $view) {
       if (isset($view->display['default']->display_options['query']['options']['select_clause'])) {
         foreach ($view->display as $display) {
-          $prefixes = $display->display_options['query']['options']['prefixes'];
           if (isset($display->display_options['query']['options']['select_clause'])) {
             $select_clause = $display->display_options['query']['options']['select_clause'];
             preg_match_all('/((?<=\?)|(?<=\$))\w+/', $select_clause, $vars);
