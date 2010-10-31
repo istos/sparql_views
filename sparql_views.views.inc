@@ -28,6 +28,13 @@ function sparql_views_views_data() {
     'query class' => 'sparql_query',
   );
 
+  $data['sparql_ep']['broken handlers'] = array(
+    'field' => array(
+      'handler' => 'sparql_views_handler_field_broken',
+      'skip base' => 'sparql_ep',
+    ),
+  );
+
   $data['sparql_ep']['where'] = array(
     'title' => t('Variable value'),
     'help' => t('Add an equality constraint to a field.'),
@@ -81,6 +88,9 @@ function sparql_views_views_handlers() {
       // Fields
       'sparql_views_handler_field' => array(
         'parent' => 'views_handler_field',
+      ),
+      'sparql_views_handler_field_broken' => array(
+        'parent' => 'sparql_views_handler_field',
       ),
       // Filters
       'sparql_views_handler_filter_field_value' => array(

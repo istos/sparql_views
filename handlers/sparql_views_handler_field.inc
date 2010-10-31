@@ -279,3 +279,37 @@ class sparql_views_handler_field extends views_handler_field {
   }
 }
 
+/**
+ * A special handler to take the place of missing or broken handlers.
+ */
+class sparql_views_handler_field_broken extends sparql_views_handler_field {
+  function ui_name($short = FALSE) {
+    return t('Broken/missing handler');
+  }
+
+  function ensure_my_table() { /* No table to ensure! */ }
+  function query() { /* No query to run */ }
+  function options_form(&$form, &$form_state) {
+    $form['markup'] = array(
+      '#prefix' => '<div class="form-item description">',
+      '#value' => t('This field is missing. You may have changed the variable
+        name in the query. If this is the case, enter the new variable name in
+        the field below.'),
+    );
+    $form['new_name'] = array(
+      '#type' => 'textfield',
+      '#title' => 'New variable name',
+    );
+  }
+
+  function options_submit(&$form, &$form_state) {
+    $new_name = $form_state['input']['options']['new_name'];
+    $this->options['field'] = $new_name;
+  }
+
+  /**
+   * Determine if the handler is considered 'broken'
+   */
+  function broken() { return TRUE; }
+}
+
