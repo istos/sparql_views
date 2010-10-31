@@ -141,7 +141,7 @@ function sparql_views_ui_print_prefix_declaration() {
     exit;
   }
   else {
-    $output = sparql_views_ui_get_prefix_declaration($_POST['prefixes']);
+    $output = sparql_views_ui_get_prefix_declaration(explode(',',$_POST['prefixes']));
     print($output);
   }
 }

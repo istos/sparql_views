@@ -407,20 +407,22 @@
     }
 
     function setPrefixDeclaration() {
-      var that = this;
+      var prefixes = this.prefixes.join(',');
+      var prefixDeclaration;
       $.ajax({
-        type: 'POST',
+        type: "POST",
         async: false,
         url: Drupal.settings.basePath + "sparql-views/prefix-declaration",
-        dataType: 'html',
-        data: { prefixes: this.prefixes },
+        dataType: "html",
+        data: { prefixes: prefixes },
         success: function (html, textStatus) {
-          that.prefixDeclaration = html;
+          prefixDeclaration = html;
         },
         error: function (xhr, textStatus, errorThrown) {
 
         }
       });
+      this.prefixDeclaration = prefixDeclaration;
     }
 
     function _getQuery() {
