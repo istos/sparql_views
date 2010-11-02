@@ -97,7 +97,7 @@ function sparql_views_ui_get_predicates() {
   $output = '';
   $prefixes = array();
   $query = "SELECT DISTINCT ?p WHERE {?s ?p ?o} ORDER BY ?p LIMIT 10 OFFSET " . $_POST['recurssionCount']*10;
-  $result = rdfx_sparql_request($query, $_POST['endpoint'], array('store_read_key' => $_POST['storeReadKey']));
+  $result = rdfx_sparql_request($query, $_POST['endpoint'], array('store_read_key' => $_POST['storeReadKey']), array($_POST['dataset']));
   if (empty($result)) {
     print('Sorry, this has timed out.');
   }
