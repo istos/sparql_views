@@ -22,39 +22,9 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
     $this->endpoint_url = $query_options['endpoint_url'];
     $this->dataset_url = $query_options['dataset_url'];
     $this->endpoint_read_key = $query_options['endpoint_read_key'];
+    $this->handwritten_query = $query_options['handwritten_query'];
     $this->prefixes = $query_options['prefixes'];
     $this->select_clause = $query_options['select_clause'];
-  }
-
-  /**
-   * Construct the "WHERE" or "HAVING" part of the query.
-   *
-   * @param $where
-   *   'where' or 'having'.
-   */
-  function condition_query($where = 'where') {
-    $clauses = array();
-    if ($this->$where) {
-      foreach ($this->$where as $group => $info) {
-        $clause = implode($info['type'], $info['clauses']);
-        if (count($info['clauses']) > 1) {
-          $clause = $clause;
-        }
-        $clauses[] = $clause;
-      }
-
-      // Unset the empty clause that is added (apparently by default).
-      unset($clauses[0]);
-      if ($clauses) {
-        if (count($clauses) > 1) {
-          return implode(")". $this->group_operator, $clauses);
-        }
-        else {
-          return array_shift($clauses);
-        }
-      }
-    }
-    return "";
   }
 
   function use_pager() {
@@ -69,34 +39,15 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
    *   Provide a countquery if this is true, otherwise provide a normal query.
    */
   function query($view, $get_count = FALSE) {
-
-    $where = $this->condition_query();
-
-    $params = $this->params;
-    if (!empty($view->pager['items_per_page'])) {
-      $params['rpp'] = $view->pager['items_per_page'] <= 100 ? $view->pager['items_per_page'] : 100;
+    if ($view->query->handwritten_query == 1) {
+      $query = $view->query->select_clause;
     }
-    $params['WHERE'] = $where;
-
-    // Build the full string.
-    $items = array();
-    if ($params) {
-      foreach ($params as $key => $value) {
-        if ($key == 'q') {
-          array_unshift($items, 'query='. urlencode($value));
-        }
-        elseif ($key == 'WHERE') {
-          $where_condition = "{". $value ."}";
-          $items[] = $key . $where_condition;
-        }
-        else {
-          $items[] = $key .'='. urlencode($value);
-        }
-      }
+    else {
+      // This is the same for now.
+      $query = $view->query->select_clause;
     }
-    $params = implode('&', $items);
 
-    return $params;
+    return $query;
   }
 
   /**
@@ -221,8 +172,8 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
    * $view->pager['current_page'].
    */
   function execute(&$view) {
-    $query = urlencode($view->query->select_clause);
-    $prefixes = urlencode($view->query->prefixes);
+    $prefixes = $view->query->prefixes;
+    $query = $view->build_info['query'];
     if ($query) {
       $replacements = module_invoke_all('views_query_substitutions', $view);
       // Add any basic restrictions set by the filters.
@@ -244,7 +195,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
         $query = str_replace('%1', urldecode($view->args[0]), $query);
       }*/
 
-      $query = urldecode($prefixes .' '. $query);
+      $query = $prefixes .' '. $query;
       if (function_exists('token_replace')) {
         // We need the array keys from token_get_list, but we need them to have
         // NULL values.
@@ -281,6 +232,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
     $options['endpoint_url'] = array('default' => '');
     $options['dataset_url'] = array('default' => '');
     $options['endpoint_read_key'] = array('default' => '');
+    $options['handwritten_query'] = array('default' => '');
     $options['prefixes'] = array('default' => '');
     $options['select_clause'] = array('default' => '');
 
