@@ -11,7 +11,7 @@
  * Implements hook_menu().
  */
 function sparql_views_ui_menu() {
-  $items['get-predicates'] = array(
+  $items['sparql-views/get-predicates'] = array(
     'title' => 'Temporary page for SVUI development',
     'page callback' => 'sparql_views_ui_get_predicates',
     'access arguments' => array('access content'),

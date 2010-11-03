@@ -77,6 +77,12 @@
         return termPosition + "_" + id;
       },
 
+      getVariable : function() {
+        var tid = this.getTid();
+        var variable = $('#'+tid+' input').val();
+        return variable;
+      },
+
       setEndpoints : function(leftEndpoint, rightEndpoint) {
         this.endpoints = new Object();
         this.endpoints['left'] = leftEndpoint;
@@ -143,13 +149,22 @@
         };
 
         var sid = this.getTid();
+        var that = this;
         var addPredicateButton = $("<div style='position: absolute' class='add-predicate'><span class='button' rel='" + sid + "'>+</span></div>");
         var predicateList = $("<div id='predicate-list_"+ sid +"' class='list'></div>").attr('rel', sid);
-        addPredicateButton.click(function(event) {
+        addPredicateButton.children().click(function(event) {
+          var qp = queryProcessor();
           $.ajax({
-            type: 'GET',
-            url: "/sparql-views/get-predicates",
+            type: 'POST',
+            url: Drupal.settings.basePath + "sparql-views/get-predicates",
             dataType: 'html',
+            data: {
+              endpoint: Drupal.settings.sparql_views.endpoint,
+              dataset: Drupal.settings.sparql_views.dataset,
+              storeReadKey: Drupal.settings.sparql_views.readKey,
+              currentQuery: qp.getQuery(),
+              currentSubject: that.getVariable()
+            },
             success: function(html, textStatus) {
               $('#predicate-list_'+ sid).append(html);
               $('.add-predicate .list div').click(function(event) {
@@ -165,7 +180,8 @@
                 }
                 newPosition.top += sparqlViews.boxMarginY + $('#' + sid).height();
                 qb.addBoxes($(this).text(), newPosition, sid);
-                $(this).parent().hide('clip');
+                var list = $(this).parent();
+                list.fadeOut(1000, function () {list.remove()});
               });
             },
             error: function(xhr, textStatus, errorThrown) {
@@ -174,6 +190,7 @@
           });
           predicateList.appendTo($(addPredicateButton))
             .fadeIn(2000);
+          delete qp;
         });
 
         // Attach the elements to the box.
@@ -414,6 +431,10 @@
     }
 
     return {
+      getQuery : function() {
+        return _getQuery();
+      },
+
       getPreviewQuery : function() {
         $query = _getQuery();
         return $query + " LIMIT 5";
@@ -589,7 +610,7 @@
     function getPredicateStore() {
       $.ajax({
         type: 'POST',
-        url: Drupal.settings.basePath + "get-predicates",
+        url: Drupal.settings.basePath + "sparql-views/get-predicates",
         dataType: 'html',
         data: {
           endpoint: Drupal.settings.sparql_views.endpoint,
