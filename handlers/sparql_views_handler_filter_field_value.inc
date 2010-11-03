@@ -80,7 +80,6 @@ class sparql_views_handler_filter_field_value extends views_handler_filter_strin
       $this->value['field'] = token_replace($this->value['field'], $type = 'global', $object = NULL, $leading = '[', $trailing = ']');
       $this->value['value'] = token_replace($this->value['value'], $type = 'global', $object = NULL, $leading = '[', $trailing = ']');
     }
-    dpm($this);
     $this->query->add_param($this->value['field'], $this->value['value']);
   }
 }
