@@ -362,11 +362,8 @@
           triple = tripleSubject + " ";
           for (i = 0; i < this.triples[tripleSubject].length; i++) {
             triple += this.triples[tripleSubject][i].join(" ");
-            if (i+1 == this.triples[tripleSubject].length) {
-               triple += " .\n"
-            }
-            else {
-               triple += " ;\n"
+            if (i+1 != this.triples[tripleSubject].length) {
+              triple += " ;\n"
             }
           }
         }
