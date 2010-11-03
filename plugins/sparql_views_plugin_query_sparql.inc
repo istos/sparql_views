@@ -6,6 +6,7 @@
  * Views query plugin to build and transmit a SPARQL query to an endpoint.
  */
 class sparql_views_plugin_query_sparql extends views_plugin_query {
+  var $filter = array();
 
   /**
    * Constructor; Create the basic query object and fill with default values.
@@ -51,7 +52,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
   /**
    * Generate a query from all of the information supplied to the object.
    */
-  function query($view, $get_count = FALSE) {
+  function query($view) {
     if ($view->query->handwritten_query == 1) {
       $query = $view->query->select_clause;
     }
@@ -59,6 +60,8 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       // This is the same for now.
       $query = $view->query->select_clause;
     }
+
+    $query = $this->set_condition($query);
 
     return $query;
   }
@@ -114,6 +117,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
     $groups[$group]['type'] = drupal_strtoupper($type);
     return $group;
   }
+
   function add_filter($type, $variable, $value) {
     $filters = &$this->filter;
     switch ($type) {
@@ -197,6 +201,15 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
   function execute(&$view) {
     $prefixes = $view->query->prefixes;
     $query = $view->build_info['query'];
+    // Add argument conditions.
+    if (is_array($view->args)) {
+      $substitutions = array();
+      foreach ($view->display_handler->get_handlers('argument') as $key => $arg) {
+        $substitutions["?$key"] = '"' . $arg->argument . '"';
+      }
+      $query = str_replace(array_keys($substitutions), $substitutions, $query);
+    }
+
     if ($query) {
       $replacements = module_invoke_all('views_query_substitutions', $view);
       // Add any basic restrictions set by the filters.
