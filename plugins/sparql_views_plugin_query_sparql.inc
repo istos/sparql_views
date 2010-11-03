@@ -32,11 +32,24 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
   }
 
   /**
-   * Generate a query and a countquery from all of the information supplied
-   * to the object.
+   * Construct the "WHERE" or "HAVING" part of the query.
    *
-   * @param $get_count
-   *   Provide a countquery if this is true, otherwise provide a normal query.
+   * @param $where
+   *   'where' or 'having'.
+   */
+  function set_condition($query) {
+    foreach ($this->filter as $variable_name => $variable) {
+      foreach ($variable as $filter) {
+        $split_query = preg_split("/(\?$variable_name.*?\.)/", $query, -1, PREG_SPLIT_DELIM_CAPTURE);
+        $split_query[1] = $split_query[1] . "FILTER $filter";
+        $query = implode($split_query);
+      }
+    }
+    return $query;
+  }
+
+  /**
+   * Generate a query from all of the information supplied to the object.
    */
   function query($view, $get_count = FALSE) {
     if ($view->query->handwritten_query == 1) {
@@ -100,6 +113,13 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
 
     $groups[$group]['type'] = drupal_strtoupper($type);
     return $group;
+  }
+  function add_filter($type, $variable, $value) {
+    $filters = &$this->filter;
+    switch ($type) {
+      case 'regex':
+        $filters[$variable][] = "regex(?$variable, \"$value\")";
+    }
   }
 
   function add_param($param, $value = '') {
