@@ -176,8 +176,8 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
    */
   function build(&$view) {
     // @TODO remove as soon as Views alpha4 is released.
-    $api = sparql_views_views_api();
-    if ($api['api'] != '3.0-alpha1') {
+    $schema_version = db_result(db_query("SELECT schema_version FROM {system} WHERE name='views'"));
+    if ($schema_version >= 6010) {
       $view->init_pager($view);
       if ($this->pager->use_pager()) {
         $this->pager->set_current_page($view->current_page);
