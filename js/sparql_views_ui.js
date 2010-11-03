@@ -91,10 +91,8 @@
       create : function() {
         var box = $("<div class='box'></div>");
         var detachButton = $("<a class='detach'>X</a>");
-        var minimizeButton = $("<a class='minimize'>&ndash;</a>");
         var headerBar = $("<div class='header-bar'></div>")
-          .append(detachButton)
-          .append(minimizeButton);
+          .append(detachButton);
         detachButton.click(function() {
           var id = $(this).parent().attr("rel");
           jsPlumb.detachAll(id);
@@ -102,11 +100,6 @@
           delete endpoints[id];
           $(this).parent().parent().remove();
         });
-
-        var nodeTypeSwitcher = "<div class='form'><input type='checkbox' class='variable' name='" + termPosition + "_type_" + id + "' value='variable'/>"
-          + "<label for='" + termPosition + "_type_" + id + "'>Get as variable</label>&nbsp;"
-          + "<input type='checkbox' class='value' name='" + termPosition + "_type_" + id + "' value='value'/>"
-          + "<label for='" + termPosition + "_type_" + id + "'>Get by value</label></div>";
 
         if (termPosition == 'predicate') {
           box
@@ -117,7 +110,7 @@
         }
         else {
           box
-            .html(nodeTypeSwitcher)
+            .html("<div class='form'></div>")
             .prepend(headerBar.attr("rel", this.getTid()))
             .addClass("rdf-node")
             .attr("id", this.getTid())
@@ -142,7 +135,7 @@
             appendChar = '"';
           }
 
-          form.html(prependChar + " <input type='text' name='" + type + "_value'/> " + appendChar);
+          form.html("? <input type='text' name='variable'/> ");
           form.attr("id", termPosition + "_" + type + "_" + id);
           form.attr("class", "form");
 
@@ -183,22 +176,8 @@
             .fadeIn(2000);
         });
 
-        var activateSwitcher = function(type) {
-          var otherType = (type == 'variable') ? "value" : "variable";
-          $("#" + termPosition + "_" + id + " ." + type).click(function () {
-            if ($("input[name=" + termPosition + "_type_" + id +"][value=" + otherType + "]").is(':checked')) {
-              $("input[name=" + termPosition + "_type_" + id +"][value=" + otherType + "]").attr('checked', false);
-              $("#" + termPosition + "_" + otherType + "_" + id).toggle(500);
-            }
-            $("#" + termPosition + "_" + type + "_" + id).toggle(500);
-          });
-        }
-
         // Attach the elements to the box.
-        nodeForm('variable').hide().appendTo($('#' + this.getTid()));
-        nodeForm('value').hide().appendTo($('#' + this.getTid()));
-        activateSwitcher('variable');
-        activateSwitcher('value');
+        nodeForm('variable').appendTo($('#' + this.getTid()));
         addPredicateButton.appendTo($('#' + this.getTid()));
       },
 
@@ -347,11 +326,8 @@
 
     function _getNodeValue(nid) {
       var nodeValue = null;
-      if ($("#" + nid + " input[value=variable]").is(':checked')) {
-        nodeValue = "?" + $("#" + nid + " input[name=variable_value]").val();
-      }
-      else if ($("#" + nid + " input[value=value]").is(':checked')) {
-        nodeValue = "\"" + $("#" + nid + " input[name=value_value]").val() + "\"";
+      if ($('#' + nid)) {
+        nodeValue = "?" + $("#" + nid + " input[name=variable]").val();
       }
       else {
         nodeValue = $('#' + nid).attr("dataset-triplevalue");
