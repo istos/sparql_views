@@ -34,6 +34,6 @@ global $base_path;?>
     <script type="text/javascript" src="http://explorercanvas.googlecode.com/svn/trunk/excanvas.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.0/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="<?php print "$base_path$path/js/"?>jquery.jsPlumb-1.2.1-all.js"></script>
+    <script type="text/javascript" src="<?php print "$base_path$path/js/"?>jquery.jsPlumb-1.2.3-all-min.js"></script>
     <script type="text/javascript" src="<?php print "$base_path$path/js/"?>jquery.quicksearch.js"></script>
     <script type="text/javascript" src="<?php print "$base_path$path/js/"?>sparql_views_ui.js"></script>
