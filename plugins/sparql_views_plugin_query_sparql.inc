@@ -41,8 +41,8 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
   function set_condition($query) {
     foreach ($this->filter as $variable_name => $variable) {
       foreach ($variable as $filter) {
-        $split_query = preg_split("/(\?$variable_name.*?\.)/", $query, -1, PREG_SPLIT_DELIM_CAPTURE);
-        $split_query[1] = $split_query[1] . "FILTER $filter";
+        $split_query = preg_split("/(\?$variable_name(.|\n)*?(\.|(?!=})))/", $query, -1, PREG_SPLIT_DELIM_CAPTURE);
+        $split_query[1] = $split_query[1] . "\nFILTER $filter";
         $query = implode($split_query);
       }
     }
