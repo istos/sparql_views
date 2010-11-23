@@ -201,14 +201,6 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
   function execute(&$view) {
     $prefixes = $view->query->prefixes;
     $query = $view->build_info['query'];
-    // Add argument conditions.
-    if (is_array($view->args)) {
-      $substitutions = array();
-      foreach ($view->display_handler->get_handlers('argument') as $key => $arg) {
-        $substitutions["?$key"] = '"' . $arg->argument . '"';
-      }
-      $query = str_replace(array_keys($substitutions), $substitutions, $query);
-    }
 
     if ($query) {
       $replacements = module_invoke_all('views_query_substitutions', $view);
@@ -226,10 +218,6 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       else {
         $dataset = $this->dataset_url;
       }
-      // @todo fix this after demo to replace all args, not just one
-      /* foreach ($view->args as $arg_num) {
-        $query = str_replace('%1', urldecode($view->args[0]), $query);
-      }*/
 
       $query = $prefixes .' '. $query;
       if (function_exists('token_replace')) {
