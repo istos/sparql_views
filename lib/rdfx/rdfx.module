@@ -35,28 +35,3 @@ function rdfx_init() {
   module_load_include('inc', 'rdfx', 'rdfx.import');
   module_load_include('inc', 'rdfx', 'rdfx.query');
 }
-
-/**
- * Implements hook_menu().
- */
-function rdfx_menu() {
-  $items['ns'] = array(
-    'title' => 'Site vocabulary',
-    'description' => 'RDF description of the site schema.',
-    'page callback' => 'drupal_get_form',
-//    'page arguments' => array(''),
-    'access arguments' => array('access RDF data'),
-    'file' => 'rdfx.pages.inc',
-  );
-  $items['node/%node/rdf'] = array(
-    'title' => 'RDF',
-    'page callback' => 'rdfx_entity_view',
-    'page arguments' => array('node', 1),
-    'access arguments' => array('access RDF data'),
-    'weight' => 0,
-    'type' => MENU_LOCAL_TASK,
-//    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-    'file' => 'rdfx.pages.inc',
-  );
-  return $items;
-}
