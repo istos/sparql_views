@@ -37,7 +37,7 @@ class sparql_views_handler_argument extends views_handler_argument {
       );
     }
     else {
-      $form['replacement_type']['description'] = 'Enable the Token module to get more options.';
+      $form['replacement_type']['#description'] = 'Enable the Token module to get more options.';
     }
 
     $form['replacement_type']['#options'] = $options;

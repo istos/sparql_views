@@ -68,8 +68,8 @@ function sparql_views_views_data() {
         'click sortable' => TRUE,
       ),
       'argument' => array(
-	      'handler' => 'sparql_views_handler_argument',
-	    ),
+	'handler' => 'sparql_views_handler_argument',
+      ),
       'sort' => array(
         'handler' => 'views_handler_sort',
       ),
@@ -90,8 +90,8 @@ function sparql_views_views_handlers() {
     'handlers' => array(
 	    // Arguments
       'sparql_views_handler_argument' => array(
-	      'parent' => 'views_handler_argument',
-	    ),
+	'parent' => 'views_handler_argument',
+      ),
       // Fields
       'sparql_views_handler_field' => array(
         'parent' => 'views_handler_field',
