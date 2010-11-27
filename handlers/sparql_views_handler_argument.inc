@@ -27,19 +27,6 @@ class sparql_views_handler_argument extends views_handler_argument {
     );
     $options = array('string' => 'String');
 
-    if (module_exists('token')) {
-      $options['url'] = 'URL';
-
-      $form['token'] = array(
-        '#type' => 'textfield',
-        '#title' => 'Token replacement',
-        '#autocomplete_path' => '',
-      );
-    }
-    else {
-      $form['replacement_type']['#description'] = 'Enable the Token module to get more options.';
-    }
-
     $form['replacement_type']['#options'] = $options;
 
     parent::options_form(&$form, &$form_state);
