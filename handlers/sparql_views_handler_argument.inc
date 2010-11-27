@@ -25,7 +25,7 @@ class sparql_views_handler_argument extends views_handler_argument {
       '#default_value' => $this->options['replacement_type'],
       '#required' => TRUE,
     );
-    $options = array('string' => 'String');
+    $options = array('string' => 'String', 'url' => 'URL');
 
     $form['replacement_type']['#options'] = $options;
 
