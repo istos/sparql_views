@@ -130,6 +130,17 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
     $this->params[$param] = $value;
   }
 
+
+  function add_argument($variable, $value) {
+    dpm($value);
+    dpm($variable);
+    $search_string = '[' . $variable .']';
+    dpm($search_string);
+    $this->select_clause = str_replace($search_string, $value, $this->select_clause);
+    dpm($this->select_clause);
+  }
+
+
   function add_where($group, $clause) {
     $args = func_get_args();
     // ditch $group
@@ -175,16 +186,13 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
    * Builds the necessary info to execute the query.
    */
   function build(&$view) {
+    $this->init_pager($view);
     // @TODO remove as soon as Views alpha4 is released.
     $schema_version = db_result(db_query("SELECT schema_version FROM {system} WHERE name='views'"));
     if ($schema_version >= 6010) {
-      $view->init_pager($view);
       if ($this->pager->use_pager()) {
         $this->pager->set_current_page($view->current_page);
       }
-    }
-    else {
-      $this->init_pager($view);
     }
     $view->build_info['query'] = $this->query($view);
     $view->build_info['count_query'] = $this->query($view, TRUE);
@@ -209,6 +217,12 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
           $query = str_replace("?$key", $value, $query);
         }
       }
+      // Set the 'LIMIT' clause of the SPARQL query to be the product of
+      // the number of pages requested and the number of items per page.
+      if ($view->query->pager->options['total_pages'] != 0) {
+        $query = $query . ' LIMIT '
+          . $view->query->pager->options['total_pages'] * $view->query->pager->options['items_per_page'];
+      }
 
       $start = views_microtime();
 
@@ -220,7 +234,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
       }
 
       $query = $prefixes .' '. $query;
-      if (function_exists('token_replace')) {
+      if (function_exists('token_replace_multiple')) {
         // We need the array keys from token_get_list, but we need them to have
         // NULL values.
         $token_types = array_fill_keys(array_keys(token_get_list('all')), NULL);
@@ -232,8 +246,7 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
           $view->result[] = $resource;
         }
         // Save the metadata into the object.
-        unset($results['result']);
-        foreach ($results as $key => $value) {
+        foreach ($results['result']['variables'] as $key => $value) {
           $this->$key = $value;
         }
 

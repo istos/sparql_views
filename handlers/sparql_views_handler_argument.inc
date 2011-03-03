@@ -25,7 +25,7 @@ class sparql_views_handler_argument extends views_handler_argument {
       '#default_value' => $this->options['replacement_type'],
       '#required' => TRUE,
     );
-    $options = array('string' => 'String', 'url' => 'URL');
+    $options = array('string' => 'String', 'url' => 'URL', 'arg' => 'Argument Replacement');
 
     $form['replacement_type']['#options'] = $options;
 
@@ -38,6 +38,9 @@ class sparql_views_handler_argument extends views_handler_argument {
     
     if ($this->options['replacement_type'] == 'string') {
       $this->query->add_filter('regex', $this->field, $argument);
+    }
+    elseif ($this->options['replacement_type'] == 'arg') {
+      $this->query->add_argument($this->field, $argument);
     }
     else if ($this->options['replacement_type'] == 'url') {
       $argument = '<' . $argument . '>';
