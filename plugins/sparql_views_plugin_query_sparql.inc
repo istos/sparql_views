@@ -132,12 +132,8 @@ class sparql_views_plugin_query_sparql extends views_plugin_query {
 
 
   function add_argument($variable, $value) {
-    dpm($value);
-    dpm($variable);
     $search_string = '[' . $variable .']';
-    dpm($search_string);
     $this->select_clause = str_replace($search_string, $value, $this->select_clause);
-    dpm($this->select_clause);
   }
 
 
